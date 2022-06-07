@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Application\Settings;
+namespace Tbg\Identity\Application\Settings;
 
 class Settings implements SettingsInterface
 {

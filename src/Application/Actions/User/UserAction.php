@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Application\Actions\User;
+namespace Tbg\Identity\Application\Actions\User;
 
-use App\Application\Actions\Action;
-use App\Domain\User\UserRepository;
 use Psr\Log\LoggerInterface;
+use Tbg\Identity\Application\Actions\Action;
+use Tbg\Identity\Repository\UserRepository;
 
 abstract class UserAction extends Action
 {

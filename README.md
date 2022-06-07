@@ -1,42 +1,59 @@
-# Slim Framework 4 Skeleton Application
+# Identity service
 
-[![Coverage Status](https://coveralls.io/repos/github/slimphp/Slim-Skeleton/badge.svg?branch=master)](https://coveralls.io/github/slimphp/Slim-Skeleton?branch=master)
+Identity is a microservice and API (Application Programming Interface) used for handling everything to do with who's
+who. For now the focus is on donors and making their journey smoother by avoiding the need to re-enter details.
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 4 application. This application uses the latest Slim 4 with Slim PSR-7 implementation and PHP-DI container implementation. It also uses the Monolog logger.
+Bootstrapped with [Slim Skeleton](https://github.com/slimphp/Slim-Skeleton), this PHP app uses Slim Framework 4
+along with several other PHP libraries used across the Big Give.
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+* [Run the app](#Run-the-app)
+* [Run unit tests](#Run-unit-tests)
 
-## Install the Application
+## Run the app
 
-Run this command from the directory in which you want to install your new Slim Framework application. You will require PHP 7.3 or newer.
+You should usually use Docker to run the app locally in an easy way, with the least possible
+configuration and the most consistency with other runtime environments - both those used
+when the app is deployed 'for real' and other developers' machines.
 
-```bash
-composer create-project slim/slim-skeleton [my-app-name]
-```
+### Prerequisites
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
+In advance of the first app run:
 
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writable.
+* [get Docker](https://www.docker.com/get-started)
+* copy `.env.example` to `.env` and change any values you need to.
 
-To run the application in development, you can run these commands 
+### Start the app
 
-```bash
-cd [my-app-name]
-composer start
-```
+To start the app and its dependency (`db`) locally:
 
-Or you can use `docker-compose` to run the app with `docker`, so you can run these commands:
-```bash
-cd [my-app-name]
-docker-compose up -d
-```
-After that, open `http://localhost:8080` in your browser.
+    docker-compose up -d app
 
-Run this command in the application directory to run the test suite
+### First run
 
-```bash
-composer test
-```
+To get PHP dependencies and an initial data in structure in place, you'll need to run these once:
 
-That's it! Now go build something cool.
+    docker-compose exec app composer install
+    docker-compose exec app composer doctrine:delete-and-recreate
+
+If dependencies change you may occasionally need to re-run the `composer install`.
+
+### Once it's up
+
+Check the `Status` endpoint works:
+
+* [localhost:30050/ping](http://localhost:30050/ping)
+
+## Run unit tests
+
+Once you have the app running, you can test with:
+
+    docker-compose exec app composer run test
+
+When run with a coverage driver (e.g. Xdebug enabled by using `thebiggive/php:dev-8.1`),
+this will save coverage data to `./coverage.xml`.
+
+Linting is run with
+
+    docker-compose exec app composer run lint:check
+
+To understand how these commands are run in CI, see [the CircleCI config file](./.circleci/config.yml).

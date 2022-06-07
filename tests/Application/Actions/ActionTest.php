@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Tests\Application\Actions;
+namespace Tbg\Identity\Tests\Application\Actions;
 
-use App\Application\Actions\Action;
-use App\Application\Actions\ActionPayload;
+use Tbg\Identity\Application\Actions\Action;
+use Tbg\Identity\Application\Actions\ActionPayload;
 use DateTimeImmutable;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
-use Tests\TestCase;
+use Tbg\Identity\Tests\TestCase;
 
 class ActionTest extends TestCase
 {
@@ -18,7 +19,7 @@ class ActionTest extends TestCase
         $container = $app->getContainer();
         $logger = $container->get(LoggerInterface::class);
 
-        $testAction = new class($logger) extends Action {
+        $testAction = new class ($logger) extends Action {
             public function __construct(
                 LoggerInterface $loggerInterface
             ) {
@@ -51,7 +52,7 @@ class ActionTest extends TestCase
         $container = $app->getContainer();
         $logger = $container->get(LoggerInterface::class);
 
-        $testAction = new class($logger) extends Action {
+        $testAction = new class ($logger) extends Action {
             public function __construct(
                 LoggerInterface $loggerInterface
             ) {

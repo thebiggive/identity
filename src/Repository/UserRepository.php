@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Domain\User;
+namespace Tbg\Identity\Repository;
 
 interface UserRepository
 {

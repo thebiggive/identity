@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
+use Tbg\Identity\Application\Actions\Status;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -14,13 +14,22 @@ return function (App $app) {
         return $response;
     });
 
-    $app->get('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world!');
-        return $response;
-    });
+    $app->get('/ping', Status::class);
 
-    $app->group('/users', function (Group $group) {
-        $group->get('', ListUsersAction::class);
-        $group->get('/{id}', ViewUserAction::class);
-    });
+//    $app->post('/people', CreatePerson::class)
+//        ->add(RecaptchaMiddleware::class) // Runs last
+//        ->add($ipMiddleware)
+//        ->add(RateLimitMiddleware::class);
+
+//    $app->post('auth', Login::class);
+
+//    $app->group('/people', function (Group $peopleGroup) {
+//        $peopleGroup->get('/{id}', ViewPersonAction::class);
+//
+//        $peopleGroup->group('/payment_methods', function (Group $paymentMethodsGroup) {
+//            $paymentMethodsGroup->post('', CreatePaymentMethod::class);
+//            $paymentMethodsGroup->post('/{id}', DeletePaymentMethod::class);
+//        });
+//    })
+//        ->add(IdentityAuthMiddleware::class);
 };

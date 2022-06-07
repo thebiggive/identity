@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Application\Handlers;
+namespace Tbg\Identity\Application\Handlers;
 
-use App\Application\Actions\ActionError;
-use App\Application\Actions\ActionPayload;
+use Tbg\Identity\Application\Actions\ActionError;
+use Tbg\Identity\Application\Actions\ActionPayload;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
@@ -50,7 +51,8 @@ class HttpErrorHandler extends SlimErrorHandler
             }
         }
 
-        if (!($exception instanceof HttpException)
+        if (
+            !($exception instanceof HttpException)
             && $exception instanceof Throwable
             && $this->displayErrorDetails
         ) {

@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Tests;
+namespace Tbg\Identity\Tests;
 
 use DI\ContainerBuilder;
 use Exception;
@@ -76,7 +77,7 @@ class TestCase extends PHPUnit_TestCase
         array $serverParams = []
     ): Request {
         $uri = new Uri('', '', 80, $path);
-        $handle = fopen('php://temp', 'w+');
+        $handle = fopen('php://temp', 'wb+');
         $stream = (new StreamFactory())->createStreamFromResource($handle);
 
         $h = new Headers();
