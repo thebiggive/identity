@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Domain;
+namespace BigGive\Identity\Domain;
 
 use DateTime;
 

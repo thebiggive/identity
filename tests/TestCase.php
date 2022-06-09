@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Tests;
+namespace BigGive\Identity\Tests;
 
 use DI\ContainerBuilder;
 use Exception;

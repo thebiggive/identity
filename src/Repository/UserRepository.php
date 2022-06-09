@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Repository;
+namespace BigGive\Identity\Repository;
 
 interface UserRepository
 {

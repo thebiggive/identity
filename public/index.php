@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Tbg\Identity\Application\Handlers\HttpErrorHandler;
-use Tbg\Identity\Application\Handlers\ShutdownHandler;
-use Tbg\Identity\Application\ResponseEmitter\ResponseEmitter;
-use Tbg\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Application\Handlers\HttpErrorHandler;
+use BigGive\Identity\Application\Handlers\ShutdownHandler;
+use BigGive\Identity\Application\ResponseEmitter\ResponseEmitter;
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;

@@ -3,9 +3,6 @@ version: "3.7"
 services:
     app:
         image: thebiggive/php:dev-8.1
-        # todo review
-#        working_dir: /var/www
-#        command: php -S 0.0.0.0:8080 -t public
         environment:
             docker: "true"
         ports:

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Actions;
+namespace BigGive\Identity\Application\Actions;
 
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;

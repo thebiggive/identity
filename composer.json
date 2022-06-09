@@ -20,13 +20,15 @@
         "doctrine/orm": "^2.12",
         "firebase/php-jwt": "^5.5",
         "google/recaptcha": "^1.2",
+        "los/los-rate-limit": "^3.3",
         "middlewares/client-ip": "^2.0",
         "monolog/monolog": "^2.6",
         "php-di/php-di": "^6.4",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "stripe/stripe-php": "^7.128",
-        "symfony/cache": "^6.1"
+        "symfony/cache": "^6.1",
+        "symfony/serializer": "^6.1"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
@@ -51,12 +53,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Tbg\\Identity\\": "src/"
+            "BigGive\\Identity\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tbg\\Identity\\Tests\\": "tests/"
+            "BigGive\\Identity\\Tests\\": "tests/"
         }
     },
     "scripts": {

@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-use Tbg\Identity\Application\Actions\Status;
+use BigGive\Identity\Application\Actions\Status;
+use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
+use LosMiddleware\RateLimit\RateLimitMiddleware;
+use Middlewares\ClientIp;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -15,6 +18,12 @@ return function (App $app) {
     });
 
     $app->get('/ping', Status::class);
+
+    $app->group('/v1', function (Group $versionGroup) {
+        // Provides real IP for reCAPTCHA
+        $ipMiddleware = getenv('APP_ENV') === 'local'
+            ? new ClientIp()
+            : (new ClientIp())->proxy([], ['X-Forwarded-For']);
 
 //    $app->post('/people', CreatePerson::class)
 //        ->add(RecaptchaMiddleware::class) // Runs last
@@ -32,4 +41,5 @@ return function (App $app) {
 //        });
 //    })
 //        ->add(IdentityAuthMiddleware::class);
+    });
 };

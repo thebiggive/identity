@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Handlers;
+namespace BigGive\Identity\Application\Handlers;
 
-use Tbg\Identity\Application\Actions\ActionError;
-use Tbg\Identity\Application\Actions\ActionPayload;
+use BigGive\Identity\Application\Actions\ActionError;
+use BigGive\Identity\Application\Actions\ActionPayload;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;

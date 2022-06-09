@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Tests\Application\Actions;
+namespace BigGive\Identity\Tests\Application\Actions;
 
-use Tbg\Identity\Application\Actions\ActionPayload;
-use Tbg\Identity\Tests\TestCase;
+use BigGive\Identity\Application\Actions\ActionPayload;
+use BigGive\Identity\Tests\TestCase;
 
 class StatusTest extends TestCase
 {

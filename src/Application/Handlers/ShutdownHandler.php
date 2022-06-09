@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Handlers;
+namespace BigGive\Identity\Application\Handlers;
 
-use Tbg\Identity\Application\ResponseEmitter\ResponseEmitter;
+use BigGive\Identity\Application\ResponseEmitter\ResponseEmitter;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpInternalServerErrorException;
 

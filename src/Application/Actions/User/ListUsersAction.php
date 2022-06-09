@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Actions\User;
+namespace BigGive\Identity\Application\Actions\User;
 
 use Psr\Http\Message\ResponseInterface as Response;
 

@@ -31,8 +31,7 @@ jobs:
 
       - run: composer run lint:check
 
-# TODO
-#      - run: composer run docs # Ensure OpenAPI annotations remain valid
+      - run: composer run docs # Ensure OpenAPI annotations remain valid
 
       - run: composer run test
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Tests\Application\Actions;
+namespace BigGive\Identity\Tests\Application\Actions;
 
-use Tbg\Identity\Application\Actions\Action;
-use Tbg\Identity\Application\Actions\ActionPayload;
+use BigGive\Identity\Application\Actions\Action;
+use BigGive\Identity\Application\Actions\ActionPayload;
 use DateTimeImmutable;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
-use Tbg\Identity\Tests\TestCase;
+use BigGive\Identity\Tests\TestCase;
 
 class ActionTest extends TestCase
 {

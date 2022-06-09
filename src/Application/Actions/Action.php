@@ -2,15 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Actions;
+namespace BigGive\Identity\Application\Actions;
 
-use Tbg\Identity\Domain\DomainException\DomainRecordNotFoundException;
+use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 
+/**
+ * @OA\Info(title="Big Give Identity service", version="1"),
+ * @OA\Server(
+ *     description="Staging",
+ *     url="https://identity-staging.thebiggivetest.org.uk",
+ * ),
+ * @todo Document app-wide JWT auth in a `SecurityScheme` annotation.
+ */
 abstract class Action
 {
     protected LoggerInterface $logger;

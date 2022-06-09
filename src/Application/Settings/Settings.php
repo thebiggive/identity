@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Settings;
+namespace BigGive\Identity\Application\Settings;
 
 class Settings implements SettingsInterface
 {

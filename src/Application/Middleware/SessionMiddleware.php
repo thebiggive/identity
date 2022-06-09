@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Middleware;
+namespace BigGive\Identity\Application\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface as Middleware;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
+/**
+ * @todo probably delete; possibly replace with JWT logic. ID app will use JWTs and stateless auth, not cookies.
+ */
 class SessionMiddleware implements Middleware
 {
     /**

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Tests\Domain;
+namespace BigGive\Identity\Tests\Domain;
 
-use Tbg\Identity\Domain\Person;
-use Tbg\Identity\Tests\TestCase;
+use BigGive\Identity\Domain\Person;
+use BigGive\Identity\Tests\TestCase;
 
 class PersonTest extends TestCase
 {

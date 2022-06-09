@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Tbg\Identity\Application\Settings\Settings;
-use Tbg\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Application\Settings\Settings;
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Monolog\Logger;
 

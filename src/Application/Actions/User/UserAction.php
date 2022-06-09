@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tbg\Identity\Application\Actions\User;
+namespace BigGive\Identity\Application\Actions\User;
 
 use Psr\Log\LoggerInterface;
-use Tbg\Identity\Application\Actions\Action;
-use Tbg\Identity\Repository\UserRepository;
+use BigGive\Identity\Application\Actions\Action;
+use BigGive\Identity\Repository\UserRepository;
 
 abstract class UserAction extends Action
 {
