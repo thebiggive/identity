@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Tests;
+namespace BigGive\Identity\Tests;
 
 use DI\ContainerBuilder;
 use Exception;
@@ -38,9 +39,9 @@ class TestCase extends PHPUnit_TestCase
         $dependencies = require __DIR__ . '/../app/dependencies.php';
         $dependencies($containerBuilder);
 
-        // Set up repositories
-        $repositories = require __DIR__ . '/../app/repositories.php';
-        $repositories($containerBuilder);
+        // Set up repositories – TODO reinstate if using this for Doctrine ones.
+//        $repositories = require __DIR__ . '/../app/repositories.php';
+//        $repositories($containerBuilder);
 
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
@@ -76,7 +77,7 @@ class TestCase extends PHPUnit_TestCase
         array $serverParams = []
     ): Request {
         $uri = new Uri('', '', 80, $path);
-        $handle = fopen('php://temp', 'w+');
+        $handle = fopen('php://temp', 'wb+');
         $stream = (new StreamFactory())->createStreamFromResource($handle);
 
         $h = new Headers();

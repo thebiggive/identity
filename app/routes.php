@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
+use BigGive\Identity\Application\Actions\Status;
+use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
+use LosMiddleware\RateLimit\RateLimitMiddleware;
+use Middlewares\ClientIp;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -14,13 +17,29 @@ return function (App $app) {
         return $response;
     });
 
-    $app->get('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world!');
-        return $response;
-    });
+    $app->get('/ping', Status::class);
 
-    $app->group('/users', function (Group $group) {
-        $group->get('', ListUsersAction::class);
-        $group->get('/{id}', ViewUserAction::class);
+    $app->group('/v1', function (Group $versionGroup) {
+        // Provides real IP for reCAPTCHA
+        $ipMiddleware = getenv('APP_ENV') === 'local'
+            ? new ClientIp()
+            : (new ClientIp())->proxy([], ['X-Forwarded-For']);
+
+//    $app->post('/people', CreatePerson::class)
+//        ->add(RecaptchaMiddleware::class) // Runs last
+//        ->add($ipMiddleware)
+//        ->add(RateLimitMiddleware::class);
+
+//    $app->post('auth', Login::class);
+
+//    $app->group('/people', function (Group $peopleGroup) {
+//        $peopleGroup->get('/{id}', ViewPersonAction::class);
+//
+//        $peopleGroup->group('/payment_methods', function (Group $paymentMethodsGroup) {
+//            $paymentMethodsGroup->post('', CreatePaymentMethod::class);
+//            $paymentMethodsGroup->post('/{id}', DeletePaymentMethod::class);
+//        });
+//    })
+//        ->add(IdentityAuthMiddleware::class);
     });
 };

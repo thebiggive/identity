@@ -1,12 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
-use App\Application\Settings\Settings;
-use App\Application\Settings\SettingsInterface;
+use BigGive\Identity\Application\Settings\Settings;
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Monolog\Logger;
 
 return function (ContainerBuilder $containerBuilder) {
+    $doctrineConnectionOptions = [];
+    if (getenv('APP_ENV') !== 'local') {
+        $doctrineConnectionOptions[PDO::MYSQL_ATTR_SSL_CA] = dirname(__DIR__) . '/deploy/rds-ca-2019-root.pem';
+    }
 
     // Global Settings Object
     $containerBuilder->addDefinitions([

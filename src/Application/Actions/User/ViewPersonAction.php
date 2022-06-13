@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Application\Actions\User;
+namespace BigGive\Identity\Application\Actions\User;
 
 use Psr\Http\Message\ResponseInterface as Response;
 
-class ViewUserAction extends UserAction
+class ViewPersonAction extends UserAction
 {
     /**
      * {@inheritdoc}
