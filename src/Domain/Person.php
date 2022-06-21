@@ -16,6 +16,8 @@ use JsonSerializable;
  */
 class Person implements JsonSerializable
 {
+    use TimestampsTrait;
+
     /**
      * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
      * @var Collection|PaymentMethod[]
@@ -24,6 +26,12 @@ class Person implements JsonSerializable
 
     // TODO decide between numeric and UUIDs as primary/ whether UUIDs worth it at all.
     // Enable Ramsey type if so, tidy up UUID refs if not.
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"unsigned": true})
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @var int|null
+     */
     public ?int $id = null;
 
     public string $emailAddress;

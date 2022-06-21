@@ -8,8 +8,23 @@ use Doctrine\ORM\Mapping as ORM;
 use JsonException;
 use JsonSerializable;
 
+/**
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table
+ */
 class PaymentMethod implements JsonSerializable
 {
+    use TimestampsTrait;
+
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"unsigned": true})
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @var int|null
+     */
+    public ?int $id = null;
+
     /**
      * @ORM\ManyToOne(targetEntity="Person", cascade={"persist"})
      * @var Person

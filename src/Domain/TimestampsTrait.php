@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use DateTime;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Trait to define timestamp fields and set them when appropriate. For this to work the models *must* be
