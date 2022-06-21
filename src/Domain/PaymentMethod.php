@@ -26,10 +26,9 @@ class PaymentMethod implements JsonSerializable
     public ?int $id = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Person", cascade={"persist"})
-     * @var Person
+     * @ORM\ManyToOne(targetEntity="Person", inversedBy="paymentMethods", cascade={"persist"})
      */
-    protected Person $user;
+    protected Person $person;
 
     public string $psp = 'stripe';
 
