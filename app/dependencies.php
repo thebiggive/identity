@@ -9,12 +9,12 @@ use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\ORM\Tools\Setup;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -55,10 +55,11 @@ return function (ContainerBuilder $containerBuilder) {
 //            }
 
             // TODO Pass $cache as 4th arg once it's ready.
-            $config = Setup::createAnnotationMetadataConfiguration(
+            $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
                 $doctrineSettings['metadata_dirs'],
                 $doctrineSettings['dev_mode'],
                 $doctrineSettings['cache_dir'] . '/proxies',
+                new ArrayAdapter(),
             );
 
             // Turn off auto-proxies in ECS envs, where we explicitly generate them on startup entrypoint and cache all
