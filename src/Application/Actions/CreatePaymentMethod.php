@@ -11,7 +11,7 @@ use Slim\Exception\HttpBadRequestException;
 /**
  * @todo
  */
-class CreatePerson extends Action
+class CreatePaymentMethod extends Action
 {
     /**
      * @return Response

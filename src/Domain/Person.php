@@ -4,14 +4,27 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 
 /**
- * @todo ORM map everything!
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table
  */
 class Person implements JsonSerializable
 {
-    public ?int $id = null; // TODO decide between numeric and UUIDs as primary.
+    /**
+     * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
+     * @var Collection|PaymentMethod[]
+     */
+    public Collection | array $paymentMethods;
+
+    // TODO decide between numeric and UUIDs as primary/ whether UUIDs worth it at all.
+    // Enable Ramsey type if so, tidy up UUID refs if not.
+    public ?int $id = null;
 
     public string $emailAddress;
 
@@ -22,6 +35,11 @@ class Person implements JsonSerializable
     public string $firstName;
 
     public string $lastName;
+
+    public function __construct()
+    {
+        $this->paymentMethods = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {

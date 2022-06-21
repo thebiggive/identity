@@ -6,13 +6,13 @@ namespace BigGive\Identity\Application\Actions\User;
 
 use Psr\Log\LoggerInterface;
 use BigGive\Identity\Application\Actions\Action;
-use BigGive\Identity\Repository\UserRepository;
+use BigGive\Identity\Repository\PersonRepository;
 
 abstract class UserAction extends Action
 {
-    protected UserRepository $userRepository;
+    protected PersonRepository $userRepository;
 
-    public function __construct(LoggerInterface $logger, UserRepository $userRepository)
+    public function __construct(LoggerInterface $logger, PersonRepository $userRepository)
     {
         parent::__construct($logger);
         $this->userRepository = $userRepository;
