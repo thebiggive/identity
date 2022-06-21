@@ -5,6 +5,8 @@ services:
         image: thebiggive/php:dev-8.1
         environment:
             docker: "true"
+        env_file:
+            - .env
         ports:
             - "30050:80"
         volumes:
