@@ -54,11 +54,11 @@ return function (ContainerBuilder $containerBuilder) {
 //                $cache = new ArrayCache();
 //            }
 
+            // TODO Pass $cache as 4th arg once it's ready.
             $config = Setup::createAnnotationMetadataConfiguration(
                 $doctrineSettings['metadata_dirs'],
                 $doctrineSettings['dev_mode'],
                 $doctrineSettings['cache_dir'] . '/proxies',
-//                $cache
             );
 
             // Turn off auto-proxies in ECS envs, where we explicitly generate them on startup entrypoint and cache all
