@@ -10,3 +10,4 @@
 openapi.yaml
 
 .env
+/coverage.xml
