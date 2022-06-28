@@ -50,13 +50,13 @@ class PaymentMethod implements JsonSerializable
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @var string Stores billing post code, nullable.
+     * @var string|null Stores billing post code, nullable.
      */
     public ?string $billingPostcode = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @var string stores the country the card used is registered in, nullable.
+     * @var string|null stores the country the card used is registered in, nullable.
      */
     public ?string $billingCountryCode = null;
 
