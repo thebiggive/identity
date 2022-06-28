@@ -30,14 +30,34 @@ class PaymentMethod implements JsonSerializable
      */
     protected Person $person;
 
+    /**
+     * @ORM\Column(type="string")
+     * @var string Stores what payment service provider is used - currently Stripe for everyone.
+     */
     public string $psp = 'stripe';
 
+    /**
+     * @ORM\Column(type="string", unique=true)
+     * @var string Unique token to identify a specific PaymentMethod record.
+     */
     public string $token;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null Stores first line of billing adress, nullable.
+     */
     public ?string $billingFirstAddressLine = null;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string Stores billing post code, nullable.
+     */
     public ?string $billingPostcode = null;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string stores the country the card used is registered in, nullable.
+     */
     public ?string $billingCountryCode = null;
 
     public function jsonSerialize(): mixed

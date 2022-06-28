@@ -34,15 +34,27 @@ class Person implements JsonSerializable
      */
     public ?int $id = null;
 
+    /**
+     * @ORM\Column(type="string")
+     * @var string The person's first name.
+     */
+    public string $firstName;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string The person's last name / surname.
+     */
+    public string $lastName;
+
+    /**
+     * @ORM\Column(type="string", unique=true)
+     * @var string The email address of the person. Email address must be unique.
+     */
     public string $emailAddress;
 
     private string $password;
 
     private ?string $stripeCustomerId = null;
-
-    public string $firstName;
-
-    public string $lastName;
 
     public function __construct()
     {
