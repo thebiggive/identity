@@ -6,6 +6,7 @@ namespace BigGive\Identity\Repository;
 
 use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
 use BigGive\Identity\Domain\Person;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @todo implement or drop.
@@ -18,9 +19,9 @@ interface PersonRepository
     public function findAll(): array;
 
     /**
-     * @param int $id
+     * @param UuidInterface $id
      * @return Person
      * @throws DomainRecordNotFoundException
      */
-    public function findUserOfId(int $id): Person;
+    public function findPersonOfId(UuidInterface $id): Person;
 }

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\ArrayShape;
 use JsonException;
 use JsonSerializable;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity()
@@ -18,15 +20,17 @@ class PaymentMethod implements JsonSerializable
     use TimestampsTrait;
 
     /**
+     * @var \Ramsey\Uuid\UuidInterface
+     *
      * @ORM\Id
-     * @ORM\Column(type="integer", options={"unsigned": true})
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @var int|null
+     * @ORM\Column(type="uuid_binary_ordered_time", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
-    public ?int $id = null;
+    public UuidInterface $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="paymentMethods", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Person", inversedBy="payment_methods", cascade={"persist"})
      */
     protected Person $person;
 
@@ -46,29 +50,36 @@ class PaymentMethod implements JsonSerializable
      * @ORM\Column(type="string", nullable=true)
      * @var string|null Stores first line of billing adress, nullable.
      */
-    public ?string $billingFirstAddressLine = null;
+    public ?string $billing_first_address_line = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      * @var string|null Stores billing post code, nullable.
      */
-    public ?string $billingPostcode = null;
+    public ?string $billing_postcode = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      * @var string|null stores the country the card used is registered in, nullable.
      */
-    public ?string $billingCountryCode = null;
+    public ?string $billing_country_code = null;
 
-    public function jsonSerialize(): mixed
+    public function setPerson(Person $person): void
     {
-        try {
-            return json_encode([
-                'user_id' => $this->user->getId(),
-                ...get_object_vars($this)
-            ], JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            // todo
-        }
+        $this->person = $person;
+    }
+
+    public function getPerson(): Person
+    {
+        return $this->person;
+    }
+
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): array
+    {
+        return [
+            'person_id' => $this->person->getId(),
+            ...get_object_vars($this)
+        ];
     }
 }
