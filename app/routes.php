@@ -33,7 +33,7 @@ return function (App $app) {
 //    $app->post('auth', Login::class);
 
 //    $app->group('/people', function (Group $peopleGroup) {
-//        $peopleGroup->get('/{id}', ViewPersonAction::class);
+//        $peopleGroup->get('/{id}', GetPersonAction::class);
 //
 //        $peopleGroup->group('/payment_methods', function (Group $paymentMethodsGroup) {
 //            $paymentMethodsGroup->post('', CreatePaymentMethod::class);

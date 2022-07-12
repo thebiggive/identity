@@ -4,43 +4,82 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
+use Ramsey\Uuid\UuidInterface;
 
 /**
- * @todo ORM map everything!
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table
  */
 class Person implements JsonSerializable
 {
-    public ?int $id = null; // TODO decide between numeric and UUIDs as primary.
+    use TimestampsTrait;
 
+    /**
+     * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
+     * @var Collection|PaymentMethod[]
+     */
+    public Collection | array $payment_methods;
+
+    /**
+     * @var \Ramsey\Uuid\UuidInterface
+     *
+     * @ORM\Id
+     * @ORM\Column(type="uuid_binary_ordered_time", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
+     */
+    public UuidInterface $id;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string The person's first name.
+     */
+    public string $first_name;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string The person's last name / surname.
+     */
+    public string $last_name;
+
+    /**
+     * @ORM\Column(type="string", unique=true)
+     * @var string The email address of the person. Email address must be unique.
+     */
     public string $emailAddress;
 
     private string $password;
 
-    private ?string $stripeCustomerId = null;
+    private ?string $stripe_customer_id = null;
 
-    public string $firstName;
+    public function __construct()
+    {
+        $this->payment_methods = new ArrayCollection();
+    }
 
-    public string $lastName;
-
-    public function getId(): ?int
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
 
     public function getFirstName(): string
     {
-        return $this->firstName;
+        return $this->first_name;
     }
 
     public function getLastName(): string
     {
-        return $this->lastName;
+        return $this->last_name;
     }
 
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
-        return json_encode(get_object_vars($this), JSON_THROW_ON_ERROR);
+        return get_object_vars($this);
     }
 }
