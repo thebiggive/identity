@@ -23,5 +23,5 @@ interface PersonRepository
      * @return Person
      * @throws DomainRecordNotFoundException
      */
-    public function findPersonOfId(UuidInterface $id): Person;
+    public function findPersonById(UuidInterface $id): Person;
 }
