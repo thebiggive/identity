@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BigGive\Identity\Application\Actions\Status;
+use BigGive\Identity\Application\Actions\CreatePerson;
 use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
