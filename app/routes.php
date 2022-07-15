@@ -24,11 +24,14 @@ return function (App $app) {
         $ipMiddleware = getenv('APP_ENV') === 'local'
             ? new ClientIp()
             : (new ClientIp())->proxy([], ['X-Forwarded-For']);
-
-//    $app->post('/people', CreatePerson::class)
-//        ->add(RecaptchaMiddleware::class) // Runs last
-//        ->add($ipMiddleware)
-//        ->add(RateLimitMiddleware::class);
+        
+        // Current unauthenticated endpoint in the `/v1` group. Middlewares run in reverse
+        // order when chained this way – so we check rate limits first, then get the real
+        // IP in an attribute for reCAPTCHA sending, then check the captcha.
+        $versionGroup->get('/people', CreatePerson::class);
+            // ->add(RecaptchaMiddleware::class) // Runs last
+            // ->add($ipMiddleware)
+            // ->add(RateLimitMiddleware::class);
 
 //    $app->post('auth', Login::class);
 
