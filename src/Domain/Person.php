@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
-use BigGive\Identity\Security\Password;
+use BigGive\Identity\Application\Security\Password;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -56,6 +56,12 @@ class Person implements JsonSerializable
 
     private string $password;
 
+    /** @var string|null Used only on create; not persisted. */
+    public ?string $recaptcha_code = null;
+
+    /**
+     * @var string|null Used on create; only hash of this is persisted.
+     */
     public ?string $raw_password = null;
 
     private ?string $stripe_customer_id = null;
