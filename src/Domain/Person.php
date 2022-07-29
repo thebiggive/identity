@@ -36,7 +36,7 @@ class Person implements JsonSerializable
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
-    public ?UuidInterface $id = null;
+    public UuidInterface $id;
 
     /**
      * @ORM\Column(type="string")
@@ -80,13 +80,12 @@ class Person implements JsonSerializable
         $this->payment_methods = new ArrayCollection();
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
 
-    // todo make ID compulsory if poss without breaking stuff.
-    public function setId(?UuidInterface $id): void
+    public function setId(UuidInterface $id): void
     {
         $this->id = $id;
     }
@@ -115,7 +114,7 @@ class Person implements JsonSerializable
     public function jsonSerialize(): array
     {
         $jsonVars = get_object_vars($this);
-        $jsonVars['uuid'] = $this->getId()?->toString();
+        $jsonVars['uuid'] = $this->getId()->toString();
 
         return $jsonVars;
     }
