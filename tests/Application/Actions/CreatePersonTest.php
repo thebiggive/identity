@@ -109,8 +109,14 @@ class CreatePersonTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertJson($payloadJSON);
 
-        $payload = json_decode($payloadJSON);
-        // todo test errors
+        $expectedJSON = json_encode([
+            'error' => [
+                'description' => 'Validation error: Captcha is required to create an account',
+                'type' => 'BAD_REQUEST',
+            ],
+            'statusCode' => 400,
+        ], JSON_THROW_ON_ERROR);
+        $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
 
     public function testMissingData(): void
