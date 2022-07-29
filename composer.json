@@ -31,7 +31,8 @@
         "stripe/stripe-php": "^7.128",
         "symfony/cache": "^6.1",
         "symfony/property-access": "^6.1",
-        "symfony/serializer": "^6.1"
+        "symfony/serializer": "^6.1",
+        "symfony/validator": "^6.1"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,6 +19,7 @@ use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
+use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
@@ -42,6 +44,13 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         EntityManagerInterface::class => static function (ContainerInterface $c): EntityManagerInterface {
+            // https://github.com/ramsey/uuid-doctrine#innodb-optimised-binary-uuids
+            // Tests seem to hit this multiple times and get unhappy, so we must check
+            // for a previous invocation with `hasType()`.
+            if (!Type::hasType('uuid_binary_ordered_time')) {
+                Type::addType('uuid_binary_ordered_time', UuidBinaryOrderedTimeType::class);
+            }
+
             return EntityManager::create(
                 $c->get(SettingsInterface::class)->get('doctrine')['connection'],
                 $c->get(ORM\Configuration::class),
