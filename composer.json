@@ -30,7 +30,9 @@
         "slim/slim": "^4.10",
         "stripe/stripe-php": "^7.128",
         "symfony/cache": "^6.1",
-        "symfony/serializer": "^6.1"
+        "symfony/property-access": "^6.1",
+        "symfony/serializer": "^6.1",
+        "symfony/validator": "^6.1"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
@@ -40,7 +42,7 @@
         "phpunit/phpunit": "^9.5.20",
         "roave/security-advisories": "dev-latest",
         "squizlabs/php_codesniffer": "^3.6",
-        "zircote/swagger-php": "^3.3"
+        "zircote/swagger-php": "^4.4"
     },
     "config": {
         "optimize-autoloader": true,

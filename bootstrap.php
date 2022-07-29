@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 // Instantiate PHP-DI ContainerBuilder
 use DI\ContainerBuilder;
-use Doctrine\DBAL\Types\Type;
-use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -23,12 +21,8 @@ $settings($containerBuilder);
 $dependencies = require __DIR__ . '/app/dependencies.php';
 $dependencies($containerBuilder);
 
-// Set up repositories – TODO delete or start using.
-//$repositories = require __DIR__ . '/app/repositories.php';
-//$repositories($containerBuilder);
-
-// https://github.com/ramsey/uuid-doctrine#innodb-optimised-binary-uuids
-Type::addType('uuid_binary_ordered_time', UuidBinaryOrderedTimeType::class);
+$repositories = require __DIR__ . '/app/repositories.php';
+$repositories($containerBuilder);
 
 // Build PHP-DI Container instance
 return $containerBuilder->build();

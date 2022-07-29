@@ -11,6 +11,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
+use Symfony\Component\Validator\ConstraintViolation;
 
 /**
  * @OA\Info(title="Big Give Identity service", version="1"),
@@ -22,17 +23,14 @@ use Slim\Exception\HttpNotFoundException;
  */
 abstract class Action
 {
-    protected LoggerInterface $logger;
-
     protected Request $request;
 
     protected Response $response;
 
     protected array $args;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(protected readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     /**
@@ -97,5 +95,36 @@ abstract class Action
         return $this->response
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus($payload->getStatusCode());
+    }
+
+    /**
+     * @param string        $logMessage
+     * @param string|null   $publicMessage  Falls back to $logMessage if null.
+     * @param bool          $reduceSeverity Whether to log this error only at INFO level. Used to
+     *                                      avoid noise from known issues.
+     * @return Response with 400 HTTP response code.
+     */
+    protected function validationError(
+        string $logMessage,
+        ?string $publicMessage = null,
+        bool $reduceSeverity = false,
+    ): Response {
+        if ($reduceSeverity) {
+            $this->logger->info($logMessage);
+        } else {
+            $this->logger->warning($logMessage);
+        }
+        $error = new ActionError(ActionError::BAD_REQUEST, $publicMessage ?? $logMessage);
+
+        return $this->respond(new ActionPayload(400, null, $error));
+    }
+
+    protected function summariseConstraintViolation(ConstraintViolation $violation): string
+    {
+        if ($violation->getMessage() === 'This value should not be blank.') {
+            return "{$violation->getPropertyPath()} must not be blank";
+        }
+
+        return $violation->getMessage();
     }
 }

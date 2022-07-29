@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Middleware;
 
-use BigGive\Identity\Application\HttpModels\PersonRegistration;
+use BigGive\Identity\Domain\Person;
 use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -40,14 +40,14 @@ class RecaptchaMiddleware implements MiddlewareInterface
 
             $body = (string) $request->getBody();
 
-            /** @var PersonRegistration $person */
+            /** @var Person $person */
             try {
                 $person = $this->serializer->deserialize(
                     $body,
-                    PersonRegistration::class,
+                    Person::class,
                     'json'
                 );
-                $captchaCode = $person->creationRecaptchaCode ?? '';
+                $captchaCode = $person->captcha_code ?? '';
             } catch (UnexpectedValueException $exception) { // This is the Serializer one, not the global one
                 // No-op. Allow verification with blank string to occur. This will fail with the live
                 // service, but can be mocked with success in unit tests so we can test handling of other

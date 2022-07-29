@@ -9,6 +9,7 @@ use Exception;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use ReCaptcha\ReCaptcha;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Factory\StreamFactory;
@@ -39,20 +40,26 @@ class TestCase extends PHPUnit_TestCase
         $dependencies = require __DIR__ . '/../app/dependencies.php';
         $dependencies($containerBuilder);
 
-        // Set up repositories – TODO reinstate if using this for Doctrine ones.
-//        $repositories = require __DIR__ . '/../app/repositories.php';
-//        $repositories($containerBuilder);
+        $repositories = require __DIR__ . '/../app/repositories.php';
+        $repositories($containerBuilder);
 
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
 
+        $recaptchaProphecy = $this->prophesize(ReCaptcha::class);
+        $recaptchaProphecy->verify('good response', '1.2.3.4')
+            ->willReturn(new \ReCaptcha\Response(true));
+        $recaptchaProphecy->verify('bad response', '1.2.3.4')
+            ->willReturn(new \ReCaptcha\Response(false));
+        // Blank is mocked succeeding so that the deserialise error unit test behaves
+        // as it did before we had captcha verification.
+        $recaptchaProphecy->verify('', '1.2.3.4')
+            ->willReturn(new \ReCaptcha\Response(true));
+        $container->set(ReCaptcha::class, $recaptchaProphecy->reveal());
+
         // Instantiate the app
         AppFactory::setContainer($container);
         $app = AppFactory::create();
-
-        // Register middleware
-        $middleware = require __DIR__ . '/../app/middleware.php';
-        $middleware($app);
 
         // Register routes
         $routes = require __DIR__ . '/../app/routes.php';
