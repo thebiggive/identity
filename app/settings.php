@@ -46,6 +46,22 @@ return function (ContainerBuilder $containerBuilder) {
                     'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
                     'level' => Logger::DEBUG,
                 ],
+                'los_rate_limit' => [
+                    // Dynamic so we can increase it for load tests or as needed based on observed
+                    // Production behaviour.
+                    'ip_max_requests'   => (int) (getenv('MAX_CREATES_PER_IP_PER_5M') ?: '1'),
+                    'ip_reset_time'     => 300, // 5 minutes
+                    // All non-local envs, including 'test', assume ALB-style forwarded headers will be used.
+                    'prefer_forwarded' => getenv('APP_ENV') !== 'local',
+                    'trust_forwarded' => getenv('APP_ENV') !== 'local',
+                    'forwarded_headers_allowed' => [
+                        'X-Forwarded-For',
+                    ],
+                    'hash_ips' => true, // Required for Redis storage of IPv6 addresses.
+                ],
+                'recaptcha' => [
+                    'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
+                ],
             ]);
         }
     ]);
