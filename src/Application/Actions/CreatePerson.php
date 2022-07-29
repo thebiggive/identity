@@ -17,7 +17,32 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
 /**
- * Creates a new Person record.
+ * @OA\Post(
+ *     path="/people",
+ *     summary="Create a new Person record",
+ *     operationId="person_create",
+ *     @OA\Response(
+ *         response=200,
+ *         description="Registered",
+ *         @OA\JsonContent(ref="#/components/schemas/Person"),
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid or missing data",
+ *         @OA\JsonContent(
+ *          format="object",
+ *          example={
+ *              "error": {
+ *                  "description": "The error details",
+ *              }
+ *          },
+ *         ),
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Captcha verification failed",
+ *     ),
+ * ),
  */
 class CreatePerson extends Action
 {
