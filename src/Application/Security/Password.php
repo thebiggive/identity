@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BigGive\Identity\Security;
+namespace BigGive\Identity\Application\Security;
 
 use BigGive\Identity\Domain\Person;
 
