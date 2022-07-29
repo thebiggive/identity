@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="\BigGive\Identity\Repository\PersonRepository")
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table
  */
@@ -36,7 +36,7 @@ class Person implements JsonSerializable
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
-    public UuidInterface $id;
+    public ?UuidInterface $id = null;
 
     /**
      * @ORM\Column(type="string")
@@ -65,7 +65,7 @@ class Person implements JsonSerializable
      * @var string|null Used only on create; not persisted.
      * @see Person::validateCaptchaAndRawPasswordSetIfNew()
      */
-    public ?string $recaptcha_code = null;
+    public ?string $captcha_code = null;
 
     /**
      * @var string|null Used on create; only hash of this is persisted.
@@ -80,9 +80,15 @@ class Person implements JsonSerializable
         $this->payment_methods = new ArrayCollection();
     }
 
-    public function getId(): UuidInterface
+    public function getId(): ?UuidInterface
     {
         return $this->id;
+    }
+
+    // todo make ID compulsory if poss without breaking stuff.
+    public function setId(?UuidInterface $id): void
+    {
+        $this->id = $id;
     }
 
     public function getFirstName(): string
@@ -108,25 +114,28 @@ class Person implements JsonSerializable
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        $jsonVars = get_object_vars($this);
+        $jsonVars['uuid'] = $this->getId()?->toString();
+
+        return $jsonVars;
     }
 
     /**
-     * @Assert\Callback
-     * @see Person::$recaptcha_code
+     * @Assert\Callback()
+     * @see Person::$captcha_code
      * @see Person::$raw_password
      */
-    public function validateCaptchaAndRawPasswordSetIfNew(ExecutionContextInterface $context, $payload): void
+    public function validateCaptchaAndRawPasswordSetIfNew(ExecutionContextInterface $context): void
     {
         // Brand new entity + no captcha solved.
-        if (empty($this->id) && empty($payload['recaptcha_code'])) {
+        if (empty($this->id) && empty($this->captcha_code)) {
             $context->buildViolation('Captcha is required to create an account')
-                ->atPath('recaptcha_code')
+                ->atPath('captcha_code')
                 ->addViolation();
         }
 
         // Entity brand new or somehow otherwise without a password, and none set.
-        if (empty($this->password) && empty($payload['raw_password'])) {
+        if (empty($this->password) && empty($this->raw_password)) {
             $context->buildViolation('Password is required to create an account')
                 ->atPath('raw_password')
                 ->addViolation();

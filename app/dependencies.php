@@ -29,6 +29,8 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -128,6 +130,13 @@ return function (ContainerBuilder $containerBuilder) {
             $normalizers = [new ObjectNormalizer()];
 
             return new Serializer($normalizers, $encoders);
+        },
+
+        ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {
+            return Validation::createValidatorBuilder()
+                ->enableAnnotationMapping()
+                ->addDefaultDoctrineAnnotationReader()
+                ->getValidator();
         },
     ]);
 };

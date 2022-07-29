@@ -49,8 +49,6 @@ class PersonTest extends TestCase
      * @param string $username
      * @param string $firstName
      * @param string $lastName
-     *
-     * @todo test remaining properties.
      */
     public function testJsonSerialize(int $id, string $username, string $firstName, string $lastName): void
     {
@@ -60,9 +58,11 @@ class PersonTest extends TestCase
         $person->id = (new UuidGenerator())->generateId($em, $person);
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
+        $person->email_address = 'loraine@hyperdub.net';
         $json = $person->jsonSerialize();
 
         $this->assertEquals('Loraine', $json['first_name']);
         $this->assertEquals('James', $json['last_name']);
+        $this->assertEquals('loraine@hyperdub.net', $json['email_address']);
     }
 }

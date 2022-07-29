@@ -42,9 +42,9 @@ return function (ContainerBuilder $containerBuilder) {
                 'logError'            => false,
                 'logErrorDetails'     => false,
                 'logger' => [
-                    'name' => 'slim-app',
-                    'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
-                    'level' => Logger::DEBUG,
+                    'name' => 'identity',
+                    'path' => 'php://stdout',
+                    'level' => getenv('APP_ENV') === 'local' ? Logger::DEBUG : Logger::INFO,
                 ],
                 'los_rate_limit' => [
                     // Dynamic so we can increase it for load tests or as needed based on observed
