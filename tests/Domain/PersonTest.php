@@ -11,7 +11,7 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
 
 class PersonTest extends TestCase
 {
-    public function personProvider()
+    public function personProvider(): array
     {
         return [
             [1, 'bill.gates', 'Bill', 'Gates'],
@@ -29,7 +29,7 @@ class PersonTest extends TestCase
      * @param string $firstName
      * @param string $lastName
      */
-    public function testGetters(int $id, string $username, string $firstName, string $lastName)
+    public function testGetters(int $id, string $username, string $firstName, string $lastName): void
     {
         $em = $this->getAppInstance()->getContainer()->get(EntityManagerInterface::class);
 

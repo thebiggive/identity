@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
+use BigGive\Identity\Security\Password;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,7 +24,7 @@ class Person implements JsonSerializable
      * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
      * @var Collection|PaymentMethod[]
      */
-    public Collection | array $payment_methods;
+    public Collection | array $payment_methods = [];
 
     /**
      * @var \Ramsey\Uuid\UuidInterface
@@ -55,6 +56,8 @@ class Person implements JsonSerializable
 
     private string $password;
 
+    public ?string $raw_password = null;
+
     private ?string $stripe_customer_id = null;
 
     public function __construct()
@@ -75,6 +78,16 @@ class Person implements JsonSerializable
     public function getLastName(): string
     {
         return $this->last_name;
+    }
+
+    public function hashPassword(): void
+    {
+        $this->password = Password::hash($this->raw_password);
+    }
+
+    public function getPasswordHash(): string
+    {
+        return $this->password;
     }
 
     #[\ReturnTypeWillChange]
