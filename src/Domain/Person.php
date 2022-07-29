@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity()
@@ -38,29 +40,36 @@ class Person implements JsonSerializable
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      * @var string The person's first name.
      */
     public string $first_name;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      * @var string The person's last name / surname.
      */
     public string $last_name;
 
     /**
      * @ORM\Column(type="string", unique=true)
+     * @Assert\NotBlank()
      * @var string The email address of the person. Email address must be unique.
      */
-    public string $emailAddress;
+    public string $email_address;
 
     private string $password;
 
-    /** @var string|null Used only on create; not persisted. */
+    /**
+     * @var string|null Used only on create; not persisted.
+     * @see Person::validateCaptchaAndRawPasswordSetIfNew()
+     */
     public ?string $recaptcha_code = null;
 
     /**
      * @var string|null Used on create; only hash of this is persisted.
+     * @see Person::validateCaptchaAndRawPasswordSetIfNew()
      */
     public ?string $raw_password = null;
 
@@ -100,5 +109,27 @@ class Person implements JsonSerializable
     public function jsonSerialize(): array
     {
         return get_object_vars($this);
+    }
+
+    /**
+     * @Assert\Callback
+     * @see Person::$recaptcha_code
+     * @see Person::$raw_password
+     */
+    public function validateCaptchaAndRawPasswordSetIfNew(ExecutionContextInterface $context, $payload): void
+    {
+        // Brand new entity + no captcha solved.
+        if (empty($this->id) && empty($payload['recaptcha_code'])) {
+            $context->buildViolation('Captcha is required to create an account')
+                ->atPath('recaptcha_code')
+                ->addViolation();
+        }
+
+        // Entity brand new or somehow otherwise without a password, and none set.
+        if (empty($this->password) && empty($payload['raw_password'])) {
+            $context->buildViolation('Password is required to create an account')
+                ->atPath('raw_password')
+                ->addViolation();
+        }
     }
 }

@@ -18,6 +18,7 @@ class CreatePersonTest extends TestCase
             'last_name' => 'James',
             'raw_password' => 'superSecure123',
             'email_address' => 'loraine@hyperdub.net',
+            'captcha_code' => 'good response',
         ]);
 
         $response = $app->handle($request);
@@ -35,12 +36,66 @@ class CreatePersonTest extends TestCase
         $this->assertNotEmpty($payload->updated_at);
     }
 
-    public function testMissingValues(): void
+    public function testFailingCaptcha(): void
     {
         $app = $this->getAppInstance();
 
         $request = $this->buildRequest([
             'first_name' => 'Loraine',
+            'last_name' => 'James',
+            'raw_password' => 'superSecure123',
+            'email_address' => 'loraine@hyperdub.net',
+            'captcha_code' => 'bad response',
+        ]);
+
+        $response = $app->handle($request);
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        $payload = json_decode($payloadJSON);
+
+        $this->assertJson($payload->uuid);
+        $this->assertSame(32, strlen($payload->getData()->uuid));
+        $this->assertEquals('Loraine', $payload->first_name);
+        $this->assertNotEmpty($payload->created_at);
+        $this->assertNotEmpty($payload->updated_at);
+    }
+
+    public function testMissingCaptcha(): void
+    {
+        $app = $this->getAppInstance();
+
+        $request = $this->buildRequest([
+            'first_name' => 'Loraine',
+            'last_name' => 'James',
+            'raw_password' => 'superSecure123',
+            'email_address' => 'loraine@hyperdub.net',
+        ]);
+
+        $response = $app->handle($request);
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        $payload = json_decode($payloadJSON);
+
+        $this->assertJson($payload->uuid);
+        $this->assertSame(32, strlen($payload->getData()->uuid));
+        $this->assertEquals('Loraine', $payload->first_name);
+        $this->assertNotEmpty($payload->created_at);
+        $this->assertNotEmpty($payload->updated_at);
+    }
+
+    public function testMissingData(): void
+    {
+        $app = $this->getAppInstance();
+
+        $request = $this->buildRequest([
+            'first_name' => 'Loraine',
+            'captcha_code' => 'good response',
         ]);
 
         $response = $app->handle($request);
