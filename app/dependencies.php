@@ -16,14 +16,15 @@ use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Psr\SimpleCache\CacheInterface;
 use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -34,14 +35,21 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
-        CacheInterface::class => function (ContainerInterface $c): CacheInterface {
-            return new Psr16Cache(
-                new Symfony\Component\Cache\Adapter\RedisAdapter(
-                    $c->get(Redis::class),
-                    // Distinguish rate limit data etc. from other apps + use cases.
-                    'identity-cache',
-                    3600, // Allow Auto-clearing cache/rate limit data after an hour.
-                ),
+        CacheItemPoolInterface::class => function (ContainerInterface $c): CacheItemPoolInterface {
+            $redis = $c->get(Redis::class);
+            if ($redis === null) {
+                // Should never happen live except during major infrastructure issues.
+                // This is presumed to be one better than `NullAdapter` in that case since
+                // a single ECS task/request can hopefully do some short term caching.
+                // We should also have already logged a warning during Redis::class resolution.
+                return new ArrayAdapter();
+            }
+
+            return new RedisAdapter(
+                $c->get(Redis::class),
+                // Distinguish rate limit data etc. from other apps + use cases.
+                "identity-{$c->get(SettingsInterface::class)->get('appEnv')}",
+                3600, // Allow Auto-clearing cache/rate limit data after an hour.
             );
         },
 
@@ -75,25 +83,15 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         ORM\Configuration::class => static function (ContainerInterface $c): ORM\Configuration {
-            $doctrineSettings = $c->get(SettingsInterface::class)->get('doctrine');
+            $cache = $c->get(CacheItemPoolInterface::class);
+            $settings = $c->get(SettingsInterface::class);
+            $doctrineSettings = $settings->get('doctrine');
 
-            // TODO use Redis.
-//            $redis = new Redis();
-//            try {
-//                $redis->connect($c->get('settings')['redis']['host']);
-//                $cache = new RedisCache();
-//                $cache->setRedis($redis);
-//                $cache->setNamespace("matchbot-{$settings['appEnv']}");
-//            } catch (RedisException $exception) {
-//                $cache = new ArrayCache();
-//            }
-
-            // TODO Pass $cache as 4th arg once it's ready.
             $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
                 $doctrineSettings['metadata_dirs'],
                 $doctrineSettings['dev_mode'],
                 $doctrineSettings['cache_dir'] . '/proxies',
-                new ArrayAdapter(),
+                $cache,
             );
 
             // Turn off auto-proxies in ECS envs, where we explicitly generate them on startup entrypoint and cache all
@@ -104,7 +102,13 @@ return function (ContainerBuilder $containerBuilder) {
                 new AnnotationDriver(new AnnotationReader(), $doctrineSettings['metadata_dirs'])
             );
 
-//            $config->setMetadataCacheImpl($cache);
+            // Note that we *don't* use a result cache for this app, for both functional and security
+            // reasons:
+            // * We don't want old copies of data for critical donor functions.
+            // * We don't want PII in non-encrypted Redis, for which speed is the priority.
+            $config->setHydrationCache($cache);
+            $config->setMetadataCache($cache);
+            $config->setQueryCache($cache);
 
             return $config;
         },
@@ -113,9 +117,13 @@ return function (ContainerBuilder $containerBuilder) {
             return new ProblemDetailsResponseFactory(new ResponseFactory());
         },
 
+        Psr16Cache::class => function (ContainerInterface $c): Psr16Cache {
+            return new Psr16Cache($c->get(CacheItemPoolInterface::class));
+        },
+
         RateLimitMiddleware::class => static function (ContainerInterface $c): RateLimitMiddleware {
             return new RateLimitMiddleware(
-                $c->get(CacheInterface::class),
+                $c->get(Psr16Cache::class),
                 $c->get(ProblemDetailsResponseFactory::class),
                 new RateLimitOptions($c->get(SettingsInterface::class)->get('los_rate_limit')),
             );
@@ -123,6 +131,25 @@ return function (ContainerBuilder $containerBuilder) {
 
         ReCaptcha::class => static function (ContainerInterface $c): ReCaptcha {
             return new ReCaptcha($c->get(SettingsInterface::class)->get('recaptcha')['secret_key'], new CurlPost());
+        },
+
+        // Note that *unlike MatchBot* we share the same instance with Doctrine + other stuff,
+        // as we do not require the serializer option to be set off for anything in this app.
+        Redis::class => static function (ContainerInterface $c): ?Redis {
+            $redis = new Redis();
+            try {
+                $redis->connect($c->get(SettingsInterface::class)->get('redis')['host']);
+            } catch (RedisException $exception) {
+                $c->get(LoggerInterface::class)->warning(sprintf(
+                    'Redis connect() got RedisException: "%s". Host %s',
+                    $exception->getMessage(),
+                    $c->get(SettingsInterface::class)->get('redis')['host'],
+                ));
+
+                return null;
+            }
+
+            return $redis;
         },
 
         SerializerInterface::class => static function (ContainerInterface $c): SerializerInterface {
