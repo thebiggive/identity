@@ -18,7 +18,7 @@ use TypeError;
 
 /**
  * @OA\Post(
- *     path="/people",
+ *     path="/v1/people",
  *     summary="Create a new Person record",
  *     operationId="person_create",
  *     @OA\RequestBody(
