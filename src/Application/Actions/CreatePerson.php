@@ -21,6 +21,11 @@ use TypeError;
  *     path="/people",
  *     summary="Create a new Person record",
  *     operationId="person_create",
+ *     @OA\RequestBody(
+ *         description="All details needed to register a Person",
+ *         required=true,
+ *         @OA\JsonContent(ref="#/components/schemas/Person")
+ *     ),
  *     @OA\Response(
  *         response=200,
  *         description="Registered",
