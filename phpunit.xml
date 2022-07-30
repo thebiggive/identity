@@ -19,5 +19,6 @@
   <php>
     <env name="APP_ENV" value="test" force="true" />
     <env name="MAX_CREATES_PER_IP_PER_5M" value="1" force="true" />
+    <env name="REDIS_HOST" value="dummy-redis-hostname" force="true"/>
   </php>
 </phpunit>

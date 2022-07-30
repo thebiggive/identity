@@ -13,6 +13,7 @@ services:
             - .:/var/www/html
         depends_on:
             - db
+            - redis
 
     db:
         image: mysql:8.0
@@ -22,3 +23,6 @@ services:
         environment:
             MYSQL_DATABASE: identity
             MYSQL_ROOT_PASSWORD: tbgLocal123
+
+    redis:
+        image: redis:6.2

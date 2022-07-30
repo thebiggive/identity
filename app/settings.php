@@ -17,6 +17,7 @@ return function (ContainerBuilder $containerBuilder) {
             }
 
             return new Settings([
+                'appEnv' => getenv('APP_ENV'),
                 'displayErrorDetails' => true, // Should be set to false in production
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
@@ -61,6 +62,9 @@ return function (ContainerBuilder $containerBuilder) {
                 ],
                 'recaptcha' => [
                     'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
+                ],
+                'redis' => [
+                    'host' => getenv('REDIS_HOST'),
                 ],
             ]);
         }
