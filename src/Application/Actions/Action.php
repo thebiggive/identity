@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions;
 
 use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -13,14 +13,6 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Validator\ConstraintViolation;
 
-/**
- * @OA\Info(title="Big Give Identity service", version="0.0.2"),
- * @OA\Server(
- *     description="Staging",
- *     url="https://identity-staging.thebiggivetest.org.uk",
- * ),
- * @todo Document app-wide JWT auth in a `SecurityScheme` annotation.
- */
 abstract class Action
 {
     protected Request $request;

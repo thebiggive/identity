@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions;
 
-use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
