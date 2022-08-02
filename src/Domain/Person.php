@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -18,10 +18,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\Entity(repositoryClass="\BigGive\Identity\Repository\PersonRepository")
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table
- * @OA\Schema(
+ * #[OA\Schema(
  *  required={"first_name", "last_name", "email_address"},
- * )
- * @see Credentials
+ * )]
  */
 class Person implements JsonSerializable
 {
@@ -38,23 +37,23 @@ class Person implements JsonSerializable
      * @ORM\Column(type="uuid_binary_ordered_time", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     * @OA\Property(
+     * #[OA\Property(
      *  property="id",
      *  format="uuid",
      *  example="f7095caf-7180-4ddf-a212-44bacde69066",
      *  pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-     * )
+     * )]
      */
     public ?UuidInterface $id = null;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
-     * @OA\Property(
+     * #[OA\Property(
      *  property="first_name",
      *  description="The person's first name",
      *  example="Loraine",
-     * )
+     * )]
      * @var string The person's first name.
      */
     public string $first_name;
@@ -62,11 +61,11 @@ class Person implements JsonSerializable
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
-     * @OA\Property(
+     * #[OA\Property(
      *  property="last_name",
      *  description="The person's surname",
      *  example="James",
-     * )
+     * )]
      * @var string The person's last name / surname.
      */
     public string $last_name;
@@ -74,11 +73,11 @@ class Person implements JsonSerializable
     /**
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotBlank()
-     * @OA\Property(
+     * #[OA\Property(
      *  property="email_address",
      *  format="email",
      *  example="loraine@example.org",
-     * )
+     * )]
      * @var string The email address of the person. Email address must be unique.
      */
     public string $email_address;
@@ -86,24 +85,24 @@ class Person implements JsonSerializable
     private string $password;
 
     /**
-     * @OA\Property(
+     * #[OA\Property(
      *  description="One-time code for a solved captcha; required on new registration",
      *  type="string",
      *  example="some-token-123",
-     * )
+     * )]
      * @var string|null Used only on create; not persisted.
      * @see Person::validateCaptchaAndRawPasswordSetIfNew()
      */
     public ?string $captcha_code = null;
 
     /**
-     * @OA\Property(
+     * #[OA\Property(
      *  property="raw_password",
      *  description="Plain text password; required on new registration",
      *  type="string",
      *  format="password",
      *  example="mySecurePassword123",
-     * )
+     * )]
      * @var string|null Used on create; only hash of this is persisted.
      * @see Person::validateCaptchaAndRawPasswordSetIfNew()
      */

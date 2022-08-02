@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
 /**
- * @OA\Get(
+ * #[OA\Get(
  *     path="/ping",
  *     summary="Check if the service is running and healthy",
  *     operationId="status",
- *     @OA\Response(
+ *     [new OA\Response(
  *         response=200,
  *         description="Up and running",
- *     ),
- *     @OA\Response(
+ *     )],
+ *     [new OA\Response(
  *         response=500,
  *         description="Having some trouble",
- *     ),
- * ),
+ *     )],
+ * )],
  */
 class Status extends Action
 {

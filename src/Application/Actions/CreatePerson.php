@@ -7,7 +7,7 @@ namespace BigGive\Identity\Application\Actions;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
@@ -17,37 +17,37 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
 /**
- * @OA\Post(
+ * #[OA\Post(
  *     path="/v1/people",
  *     summary="Create a new Person record",
  *     operationId="person_create",
- *     @OA\RequestBody(
+ *     [new OA\RequestBody(
  *         description="All details needed to register a Person",
  *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/Person")
- *     ),
- *     @OA\Response(
+ *         [new OA\JsonContent(ref="#/components/schemas/Person")],
+ *     )],
+ *     [new OA\Response(
  *         response=200,
  *         description="Registered",
- *         @OA\JsonContent(ref="#/components/schemas/Person"),
- *     ),
- *     @OA\Response(
+ *         [new OA\JsonContent(ref="#/components/schemas/Person")],
+ *     )],
+ *     [new OA\Response(
  *         response=400,
  *         description="Invalid or missing data",
- *         @OA\JsonContent(
+ *         [new OA\JsonContent(
  *          format="object",
  *          example={
  *              "error": {
  *                  "description": "The error details",
  *              }
  *          },
- *         ),
- *     ),
- *     @OA\Response(
+ *         )],
+ *     )],
+ *     [new OA\Response(
  *         response=401,
  *         description="Captcha verification failed",
- *     ),
- * ),
+ *     )],
+ * )],
  */
 class CreatePerson extends Action
 {
