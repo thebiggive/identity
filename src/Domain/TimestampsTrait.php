@@ -41,20 +41,4 @@ trait TimestampsTrait
     {
         $this->updated_at = new \DateTime('now');
     }
-
-    /**
-     * @return DateTime
-     */
-    public function getCreatedDate(): DateTime
-    {
-        return $this->created_at;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getUpdatedDate(): DateTime
-    {
-        return $this->updated_at;
-    }
 }
