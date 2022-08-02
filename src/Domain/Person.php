@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @OA\Schema(
  *  required={"first_name", "last_name", "email_address"},
  * )
+ * @see Credentials
  */
 class Person implements JsonSerializable
 {
@@ -33,8 +34,6 @@ class Person implements JsonSerializable
     public Collection | array $payment_methods = [];
 
     /**
-     * @var \Ramsey\Uuid\UuidInterface
-     *
      * @ORM\Id
      * @ORM\Column(type="uuid_binary_ordered_time", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
@@ -46,7 +45,7 @@ class Person implements JsonSerializable
      *  pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
      * )
      */
-    public UuidInterface $id;
+    public ?UuidInterface $id = null;
 
     /**
      * @ORM\Column(type="string")
@@ -117,12 +116,12 @@ class Person implements JsonSerializable
         $this->payment_methods = new ArrayCollection();
     }
 
-    public function getId(): UuidInterface
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
 
-    public function setId(UuidInterface $id): void
+    public function setId(?UuidInterface $id): void
     {
         $this->id = $id;
     }
@@ -151,7 +150,7 @@ class Person implements JsonSerializable
     public function jsonSerialize(): array
     {
         $jsonVars = get_object_vars($this);
-        $jsonVars['uuid'] = $this->getId()->toString();
+        $jsonVars['uuid'] = $this->getId()?->toString();
 
         return $jsonVars;
     }
