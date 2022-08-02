@@ -16,8 +16,8 @@ trait TestPeopleTrait
     }
 
     /**
-     * @param bool $withId  Sets a string UUID; must be false if passing to middleware that assumes
-     *                      a real UUID object.
+     * @param bool $withId  Sets a string UUID; must be false if passing JSON output on to middleware
+     *                      that assumes a real UUID object.
      * @return Person
      */
     private function getTestPerson(bool $withId = false): Person

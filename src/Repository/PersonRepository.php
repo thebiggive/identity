@@ -4,21 +4,14 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Repository;
 
-use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
 use BigGive\Identity\Domain\Person;
 use Doctrine\ORM\EntityRepository;
-use Ramsey\Uuid\UuidInterface;
 
 class PersonRepository extends EntityRepository
 {
-    /**
-     * @param UuidInterface $id
-     * @return Person
-     * @throws DomainRecordNotFoundException
-     */
-    public function findPersonById(UuidInterface $id): Person
+    public function findPersonByEmailAddress(string $emailAddress): ?Person
     {
-        return $this->findOneBy(['id' => $id]);
+        return $this->findOneBy(['email_address' => $emailAddress]);
     }
 
     /**

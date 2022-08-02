@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BigGive\Identity\Application\Actions\CreatePerson;
+use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Status;
 use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
@@ -31,7 +32,7 @@ return function (App $app) {
             ->add($ipMiddleware)
             ->add(RateLimitMiddleware::class);
 
-//    $app->post('auth', Login::class);
+        $versionGroup->post('/auth', Login::class);
 
 //    $app->group('/people', function (Group $peopleGroup) {
 //        $peopleGroup->get('/{id}', GetPersonAction::class);

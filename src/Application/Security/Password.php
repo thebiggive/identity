@@ -12,6 +12,9 @@ use BigGive\Identity\Domain\Person;
  */
 class Password
 {
+    /** Share this to make sure we don't surface the difference between no account + wrong password. */
+    public const BAD_LOGIN_MESSAGE = 'Invalid credentials';
+
     public static function hash(string $rawPassword): string
     {
         return password_hash($rawPassword, PASSWORD_DEFAULT);
@@ -23,7 +26,7 @@ class Password
     public static function verify(string $rawPassword, Person $person): void
     {
         if (!password_verify($rawPassword, $person->getPasswordHash())) {
-            throw new AuthenticationException('Invalid credentials');
+            throw new AuthenticationException(static::BAD_LOGIN_MESSAGE);
         }
     }
 }

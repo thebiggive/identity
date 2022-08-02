@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @OA\Schema(
  *  required={"first_name", "last_name", "email_address"},
  * )
+ * @see Credentials
  */
 class Person implements JsonSerializable
 {

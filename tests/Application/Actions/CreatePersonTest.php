@@ -186,15 +186,7 @@ class CreatePersonTest extends TestCase
     private function buildRequestRaw(string $payloadLiteral): ServerRequestInterface
     {
         // Accept JSON is the `createRequest()` default.
-        $request = $this->createRequest(
-            'POST',
-            '/v1/people',
-            [
-                'HTTP_ACCEPT' => 'application/json',
-                // Simulate ALB in unit tests by default. Rate limit middleware needs an IP from somewhere to not crash.
-                'HTTP_X-Forwarded-For' => '1.2.3.4',
-            ],
-        );
+        $request = $this->createRequest('POST', '/v1/people');
         $request->getBody()->write($payloadLiteral);
 
         return $request;
