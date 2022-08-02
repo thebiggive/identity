@@ -100,7 +100,10 @@ class TestCase extends PHPUnit_TestCase
     protected function createRequest(
         string $method,
         string $path,
-        array $headers = ['HTTP_ACCEPT' => 'application/json'],
+        array $headers = [
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_X-Forwarded-For' => '1.2.3.4', // Simulate ALB in unit tests by default.
+        ],
         array $cookies = [],
         array $serverParams = []
     ): Request {
