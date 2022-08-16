@@ -147,8 +147,8 @@ class CreatePersonTest extends TestCase
 
         $expectedJSON = json_encode([
             'error' => [
-                'description' => 'Validation error: Password of 10 or more characters is required to create an account; ' .
-                    'last_name must not be blank; email_address must not be blank',
+                'description' => 'Validation error: Password of 10 or more characters' .
+                ' is required to create an account; last_name must not be blank; email_address must not be blank',
                 'type' => 'BAD_REQUEST',
             ],
             'statusCode' => 400,
