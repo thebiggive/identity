@@ -9,7 +9,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 $containerBuilder = new ContainerBuilder();
 
-if (getenv('APP_ENV') !== 'local') { // Compile cache on staging & production
+if (!in_array(getenv('APP_ENV'), ['local', 'test'], true)) { // Compile cache on staging & production
     $containerBuilder->enableCompilation(__DIR__ . '/var/cache');
 }
 

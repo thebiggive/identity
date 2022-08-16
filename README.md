@@ -102,7 +102,7 @@ Generally this structure follows normal conventions for a modern PHP app:
 ### Configuration in `app`
 
 * [`dependencies.php`](./app/dependencies.php): this sets up dependency
-  injection (DI) for the whole app. This determines how every class gets the stuff it needs to run. DI is super
+  injection (DI) for the whole app. This determines how every class gets most stuff it needs to run. DI is super
   powerful because of its flexibility (a class can say _I want a logger_ and not worry about which one), and typically
   avoids objects being created that aren't actually needed, or being created more times than needed. Both of these files
   work the same way - they are only separate for cleaner organisation.
@@ -111,8 +111,8 @@ Generally this structure follows normal conventions for a modern PHP app:
   There's an [overview here](https://www.slimframework.com/docs/v4/concepts/di.html) of what this means in the context
   of Slim v4.
 
-  With PHP-DI, by tuning dependencies to be more class-based we could potentially eliminate some of our explicit
-  depenendency definitions in the future by taking better advantage of [autowiring](http://php-di.org/doc/autowiring.html).
+  With PHP-DI, we can also reduce some of our explicit depenendency definitions using [autowiring](http://php-di.org/doc/autowiring.html).
+* [`repositories.php](./app/repositories.php): this sets up entity repositories that the app will use.
 * [`routes.php`](./app/routes.php): this small file defines every route exposed on the web, and every authentication
   rule that applies to them. The latter is controlled by [PSR-15](https://www.php-fig.org/psr/psr-15/) middleware and
   is very important to keep in the right place!

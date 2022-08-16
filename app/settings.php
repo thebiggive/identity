@@ -21,7 +21,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'displayErrorDetails' => true, // Should be set to false in production
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
-                    'dev_mode' => (getenv('APP_ENV') === 'local'),
+                    'dev_mode' => in_array(getenv('APP_ENV'), ['local', 'test'], true),
 
                     'cache_dir' => __DIR__ . '/../var/doctrine',
                     'metadata_dirs' => [__DIR__ . '/../src/Domain'],

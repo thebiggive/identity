@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\ArrayShape;
-use JsonException;
 use JsonSerializable;
 use Ramsey\Uuid\UuidInterface;
 

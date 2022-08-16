@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ORM\Entity(repositoryClass="\BigGive\Identity\Repository\PersonRepository")
+ * @ORM\Entity(repositoryClass="BigGive\Identity\Repository\PersonRepository")
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table
  * @OA\Schema(
