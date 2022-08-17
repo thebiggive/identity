@@ -27,6 +27,8 @@ class Person implements JsonSerializable
 {
     use TimestampsTrait;
 
+    public const MIN_PASSWORD_LENGTH = 10;
+
     /**
      * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
      * @var Collection|PaymentMethod[]
@@ -170,8 +172,15 @@ class Person implements JsonSerializable
         }
 
         // Entity brand new or somehow otherwise without a password, and none set.
-        if (empty($this->password) && empty($this->raw_password)) {
-            $context->buildViolation('Password is required to create an account')
+        $passwordMissingOrInvalid = (
+            empty($this->password) &&
+            (empty($this->raw_password) || mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH)
+        );
+        if ($passwordMissingOrInvalid) {
+            $context->buildViolation(sprintf(
+                'Password of %d or more characters is required to create an account',
+                static::MIN_PASSWORD_LENGTH
+            ))
                 ->atPath('raw_password')
                 ->addViolation();
         }
