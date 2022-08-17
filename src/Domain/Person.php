@@ -172,11 +172,11 @@ class Person implements JsonSerializable
         }
 
         // Entity brand new or somehow otherwise without a password, and none set.
-        $passwordMissing = (
+        $passwordMissingOrInvalid = (
             empty($this->password) &&
             (empty($this->raw_password) || mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH)
         );
-        if ($passwordMissing) {
+        if ($passwordMissingOrInvalid) {
             $context->buildViolation(sprintf(
                 'Password of %d or more characters is required to create an account',
                 static::MIN_PASSWORD_LENGTH
