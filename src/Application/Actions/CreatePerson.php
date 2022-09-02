@@ -108,6 +108,29 @@ class CreatePerson extends Action
 
         $person = $this->personRepository->persist($person);
 
+        try {
+            // Send registration success email to donor
+            $registrationEmailResponse = $this->getHttpClient()->post(
+                $this->getSetting('mailer', 'baseUri'),
+                ['json' => $person->toApiModel()]
+            );
+        }
+
+        catch (RequestException $ex) {
+            if ($ex->getCode() === 404 && getenv('APP_ENV') !== 'production') {
+                throw new NotFoundException();
+            }
+
+            $this->logger->error(sprintf(
+                'Donor registration email exception %s: %s. Body: %s',
+                get_class($ex),
+                $ex->getMessage(),
+                $ex->getResponse() ? $ex->getResponse()->getBody() : 'N/A',
+            ));
+
+            throw new BadRequestException('Failed to send registration success email to newly registered donor.');
+        }
+
         return new JsonResponse($person->jsonSerialize());
     }
 }
