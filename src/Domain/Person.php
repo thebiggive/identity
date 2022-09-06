@@ -138,6 +138,11 @@ class Person implements JsonSerializable
         return $this->last_name;
     }
 
+    public function getEmailAddress(): string
+    {
+        return $this->email_address;
+    }
+
     public function hashPassword(): void
     {
         $this->password = Password::hash($this->raw_password);
@@ -153,8 +158,22 @@ class Person implements JsonSerializable
     {
         $jsonVars = get_object_vars($this);
         $jsonVars['uuid'] = $this->getId()?->toString();
-
         return $jsonVars;
+    }
+
+    public function toMailerPayload(): array
+    {
+        $data = [
+            'templateKey' => 'donor-registered',
+            'recipientEmailAddress' => $this->getEmailAddress(),
+            'forGlobalCampaign' => false,
+            'params' => [
+                'donorFirstName' => $this->getFirstName(true),
+                'donorEmail' => $this->getEmailAddress(),
+            ],
+        ];
+
+        return $data;
     }
 
     /**
