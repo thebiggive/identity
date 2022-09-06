@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace BigGive\Identity\Application\Actions;
+namespace BigGive\Identity\Application\Actions\Person;
 
+use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -11,16 +12,18 @@ use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
+use function BigGive\Identity\Application\Actions\count;
 
 /**
- * @OA\Post(
- *     path="/v1/people",
- *     summary="Create a new Person record",
- *     operationId="person_create",
+ * @OA\Put(
+ *     path="/v1/people/{id}",
+ *     summary="Update a Person, e.g. to set a password",
+ *     operationId="person_update",
  *     @OA\RequestBody(
  *         description="All details needed to register a Person",
  *         required=true,
@@ -49,7 +52,7 @@ use TypeError;
  *     ),
  * ),
  */
-class CreatePerson extends Action
+class Update extends Action
 {
     public function __construct(
         LoggerInterface $logger,
@@ -63,9 +66,15 @@ class CreatePerson extends Action
     /**
      * @return Response
      * @throws HttpBadRequestException
+     * @throws HttpNotFoundException
      */
     protected function action(): Response
     {
+        $person = $this->personRepository->find($this->request->getAttribute('id'));
+        if (!$person) {
+            throw new HttpNotFoundException($this->request, 'Person not found');
+        }
+
         try {
             /** @var Person $person */
             $person = $this->serializer->deserialize(

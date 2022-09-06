@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table
  * @OA\Schema(
- *  required={"first_name", "last_name", "email_address"},
+ *  description="Person – initially anonymous. To be login-ready, first_name, last_name, email_address and password are required.",
  * )
  * @see Credentials
  */
@@ -85,7 +85,12 @@ class Person implements JsonSerializable
      */
     public string $email_address;
 
-    private string $password;
+    /**
+     * JSON Web Token that lets somebody set a password to make the account reusable.
+     */
+    public ?string $password_set_jwt = null;
+
+    private ?string $password = null;
 
     /**
      * @OA\Property(
@@ -143,9 +148,14 @@ class Person implements JsonSerializable
         $this->password = Password::hash($this->raw_password);
     }
 
-    public function getPasswordHash(): string
+    public function getPasswordHash(): ?string
     {
         return $this->password;
+    }
+
+    public function setStripeCustomerId(?string $stripe_customer_id): void
+    {
+        $this->stripe_customer_id = $stripe_customer_id;
     }
 
     #[\ReturnTypeWillChange]
@@ -185,4 +195,6 @@ class Person implements JsonSerializable
                 ->addViolation();
         }
     }
+
+
 }

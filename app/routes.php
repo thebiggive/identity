@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use BigGive\Identity\Application\Actions\CreatePerson;
 use BigGive\Identity\Application\Actions\Login;
+use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Status;
 use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
@@ -27,10 +27,13 @@ return function (App $app) {
             ? new ClientIp()
             : (new ClientIp())->proxy([], ['X-Forwarded-For']);
 
-        $versionGroup->post('/people', CreatePerson::class)
+        $versionGroup->post('/people', Person\Create::class)
             ->add(RecaptchaMiddleware::class) // Runs last
             ->add($ipMiddleware)
             ->add(RateLimitMiddleware::class);
+
+        $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
+            ->add(PersonManagementAuthMiddleware::class);
 
         $versionGroup->post('/auth', Login::class);
 

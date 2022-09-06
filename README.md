@@ -75,6 +75,16 @@ Once the app is more complete, we will copy/paste and publish generated docs to 
 [live home on SwaggerHub](https://app.swaggerhub.com/apis/Noel/TBG-Identity/)
 after any changes.
 
+## JWT types
+
+Tokens can currently be issued with the following subject (`"sub"`) claims:
+
+1. Some `"person_id"` and `"complete" false`: short-term (1 day) token permitting only updating a person's core details. Issued upon creation of a placeholder Person
+  and permits setting identifying information and a password for them.
+2. *Some `"person_id"` and `"complete" true`:* – 8-day token issued upon password authentication, allowing read + write access to everything for a
+ complete Person record including saved payment methods. (This doesn't include full card numbers or data
+ that would allow card use outside Big Give.)
+
 ## Service dependencies
 
 It's expected that the a MySQL database will be a dependency. In live environments, MatchBot's RDS

@@ -10,6 +10,9 @@ use Psr\Log\LoggerInterface;
 
 class Token
 {
+    public const VALID_DAYS_USER_CREATION = 1;
+    public const VALID_DAYS_PASSWORD_AUTH = 8;
+
     /**
      * @link https://stackoverflow.com/questions/39239051/rs256-vs-hs256-whats-the-difference has info on hash
      * algorithm choice. Since we use the secret only server-side and will secure it like other secrets,
@@ -21,8 +24,10 @@ class Token
      * @param string $personId UUID for a person
      * @return string Signed JWS
      */
-    public static function create(string $personId): string
+    public static function create(string $personId, bool $complete): string
     {
+        $durationInDays = $complete ? static::VALID_DAYS_PASSWORD_AUTH : static::VALID_DAYS_USER_CREATION;
+
         /**
          * @var array $claims
          * @link https://tools.ietf.org/html/rfc7519 has info on the standard keys like `exp`
@@ -30,9 +35,10 @@ class Token
         $claims = [
             'iss' => getenv('BASE_URI'),
             'iat' => time(),
-            'exp' => time() + (15 * 86400), // Expire in 15 days
+            'exp' => time() + ($durationInDays * 86400),
             'sub' => [
                 'person_id' => $personId,
+                'complete' => $complete, // A token allows setting a password *or* full Person use; not both.
             ],
         ];
 
@@ -45,7 +51,7 @@ class Token
      * @param LoggerInterface   $logger
      * @return bool Whether the token is valid for the given person.
      */
-    public static function check(string $personId, string $jws, LoggerInterface $logger): bool
+    public static function check(string $personId, bool $complete, string $jws, LoggerInterface $logger): bool
     {
         $key = new Key(static::getSecret(), static::$algorithm);
         try {
