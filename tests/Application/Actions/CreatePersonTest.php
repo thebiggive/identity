@@ -216,8 +216,8 @@ class CreatePersonTest extends TestCase
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
 
-    public function testFailedMailerCallout() {
-
+    public function testFailedMailerCallout()
+    {
         $person = $this->getTestPerson();
 
         $personWithPostPersistData = clone $person;

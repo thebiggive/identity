@@ -9,7 +9,7 @@ use Exception;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use ReCaptcha\ReCaptcha;
 use Redis;
 use Slim\App;
@@ -95,7 +95,7 @@ class TestCase extends PHPUnit_TestCase
      * @param array  $headers
      * @param array  $cookies
      * @param array  $serverParams
-     * @return ServerRequestInterface
+     * @return Request
      */
     protected function createRequest(
         string $method,
@@ -106,7 +106,7 @@ class TestCase extends PHPUnit_TestCase
         ],
         array $cookies = [],
         array $serverParams = []
-    ): ServerRequestInterface {
+    ): Request {
         $uri = new Uri('', '', 80, $path);
         $handle = fopen('php://temp', 'wb+');
         $stream = (new StreamFactory())->createStreamFromResource($handle);

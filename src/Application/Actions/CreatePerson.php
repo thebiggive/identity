@@ -49,7 +49,7 @@ use TypeError;
  *     ),
  *     @OA\Response(
  *         response=401,
- *         description="Unauthorised"
+ *         description="Captcha verification failed",
  *     ),
  * ),
  */
@@ -139,7 +139,8 @@ class CreatePerson extends Action
      * @throws GuzzleException
      * @throws RequestException
      */
-    protected function sendRegistrationSuccessEmail(Person $person): void {
+    protected function sendRegistrationSuccessEmail(Person $person): void
+    {
         $this->httpClient = new Client([
             'timeout' => $this->settings->get('apiClient')['global']['timeout'],
         ]);
