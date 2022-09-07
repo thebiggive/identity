@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions;
+
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
