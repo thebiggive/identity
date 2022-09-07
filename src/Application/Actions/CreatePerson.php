@@ -50,6 +50,7 @@ use TypeError;
  *     ),
  *     @OA\Response(
  *         response=401,
+ *         description="Unauthorised"
  *     ),
  * ),
  */
