@@ -6,9 +6,12 @@ namespace BigGive\Identity\Application\Actions;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
+use DI\NotFoundException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
+use BigGive\Identity\Client\BadRequestException;
 use Laminas\Diactoros\Response\JsonResponse;
-use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
@@ -46,7 +49,6 @@ use TypeError;
  *     ),
  *     @OA\Response(
  *         response=401,
- *         description="Captcha verification failed",
  *     ),
  * ),
  */
@@ -65,6 +67,8 @@ class CreatePerson extends Action
     /**
      * @return Response
      * @throws HttpBadRequestException
+     * @throws GuzzleException
+     * @throws BadRequestException
      */
     protected function action(): Response
     {
@@ -118,7 +122,7 @@ class CreatePerson extends Action
 
             $requestBody = $person->toMailerPayload();
 
-            $registrationEmailResponse = $this->httpClient->post(
+            $this->httpClient->post(
                 $this->settings->get('apiClient')['mailer']['baseUri'] . '/v1/send',
                 [
                     'json' => $requestBody,
