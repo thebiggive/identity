@@ -132,9 +132,7 @@ class CreatePerson extends Action
                     ],
                 ]
             );
-        }
-
-        catch (RequestException $ex) {
+        } catch (RequestException $ex) {
             if ($ex->getCode() === 404 && getenv('APP_ENV') !== 'production') {
                 throw new NotFoundException();
             }
