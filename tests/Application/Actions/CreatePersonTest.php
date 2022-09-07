@@ -243,7 +243,9 @@ class CreatePersonTest extends TestCase
         ]);
 
         $mockedClass = $this->createMock(CreatePerson::class);
-        $mockedClass->method('sendRegistrationSuccessEmail')->willThrowException(new RequestException('Request Exception', $request));
+        $mockedClass->method('sendRegistrationSuccessEmail')->willThrowException(
+            new RequestException('Request Exception', $request)
+        );
 
         $response = $app->handle($request);
         $payloadJSON = (string) $response->getBody();
