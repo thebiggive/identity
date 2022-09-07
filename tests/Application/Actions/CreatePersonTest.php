@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions;
 
+use BigGive\Identity\Application\Actions\CreatePerson;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Exception\RequestException;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
@@ -52,7 +54,7 @@ class CreatePersonTest extends TestCase
 
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
-        // Mocked PersonRepsoitory sets a UUID in code.
+        // Mocked PersonRepository sets a UUID in code.
         $this->assertIsString($payload->uuid);
         $this->assertSame(36, strlen($payload->uuid));
 
@@ -212,6 +214,39 @@ class CreatePersonTest extends TestCase
             'statusCode' => 400,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
+    }
+
+    public function testFailedMailerCallout() {
+
+        $person = $this->getTestPerson();
+
+        $personWithPostPersistData = clone $person;
+        $personWithPostPersistData->setId(Uuid::fromString('12345678-1234-1234-1234-1234567890ab'));
+        // Call same create/update time initialisers as lifecycle hooks
+        $personWithPostPersistData->createdNow();
+
+        $app = $this->getAppInstance();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->persist(Argument::type(Person::class))
+            ->shouldBeCalledOnce()
+            ->willReturn($personWithPostPersistData);
+
+        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+
+        $request = $this->buildRequest([
+            'first_name' => $person->first_name,
+            'last_name' => $person->last_name,
+            'raw_password' => $person->raw_password,
+            'email_address' => $person->email_address,
+            'captcha_code' => 'good response',
+        ]);
+
+        $mockedClass = $this->createMock(CreatePerson::class);
+        $mockedClass->method('sendRegistrationSuccessEmail')->willThrowException(RequestException::class);
+
+        $response = $app->handle($request);
+        $payloadJSON = (string) $response->getBody();
     }
 
     private function buildRequest(array $payloadValues): ServerRequestInterface

@@ -9,7 +9,7 @@ use Exception;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface;
 use ReCaptcha\ReCaptcha;
 use Redis;
 use Slim\App;
@@ -61,7 +61,7 @@ class TestCase extends PHPUnit_TestCase
 
         // For tests, we need to stub out Redis so that rate limiting middleware doesn't
         // crash trying to actually connect to REDIS_HOST "dummy-redis-hostname". (We also
-        // don't want tests dependending upon *real* Redis.)
+        // don't want tests depending upon *real* Redis.)
         $redisProphecy = $this->prophesize(Redis::class);
         $redisProphecy->isConnected()->willReturn(true);
         $redisProphecy->mget(['identity-test:10d49f663215e991d10df22692f03e89'])->willReturn(null);
@@ -95,7 +95,7 @@ class TestCase extends PHPUnit_TestCase
      * @param array  $headers
      * @param array  $cookies
      * @param array  $serverParams
-     * @return Request
+     * @return ServerRequestInterface
      */
     protected function createRequest(
         string $method,
@@ -106,7 +106,7 @@ class TestCase extends PHPUnit_TestCase
         ],
         array $cookies = [],
         array $serverParams = []
-    ): Request {
+    ): ServerRequestInterface {
         $uri = new Uri('', '', 80, $path);
         $handle = fopen('php://temp', 'wb+');
         $stream = (new StreamFactory())->createStreamFromResource($handle);

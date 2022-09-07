@@ -7,7 +7,6 @@ namespace BigGive\Identity\Application\Actions;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
-use DI\NotFoundException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
@@ -118,29 +117,12 @@ class CreatePerson extends Action
 
         // After persisting the Person, send them a registration success email
         try {
-            $this->httpClient = new Client([
-                'timeout' => $this->settings->get('apiClient')['global']['timeout'],
-            ]);
-
-            $requestBody = $person->toMailerPayload();
-
-            $this->httpClient->post(
-                $this->settings->get('apiClient')['mailer']['baseUri'] . '/v1/send',
-                [
-                    'json' => $requestBody,
-                    'headers' => [
-                        'x-send-verify-hash' => $this->hash(json_encode($requestBody)),
-                    ],
-                ]
-            );
+            $this->sendRegistrationSuccessEmail($person);
         } catch (RequestException $ex) {
-            if ($ex->getCode() === 404 && getenv('APP_ENV') !== 'production') {
-                throw new NotFoundException();
-            }
-
             $this->logger->error(sprintf(
-                'Donor registration email exception %s: %s. Body: %s',
+                'Donor registration email exception %s with error code %s: %s. Body: %s',
                 get_class($ex),
+                $ex->getCode(),
                 $ex->getMessage(),
                 $ex->getResponse() ? $ex->getResponse()->getBody() : 'N/A',
             ));
@@ -149,6 +131,30 @@ class CreatePerson extends Action
         }
 
         return new JsonResponse($person->jsonSerialize());
+    }
+
+    /**
+     * @param Person $person
+     * @return void
+     * @throws GuzzleException
+     * @throws RequestException
+     */
+    protected function sendRegistrationSuccessEmail(Person $person): void {
+        $this->httpClient = new Client([
+            'timeout' => $this->settings->get('apiClient')['global']['timeout'],
+        ]);
+
+        $requestBody = $person->toMailerPayload();
+
+        $this->httpClient->post(
+            $this->settings->get('apiClient')['mailer']['baseUri'] . '/v1/send',
+            [
+                'json' => $requestBody,
+                'headers' => [
+                    'x-send-verify-hash' => $this->hash(json_encode($requestBody)),
+                ],
+            ]
+        );
     }
 
     private function hash(string $body): string
