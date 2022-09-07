@@ -139,7 +139,7 @@ class CreatePerson extends Action
      * @throws GuzzleException
      * @throws RequestException
      */
-    protected function sendRegistrationSuccessEmail(Person $person): void
+    public function sendRegistrationSuccessEmail(Person $person): void
     {
         $this->httpClient = new Client([
             'timeout' => $this->settings->get('apiClient')['global']['timeout'],
