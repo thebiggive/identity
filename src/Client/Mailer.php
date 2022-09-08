@@ -16,7 +16,7 @@ class Mailer
     ) {
     }
 
-    public function sendEmail(array $requestBody) : bool
+    public function sendEmail(array $requestBody): bool
     {
         try {
             $httpClient = new Client([
@@ -34,8 +34,7 @@ class Mailer
             );
 
             return $response->getStatusCode() == 200;
-
-        } catch (GuzzleException|RequestException $ex) {
+        } catch (GuzzleException | RequestException $ex) {
             $this->logger->error(sprintf(
                 'Donor registration email exception %s with error code %s: %s. Body: %s',
                 get_class($ex),

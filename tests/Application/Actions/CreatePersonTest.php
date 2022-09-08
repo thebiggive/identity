@@ -224,7 +224,7 @@ class CreatePersonTest extends TestCase
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
 
-    public function testFailedMailerCallout() : void
+    public function testFailedMailerCallout(): void
     {
         $person = $this->getTestPerson();
 
@@ -256,7 +256,7 @@ class CreatePersonTest extends TestCase
             'first_name' => $person->first_name,
             'last_name' => $person->last_name,
             'raw_password' => $person->raw_password,
-            'email_address' => 'ali+122320934832@thebiggive.org.uk',
+            'email_address' => $person->email_address,
             'captcha_code' => 'good response',
         ]);
 
