@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Actions;
 
 use BigGive\Identity\Application\Actions\CreatePerson;
+use BigGive\Identity\Client\BadRequestException;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Exception\RequestException;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
@@ -36,7 +37,14 @@ class CreatePersonTest extends TestCase
             ->shouldBeCalledOnce()
             ->willReturn($personWithPostPersistData);
 
+        $mailerClientProphecy = $this->prophesize(Mailer::class);
+        $mailerClientProphecy
+            ->sendEmail($person->toMailerPayload())
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
+
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $app->getContainer()->set(Mailer::class, $mailerClientProphecy->reveal());
 
         $request = $this->buildRequest([
             'first_name' => $person->first_name,
@@ -216,7 +224,7 @@ class CreatePersonTest extends TestCase
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
 
-    public function testFailedMailerCallout()
+    public function testFailedMailerCallout() : void
     {
         $person = $this->getTestPerson();
 
@@ -232,23 +240,28 @@ class CreatePersonTest extends TestCase
             ->shouldBeCalledOnce()
             ->willReturn($personWithPostPersistData);
 
+        $mailerClientProphecy = $this->prophesize(Mailer::class);
+        $mailerClientProphecy
+            ->sendEmail($person->toMailerPayload())
+            ->shouldBeCalledOnce()
+            ->willReturn(false);
+
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $app->getContainer()->set(Mailer::class, $mailerClientProphecy->reveal());
+
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('Failed to send registration success email to newly registered donor.');
 
         $request = $this->buildRequest([
             'first_name' => $person->first_name,
             'last_name' => $person->last_name,
             'raw_password' => $person->raw_password,
-            'email_address' => $person->email_address,
+            'email_address' => 'ali+122320934832@thebiggive.org.uk',
             'captcha_code' => 'good response',
         ]);
 
-        $mockedClass = $this->createMock(CreatePerson::class);
-        $mockedClass->method('sendRegistrationSuccessEmail')->willThrowException(
-            new RequestException('Request Exception', $request)
-        );
-
-        $response = $app->handle($request);
-        $payloadJSON = (string) $response->getBody();
+        // Simulate a POST /persons request
+        $app->handle($request);
     }
 
     private function buildRequest(array $payloadValues): ServerRequestInterface

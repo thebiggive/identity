@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions;
 
-use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
 use BigGive\Identity\Client\BadRequestException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -61,7 +57,6 @@ class CreatePerson extends Action
         private readonly PersonRepository $personRepository,
         private readonly Mailer $mailerClient,
         private readonly SerializerInterface $serializer,
-        private readonly SettingsInterface $settings,
         private readonly ValidatorInterface $validator,
     ) {
         parent::__construct($logger);
@@ -70,7 +65,6 @@ class CreatePerson extends Action
     /**
      * @return Response
      * @throws HttpBadRequestException
-     * @throws GuzzleException
      * @throws BadRequestException
      */
     protected function action(): Response
@@ -118,18 +112,10 @@ class CreatePerson extends Action
         $person = $this->personRepository->persist($person);
 
         // After persisting the Person, send them a registration success email
-        try {
-            $requestBody = $person->toMailerPayload();
-            $this->mailerClient->sendEmail($requestBody);
-        } catch (RequestException $ex) {
-            $this->logger->error(sprintf(
-                'Donor registration email exception %s with error code %s: %s. Body: %s',
-                get_class($ex),
-                $ex->getCode(),
-                $ex->getMessage(),
-                $ex->getResponse() ? $ex->getResponse()->getBody() : 'N/A',
-            ));
+        $requestBody = $person->toMailerPayload();
+        $sendSuccessful = $this->mailerClient->sendEmail($requestBody);
 
+        if (!$sendSuccessful) {
             throw new BadRequestException('Failed to send registration success email to newly registered donor.');
         }
 

@@ -168,7 +168,7 @@ class Person implements JsonSerializable
             'recipientEmailAddress' => $this->getEmailAddress(),
             'forGlobalCampaign' => false,
             'params' => [
-                'donorFirstName' => $this->getFirstName(true),
+                'donorFirstName' => $this->getFirstName(),
                 'donorEmail' => $this->getEmailAddress(),
             ],
         ];
