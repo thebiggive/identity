@@ -82,6 +82,10 @@ return function (ContainerBuilder $containerBuilder) {
             return $logger;
         },
 
+        Mailer::class => static function (ContainerInterface $c): Mailer {
+            return new Mailer($c->get(SettingsInterface::class));
+        },
+
         ORM\Configuration::class => static function (ContainerInterface $c): ORM\Configuration {
             $cache = $c->get(CacheItemPoolInterface::class);
             $settings = $c->get(SettingsInterface::class);

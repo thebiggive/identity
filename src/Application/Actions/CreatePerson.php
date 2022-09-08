@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions;
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use GuzzleHttp\Client;
@@ -58,6 +59,7 @@ class CreatePerson extends Action
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
+        private readonly Mailer $mailerClient,
         private readonly SerializerInterface $serializer,
         private readonly SettingsInterface $settings,
         private readonly ValidatorInterface $validator,
@@ -117,7 +119,8 @@ class CreatePerson extends Action
 
         // After persisting the Person, send them a registration success email
         try {
-            $this->sendRegistrationSuccessEmail($person);
+            $requestBody = $person->toMailerPayload();
+            $this->mailerClient->sendEmail($requestBody);
         } catch (RequestException $ex) {
             $this->logger->error(sprintf(
                 'Donor registration email exception %s with error code %s: %s. Body: %s',
@@ -131,35 +134,5 @@ class CreatePerson extends Action
         }
 
         return new JsonResponse($person->jsonSerialize());
-    }
-
-    /**
-     * @param Person $person
-     * @return void
-     * @throws GuzzleException
-     * @throws RequestException
-     */
-    public function sendRegistrationSuccessEmail(Person $person): void
-    {
-        $this->httpClient = new Client([
-            'timeout' => $this->settings->get('apiClient')['global']['timeout'],
-        ]);
-
-        $requestBody = $person->toMailerPayload();
-
-        $this->httpClient->post(
-            $this->settings->get('apiClient')['mailer']['baseUri'] . '/v1/send',
-            [
-                'json' => $requestBody,
-                'headers' => [
-                    'x-send-verify-hash' => $this->hash(json_encode($requestBody)),
-                ],
-            ]
-        );
-    }
-
-    private function hash(string $body): string
-    {
-        return hash_hmac('sha256', trim($body), $this->settings->get('apiClient')['mailer']['sendSecret']);
     }
 }
