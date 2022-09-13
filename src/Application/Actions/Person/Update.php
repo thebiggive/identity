@@ -21,9 +21,12 @@ use TypeError;
 
 /**
  * @OA\Put(
- *     path="/v1/people/{id}",
+ *     path="/v1/people/{personId}",
  *     summary="Update a Person, e.g. to set a password",
  *     operationId="person_update",
+ *     security={
+ *         {"personJWT": {}}
+ *     },
  *     @OA\RequestBody(
  *         description="All details needed to register a Person",
  *         required=true,
@@ -48,7 +51,7 @@ use TypeError;
  *     ),
  *     @OA\Response(
  *         response=401,
- *         description="Captcha verification failed",
+ *         description="JWT token verification failed",
  *     ),
  * ),
  */
