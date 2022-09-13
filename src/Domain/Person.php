@@ -88,18 +88,21 @@ class Person implements JsonSerializable
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
      * @var string|null From residential address, if donor is claiming Gift Aid.
      */
     public ?string $home_address_line_1 = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
      * @var string|null From residential address, if donor is claiming Gift Aid and is GB-resident.
      */
     public ?string $home_postcode = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
      * @var string|null From residential address, if donor is claiming Gift Aid. Can be 'GB' or 'OVERSEAS',
      *                  or null if not applicable. Consuming code should assume that additional ISO 3166-1
      *                  alpha-2 country codes could be set in the future.
@@ -141,6 +144,7 @@ class Person implements JsonSerializable
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
      */
     public ?string $stripe_customer_id = null;
 
