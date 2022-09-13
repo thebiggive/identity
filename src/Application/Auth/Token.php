@@ -23,7 +23,7 @@ class Token
     /**
      * @param string    $personId   UUID for a person
      * @param bool      $complete   Whether the token is for a login-ready Person. If so, it should be
-     *                              issued only after password authentication and lasts for long. When
+     *                              issued only after password authentication and lasts for longer. When
      *                              this is false, it's for a Person who has just been created and is
      *                              designed for setting basic details and optionally an initial password.
      * @return string Signed JWS
