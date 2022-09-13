@@ -75,6 +75,19 @@ Once the app is more complete, we will copy/paste and publish generated docs to 
 [live home on SwaggerHub](https://app.swaggerhub.com/apis/Noel/TBG-Identity/)
 after any changes.
 
+### Typical registration flow
+
+So that new donors may have even their first, pre-registration donation associated with a
+Stripe Customer, it's necessary for us to know a Stripe Customer ID as soon as we want a
+Payment Intent. Because we take donation amount first, this means the Customer is essentially
+anonymous on creation.
+
+This means that registration when the donor decides to set a password typically has 3 calls:
+
+1. [Person\Create](./src/Application/Actions/Person/Create.php) (precedes all initiated donations)
+2. [Person\Update](./src/Application/Actions/Person/Update.php) with no password (alongside all completed donations)
+3. [Person\Update](./src/Application/Actions/Person/Update.php) with a password (when the donor sets one after donating)
+
 ## JWT types
 
 Tokens can currently be issued with the following subject (`"sub"`) claims:

@@ -13,6 +13,8 @@ use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use Stripe\Exception\ApiErrorException;
+use Stripe\StripeClient;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -57,7 +59,8 @@ class Create extends Action
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
-//        private readonly ValidatorInterface $validator,
+        private readonly StripeClient $stripeClient,
+        private readonly ValidatorInterface $validator,
     ) {
         parent::__construct($logger);
     }
@@ -89,31 +92,45 @@ class Create extends Action
             );
         }
 
-        // TODO *NO* validation or reduced validation?
-//        $violations = $this->validator->validate($person);
+        $violations = $this->validator->validate($person, null, ['new']);
 
-//        if (count($violations) > 0) {
-//            $message = 'Validation error: ';
-//
-//            $violationDetails = [];
-//            foreach ($violations as $violation) {
-//                $violationDetails[] = $this->summariseConstraintViolation($violation);
-//            }
-//
-//            $message .= implode('; ', $violationDetails);
-//
-//            return $this->validationError(
-//                $message,
-//                null,
-//                true,
-//            );
-//        }
+        if (count($violations) > 0) {
+            $message = 'Validation error: ';
+
+            $violationDetails = [];
+            foreach ($violations as $violation) {
+                $violationDetails[] = $this->summariseConstraintViolation($violation);
+            }
+
+            $message .= implode('; ', $violationDetails);
+
+            return $this->validationError(
+                $message,
+                null,
+                true,
+            );
+        }
 
         $person = $this->personRepository->persist($person);
 
+        try {
+            $customer = $this->stripeClient->customers->create([
+                'metadata' => [
+                    'personId' => $person->getId()->toString(),
+                ],
+            ]);
+        } catch (ApiErrorException $exception) {
+            $logMessage = sprintf('%s Stripe API error: %s', __CLASS__, $exception->getMessage());
+            $this->logger->error($logMessage);
+
+            return $this->validationError($logMessage, 'Stripe Customer create API error');
+        }
+
+        $person->setStripeCustomerId($customer->id);
+        $this->personRepository->persist($person);
+
         $token = Token::create($person->getId()->toString(), false);
-        // TODO this should be set up to append a temporary JWT to the Person itself.
-        $person->addFinishToken($token);
+        $person->addCompletionJWT($token);
 
         return new JsonResponse($person->jsonSerialize());
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Status;
+use BigGive\Identity\Application\Middleware\PersonManagementAuthMiddleware;
 use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;

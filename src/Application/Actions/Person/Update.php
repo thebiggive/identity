@@ -13,11 +13,11 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
+use Stripe\StripeClient;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
-use function BigGive\Identity\Application\Actions\count;
 
 /**
  * @OA\Put(
@@ -58,6 +58,7 @@ class Update extends Action
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
+        private readonly StripeClient $stripeClient,
         private readonly ValidatorInterface $validator,
     ) {
         parent::__construct($logger);
@@ -70,7 +71,7 @@ class Update extends Action
      */
     protected function action(): Response
     {
-        $person = $this->personRepository->find($this->request->getAttribute('id'));
+        $person = $this->personRepository->find($this->request->getAttribute('personId'));
         if (!$person) {
             throw new HttpNotFoundException($this->request, 'Person not found');
         }
@@ -86,7 +87,7 @@ class Update extends Action
             // UnexpectedValueException is the Serializer one, not the global one
             $this->logger->info(sprintf('%s non-serialisable payload was: %s', __CLASS__, $body));
 
-            $message = 'Person Create data deserialise error';
+            $message = 'Person Update data deserialise error';
             $exceptionType = get_class($exception);
 
             return $this->validationError(
@@ -96,7 +97,7 @@ class Update extends Action
             );
         }
 
-        $violations = $this->validator->validate($person);
+        $violations = $this->validator->validate($person, null, ['complete']);
 
         if (count($violations) > 0) {
             $message = 'Validation error: ';
@@ -116,6 +117,29 @@ class Update extends Action
         }
 
         $person = $this->personRepository->persist($person);
+
+        $customerDetails = [
+            'email' => $person->email_address,
+            'name' => sprintf('%s %s', $person->first_name, $person->last_name),
+        ];
+
+        // Billing address can vary per payment method and is best kept against that object as it's
+        // the only thing we know the address matches.
+        // "Home address" is collected only for Gift Aid declarations and is optional, so append it conditionally.
+        if (!empty($person->home_address_line_1)) {
+            $customerDetails['address'] = [
+                'line1' => $person->home_address_line_1,
+            ];
+
+            if (!empty($person->home_postcode)) {
+                $customerDetails['address']['postal_code'] = $person->home_postcode;
+
+                // Should be 'GB' when postcode non-null.
+                $customerDetails['address']['country'] = $person->home_country_code;
+            }
+        }
+
+        $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
         return new JsonResponse($person->jsonSerialize());
     }

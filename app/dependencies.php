@@ -23,6 +23,7 @@ use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
+use Stripe\StripeClient;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\Psr16Cache;
@@ -157,6 +158,13 @@ return function (ContainerBuilder $containerBuilder) {
             $normalizers = [new ObjectNormalizer()];
 
             return new Serializer($normalizers, $encoders);
+        },
+
+        StripeClient::class => static function (ContainerInterface $c): StripeClient {
+            return new StripeClient([
+                'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
+                'stripe_version' => $c->get(SettingsInterface::class)->get('stripe')['apiVersion'],
+            ]);
         },
 
         ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {

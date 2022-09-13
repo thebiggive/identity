@@ -79,6 +79,14 @@ class Token
             return false;
         }
 
+        if ($complete !== $decodedJwtBody->sub->complete) {
+            $logger->error(
+                sprintf("JWT error: Not authorised for %s status", $complete ? 'complete' : 'incomplete'),
+            );
+
+            return false;
+        }
+
         return true;
     }
 

@@ -5,9 +5,13 @@ namespace BigGive\Identity\Tests;
 use BigGive\Identity\Domain\Person;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\Uuid;
 
 trait TestPeopleTrait
 {
+    private static string $testPersonUuid = '12345678-1234-1234-1234-1234567890ab';
+    private static string $testPersonStripeCustomerId = 'cus_aaaaaaaaaaaa11';
+
     private EntityManagerInterface $em;
 
     public function setUp(): void
@@ -20,18 +24,43 @@ trait TestPeopleTrait
      *                      that assumes a real UUID object.
      * @return Person
      */
-    private function getTestPerson(bool $withId = false): Person
+    private function getTestPerson(bool $withId = false, bool $withPassword = true): Person
     {
         $person = new Person();
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
-        $person->raw_password = 'superSecure123';
         $person->email_address = 'loraine@hyperdub.net';
+
+        if ($withPassword) {
+            $person->raw_password = 'superSecure123';
+        }
 
         if ($withId) {
             $person->id = (new UuidGenerator())->generateId($this->em, $person);
         }
 
         return $person;
+    }
+
+    private function getInitialisedPerson(bool $withPassword): Person
+    {
+        $person = clone $this->getTestPerson(false, $withPassword);
+        $person->setId(Uuid::fromString(static::$testPersonUuid));
+        $person->setStripeCustomerId(static::$testPersonStripeCustomerId);
+
+        // Call same create/update time initialisers as lifecycle hooks
+        $person->createdNow();
+        $person->hashPassword();
+
+        return $person;
+    }
+
+    private function getStripeCustomerCommonArgs(): array
+    {
+        return [
+            'metadata' => [
+                'personId' => static::$testPersonUuid,
+            ],
+        ];
     }
 }

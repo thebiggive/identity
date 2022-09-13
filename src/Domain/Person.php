@@ -19,7 +19,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table
  * @OA\Schema(
- *  description="Person – initially anonymous. To be login-ready, first_name, last_name, email_address and password are required.",
+ *  description="Person – initially anonymous. To be login-ready, first_name,
+ *  last_name, email_address and password are required.",
  * )
  * @see Credentials
  */
@@ -50,8 +51,8 @@ class Person implements JsonSerializable
     public ?UuidInterface $id = null;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="first_name",
      *  description="The person's first name",
@@ -59,11 +60,11 @@ class Person implements JsonSerializable
      * )
      * @var string The person's first name.
      */
-    public string $first_name;
+    public ?string $first_name = null;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="last_name",
      *  description="The person's surname",
@@ -71,11 +72,11 @@ class Person implements JsonSerializable
      * )
      * @var string The person's last name / surname.
      */
-    public string $last_name;
+    public ?string $last_name = null;
 
     /**
-     * @ORM\Column(type="string", unique=true)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="email_address",
      *  format="email",
@@ -83,12 +84,34 @@ class Person implements JsonSerializable
      * )
      * @var string The email address of the person. Email address must be unique.
      */
-    public string $email_address;
+    public ?string $email_address = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null From residential address, if donor is claiming Gift Aid.
+     */
+    public ?string $home_address_line_1 = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null From residential address, if donor is claiming Gift Aid and is GB-resident.
+     */
+    public ?string $home_postcode = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null From residential address, if donor is claiming Gift Aid. Can be 'GB' or 'OVERSEAS',
+     *                  or null if not applicable. Consuming code should assume that additional ISO 3166-1
+     *                  alpha-2 country codes could be set in the future.
+     */
+    public ?string $home_country_code = null;
 
     /**
      * JSON Web Token that lets somebody set a password to make the account reusable.
      */
-    public ?string $password_set_jwt = null;
+    public ?string $completion_jwt = null;
+
+    public bool $has_password = false;
 
     private ?string $password = null;
 
@@ -116,7 +139,10 @@ class Person implements JsonSerializable
      */
     public ?string $raw_password = null;
 
-    private ?string $stripe_customer_id = null;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    public ?string $stripe_customer_id = null;
 
     public function __construct()
     {
@@ -145,7 +171,9 @@ class Person implements JsonSerializable
 
     public function hashPassword(): void
     {
-        $this->password = Password::hash($this->raw_password);
+        if (!empty($this->raw_password)) {
+            $this->password = Password::hash($this->raw_password);
+        }
     }
 
     public function getPasswordHash(): ?string
@@ -161,6 +189,8 @@ class Person implements JsonSerializable
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
+        $this->has_password = $this->getPasswordHash() !== null;
+
         $jsonVars = get_object_vars($this);
         $jsonVars['uuid'] = $this->getId()?->toString();
 
@@ -168,11 +198,10 @@ class Person implements JsonSerializable
     }
 
     /**
-     * @Assert\Callback()
+     * @Assert\Callback(groups={"new"})
      * @see Person::$captcha_code
-     * @see Person::$raw_password
      */
-    public function validateCaptchaAndRawPasswordSetIfNew(ExecutionContextInterface $context): void
+    public function validateCaptchaIfNew(ExecutionContextInterface $context): void
     {
         // Brand new entity + no captcha solved.
         if (empty($this->id) && empty($this->captcha_code)) {
@@ -180,15 +209,21 @@ class Person implements JsonSerializable
                 ->atPath('captcha_code')
                 ->addViolation();
         }
+    }
 
-        // Entity brand new or somehow otherwise without a password, and none set.
-        $passwordMissingOrInvalid = (
-            empty($this->password) &&
-            (empty($this->raw_password) || mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH)
+    /**
+     * @Assert\Callback(groups={"complete"})
+     * @see Person::$raw_password
+     */
+    public function validatePasswordIfNotBlank(ExecutionContextInterface $context): void
+    {
+        $passwordUpdatedAndTooShort = (
+            !empty($this->raw_password) &&
+            mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH
         );
-        if ($passwordMissingOrInvalid) {
+        if ($passwordUpdatedAndTooShort) {
             $context->buildViolation(sprintf(
-                'Password of %d or more characters is required to create an account',
+                'Password must be %d or more characters',
                 static::MIN_PASSWORD_LENGTH
             ))
                 ->atPath('raw_password')
@@ -196,5 +231,8 @@ class Person implements JsonSerializable
         }
     }
 
-
+    public function addCompletionJWT(string $completionJWT): void
+    {
+        $this->completion_jwt = $completionJWT;
+    }
 }
