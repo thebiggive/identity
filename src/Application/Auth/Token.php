@@ -21,7 +21,11 @@ class Token
     private static string $algorithm = 'HS256';
 
     /**
-     * @param string $personId UUID for a person
+     * @param string    $personId   UUID for a person
+     * @param bool      $complete   Whether the token is for a login-ready Person. If so, it should be
+     *                              issued only after password authentication and lasts for long. When
+     *                              this is false, it's for a Person who has just been created and is
+     *                              designed for setting basic details and optionally an initial password.
      * @return string Signed JWS
      */
     public static function create(string $personId, bool $complete): string
@@ -38,7 +42,7 @@ class Token
             'exp' => time() + ($durationInDays * 86400),
             'sub' => [
                 'person_id' => $personId,
-                'complete' => $complete, // A token allows setting a password *or* full Person use; not both.
+                'complete' => $complete,
             ],
         ];
 
@@ -47,6 +51,7 @@ class Token
 
     /**
      * @param string            $personId   UUID for a person
+     * @param bool              $complete   Whether the token is for a login-ready Person
      * @param string            $jws        Compact JWS (signed JWT)
      * @param LoggerInterface   $logger
      * @return bool Whether the token is valid for the given person.
