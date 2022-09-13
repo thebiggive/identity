@@ -205,7 +205,7 @@ class Person implements JsonSerializable
      * @Assert\Callback(groups={"new"})
      * @see Person::$captcha_code
      */
-    public function validateCaptchaIfNew(ExecutionContextInterface $context): void
+    public function validateCaptchaExistsIfNew(ExecutionContextInterface $context): void
     {
         // Brand new entity + no captcha solved.
         if (empty($this->id) && empty($this->captcha_code)) {
