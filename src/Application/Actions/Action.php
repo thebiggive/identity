@@ -19,7 +19,13 @@ use Symfony\Component\Validator\ConstraintViolation;
  *     description="Staging",
  *     url="https://identity-staging.thebiggivetest.org.uk",
  * ),
- * @todo Document app-wide JWT auth in a `SecurityScheme` annotation.
+ * @OA\SecurityScheme(
+ *     securityScheme="personJWT",
+ *     type="http",
+ *     in="header",
+ *     bearerFormat="JWT",
+ *     name="x-tbg-auth",
+ * ),
  */
 abstract class Action
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BigGive\Identity\Tests\Application\Actions;
+namespace BigGive\Identity\Tests\Application\Actions\Person;
 
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -13,34 +13,39 @@ use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpUnauthorizedException;
+use Stripe\Service\CustomerService;
+use Stripe\StripeClient;
 
-class CreatePersonTest extends TestCase
+class CreateTest extends TestCase
 {
     use TestPeopleTrait;
 
     public function testSuccess(): void
     {
-        $person = $this->getTestPerson();
-
-        $personWithPostPersistData = clone $person;
-        $personWithPostPersistData->setId(Uuid::fromString('12345678-1234-1234-1234-1234567890ab'));
-        // Call same create/update time initialisers as lifecycle hooks
-        $personWithPostPersistData->createdNow();
+        $personWithPostPersistData = $this->getInitialisedPerson(false);
 
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->persist(Argument::type(Person::class))
-            ->shouldBeCalledOnce()
+            ->shouldBeCalledTimes(2) // Currently once for stable UUID, once w/ Stripe Customer ID.
             ->willReturn($personWithPostPersistData);
 
+        $customerMockResult = (object) [
+            'id' => static::$testPersonStripeCustomerId,
+            'object' => 'customer',
+        ];
+        $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
+        $stripeCustomersProphecy->create($this->getStripeCustomerCommonArgs())
+            ->willReturn($customerMockResult)
+            ->shouldBeCalledOnce();
+        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
+
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest([
-            'first_name' => $person->first_name,
-            'last_name' => $person->last_name,
-            'raw_password' => $person->raw_password,
-            'email_address' => $person->email_address,
             'captcha_code' => 'good response',
         ]);
 
@@ -59,6 +64,7 @@ class CreatePersonTest extends TestCase
         $this->assertEquals('Loraine', $payload->first_name);
         $this->assertNotEmpty($payload->created_at);
         $this->assertNotEmpty($payload->updated_at);
+        $this->assertFalse($payload->has_password);
     }
 
     public function testFailingCaptcha(): void
@@ -115,76 +121,6 @@ class CreatePersonTest extends TestCase
         $expectedJSON = json_encode([
             'error' => [
                 'description' => 'Validation error: Captcha is required to create an account',
-                'type' => 'BAD_REQUEST',
-            ],
-            'statusCode' => 400,
-        ], JSON_THROW_ON_ERROR);
-        $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
-    }
-
-    public function testMissingData(): void
-    {
-        $person = $this->getTestPerson();
-
-        $app = $this->getAppInstance();
-
-        $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->persist(Argument::type(Person::class))
-            ->shouldNotBeCalled();
-
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-
-        $request = $this->buildRequest([
-            'first_name' => $person->first_name,
-            'captcha_code' => 'good response',
-        ]);
-
-        $response = $app->handle($request);
-        $payloadJSON = (string) $response->getBody();
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJson($payloadJSON);
-
-        $expectedJSON = json_encode([
-            'error' => [
-                'description' => 'Validation error: Password of 10 or more characters' .
-                ' is required to create an account; last_name must not be blank; email_address must not be blank',
-                'type' => 'BAD_REQUEST',
-            ],
-            'statusCode' => 400,
-        ], JSON_THROW_ON_ERROR);
-        $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
-    }
-
-    public function testTooShortPassword(): void
-    {
-        $person = $this->getTestPerson();
-
-        $app = $this->getAppInstance();
-
-        $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->persist(Argument::type(Person::class))
-            ->shouldNotBeCalled();
-
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-
-        $request = $this->buildRequest([
-            'first_name' => $person->first_name,
-            'last_name' => $person->last_name,
-            'raw_password' => mb_substr($person->raw_password, 0, 9), // 1 below minimum 10 characters
-            'email_address' => $person->email_address,
-            'captcha_code' => 'good response',
-        ]);
-
-        $response = $app->handle($request);
-        $payloadJSON = (string) $response->getBody();
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJson($payloadJSON);
-
-        $expectedJSON = json_encode([
-            'error' => [
-                'description' => 'Validation error: Password of 10 or more characters is required to create an account',
                 'type' => 'BAD_REQUEST',
             ],
             'statusCode' => 400,

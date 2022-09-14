@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace BigGive\Identity\Application\Actions;
+namespace BigGive\Identity\Application\Actions\Person;
 
+use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Auth\Token;
-use BigGive\Identity\Application\Security\AuthenticationException;
-use BigGive\Identity\Application\Security\Password;
-use BigGive\Identity\Domain\Credentials;
+use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use Stripe\Exception\ApiErrorException;
+use Stripe\StripeClient;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -21,22 +22,18 @@ use TypeError;
 
 /**
  * @OA\Post(
- *     path="/v1/auth",
- *     summary="Log in to get a token for authenticated Identity and MatchBot calls",
- *     operationId="authenticate",
+ *     path="/v1/people",
+ *     summary="Create a new Person record",
+ *     operationId="person_create",
  *     @OA\RequestBody(
+ *         description="All details needed to register a Person",
  *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/Credentials"),
+ *         @OA\JsonContent(ref="#/components/schemas/Person")
  *     ),
  *     @OA\Response(
  *         response=200,
- *         description="Authenticated",
- *         @OA\JsonContent(
- *          format="object",
- *          example={
- *              "jwt": "some.token.123",
- *          },
- *         ),
+ *         description="Registered",
+ *         @OA\JsonContent(ref="#/components/schemas/Person"),
  *     ),
  *     @OA\Response(
  *         response=400,
@@ -46,22 +43,23 @@ use TypeError;
  *          example={
  *              "error": {
  *                  "description": "The error details",
- *              },
+ *              }
  *          },
  *         ),
  *     ),
  *     @OA\Response(
  *         response=401,
- *         description="Authentication failed",
+ *         description="Captcha verification failed",
  *     ),
- * )
+ * ),
  */
-class Login extends Action
+class Create extends Action
 {
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
+        private readonly StripeClient $stripeClient,
         private readonly ValidatorInterface $validator,
     ) {
         parent::__construct($logger);
@@ -74,17 +72,17 @@ class Login extends Action
     protected function action(): Response
     {
         try {
-            /** @var Credentials $credentials */
-            $credentials = $this->serializer->deserialize(
+            /** @var Person $person */
+            $person = $this->serializer->deserialize(
                 $body = ((string) $this->request->getBody()),
-                Credentials::class,
-                'json',
+                Person::class,
+                'json'
             );
         } catch (UnexpectedValueException | TypeError $exception) {
             // UnexpectedValueException is the Serializer one, not the global one
             $this->logger->info(sprintf('%s non-serialisable payload was: %s', __CLASS__, $body));
 
-            $message = 'Login data deserialise error';
+            $message = 'Person Create data deserialise error';
             $exceptionType = get_class($exception);
 
             return $this->validationError(
@@ -94,7 +92,7 @@ class Login extends Action
             );
         }
 
-        $violations = $this->validator->validate($credentials);
+        $violations = $this->validator->validate($person, null, ['new']);
 
         if (count($violations) > 0) {
             $message = 'Validation error: ';
@@ -113,16 +111,27 @@ class Login extends Action
             );
         }
 
-        $person = $this->personRepository->findPersonByEmailAddress($credentials->email_address);
-        if (!$person) {
-            throw new AuthenticationException(Password::BAD_LOGIN_MESSAGE);
+        $person = $this->personRepository->persist($person);
+
+        try {
+            $customer = $this->stripeClient->customers->create([
+                'metadata' => [
+                    'personId' => $person->getId()->toString(),
+                ],
+            ]);
+        } catch (ApiErrorException $exception) {
+            $logMessage = sprintf('%s Stripe API error: %s', __CLASS__, $exception->getMessage());
+            $this->logger->error($logMessage);
+
+            return $this->validationError($logMessage, 'Stripe Customer create API error');
         }
 
-        // Throws on bad password.
-        Password::verify($credentials->raw_password, $person);
+        $person->setStripeCustomerId($customer->id);
+        $this->personRepository->persist($person);
 
-        return new JsonResponse([
-            'jwt' => Token::create($person->getId()->toString(), true),
-        ]);
+        $token = Token::create($person->getId()->toString(), false);
+        $person->addCompletionJWT($token);
+
+        return new JsonResponse($person->jsonSerialize());
     }
 }

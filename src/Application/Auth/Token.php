@@ -10,6 +10,9 @@ use Psr\Log\LoggerInterface;
 
 class Token
 {
+    public const VALID_DAYS_USER_CREATION = 1;
+    public const VALID_DAYS_PASSWORD_AUTH = 8;
+
     /**
      * @link https://stackoverflow.com/questions/39239051/rs256-vs-hs256-whats-the-difference has info on hash
      * algorithm choice. Since we use the secret only server-side and will secure it like other secrets,
@@ -18,11 +21,17 @@ class Token
     private static string $algorithm = 'HS256';
 
     /**
-     * @param string $personId UUID for a person
+     * @param string    $personId   UUID for a person
+     * @param bool      $complete   Whether the token is for a login-ready Person. If so, it should be
+     *                              issued only after password authentication and lasts for longer. When
+     *                              this is false, it's for a Person who has just been created and is
+     *                              designed for setting basic details and optionally an initial password.
      * @return string Signed JWS
      */
-    public static function create(string $personId): string
+    public static function create(string $personId, bool $complete): string
     {
+        $durationInDays = $complete ? static::VALID_DAYS_PASSWORD_AUTH : static::VALID_DAYS_USER_CREATION;
+
         /**
          * @var array $claims
          * @link https://tools.ietf.org/html/rfc7519 has info on the standard keys like `exp`
@@ -30,9 +39,10 @@ class Token
         $claims = [
             'iss' => getenv('BASE_URI'),
             'iat' => time(),
-            'exp' => time() + (15 * 86400), // Expire in 15 days
+            'exp' => time() + ($durationInDays * 86400),
             'sub' => [
                 'person_id' => $personId,
+                'complete' => $complete,
             ],
         ];
 
@@ -41,11 +51,12 @@ class Token
 
     /**
      * @param string            $personId   UUID for a person
+     * @param bool              $complete   Whether the token is for a login-ready Person
      * @param string            $jws        Compact JWS (signed JWT)
      * @param LoggerInterface   $logger
      * @return bool Whether the token is valid for the given person.
      */
-    public static function check(string $personId, string $jws, LoggerInterface $logger): bool
+    public static function check(string $personId, bool $complete, string $jws, LoggerInterface $logger): bool
     {
         $key = new Key(static::getSecret(), static::$algorithm);
         try {
@@ -69,6 +80,14 @@ class Token
 
         if ($personId !== $decodedJwtBody->sub->person_id) {
             $logger->error("JWT error: Not authorised for person ID $personId");
+
+            return false;
+        }
+
+        if ($complete !== $decodedJwtBody->sub->complete) {
+            $logger->error(
+                sprintf("JWT error: Not authorised for %s status", $complete ? 'complete' : 'incomplete'),
+            );
 
             return false;
         }
