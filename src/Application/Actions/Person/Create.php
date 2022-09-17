@@ -129,7 +129,7 @@ class Create extends Action
         $person->setStripeCustomerId($customer->id);
         $this->personRepository->persist($person);
 
-        $token = Token::create($person->getId()->toString(), false);
+        $token = Token::create($person->getId()->toString(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);
 
         return new JsonResponse($person->jsonSerialize());

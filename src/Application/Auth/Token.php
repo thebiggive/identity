@@ -28,7 +28,7 @@ class Token
      *                              designed for setting basic details and optionally an initial password.
      * @return string Signed JWS
      */
-    public static function create(string $personId, bool $complete, string $pspCustomerId = null): string
+    public static function create(string $personId, bool $complete, ?string $pspCustomerId): string
     {
         $durationInDays = $complete ? static::VALID_DAYS_PASSWORD_AUTH : static::VALID_DAYS_USER_CREATION;
 
