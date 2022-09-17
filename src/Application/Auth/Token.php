@@ -28,9 +28,18 @@ class Token
      *                              designed for setting basic details and optionally an initial password.
      * @return string Signed JWS
      */
-    public static function create(string $personId, bool $complete): string
+    public static function create(string $personId, bool $complete, string $pspCustomerId = null): string
     {
         $durationInDays = $complete ? static::VALID_DAYS_PASSWORD_AUTH : static::VALID_DAYS_USER_CREATION;
+
+        $personClaims = [
+            'person_id' => $personId,
+            'complete' => $complete,
+        ];
+
+        if ($pspCustomerId !== null) {
+            $personClaims['psp_id'] = $pspCustomerId;
+        }
 
         /**
          * @var array $claims
@@ -40,10 +49,7 @@ class Token
             'iss' => getenv('BASE_URI'),
             'iat' => time(),
             'exp' => time() + ($durationInDays * 86400),
-            'sub' => [
-                'person_id' => $personId,
-                'complete' => $complete,
-            ],
+            'sub' => $personClaims,
         ];
 
         return JWT::encode($claims, static::getSecret(), static::$algorithm);

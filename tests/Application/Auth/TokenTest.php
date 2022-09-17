@@ -12,7 +12,7 @@ class TokenTest extends TestCase
 {
     public function testCreateReturnsValidLookingToken(): void
     {
-        $token = Token::create('somePersonId', true);
+        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertMatchesRegularExpression('/^[^.]+\.[^.]+\.[^.]+$/', $token);
     }
