@@ -57,8 +57,7 @@ class CreateTest extends TestCase
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         // Mocked PersonRepsoitory sets a UUID in code.
-        $this->assertIsString($payload->uuid);
-        $this->assertSame(36, strlen($payload->uuid));
+        $this->assertSame(36, strlen((string) $payload->id));
 
         $this->assertEquals('Loraine', $payload->first_name);
         $this->assertNotEmpty($payload->created_at);

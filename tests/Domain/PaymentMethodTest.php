@@ -8,12 +8,11 @@ use BigGive\Identity\Domain\PaymentMethod;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Tests\TestCase;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Uuid;
 
 class PaymentMethodTest extends TestCase
 {
-    private UuidInterface $personId;
+    private Uuid $personId;
     private PaymentMethod $paymentMethod;
 
     public function setUp(): void
@@ -21,12 +20,12 @@ class PaymentMethodTest extends TestCase
         $em = $this->getAppInstance()->getContainer()->get(EntityManagerInterface::class);
 
         $person = new Person();
-        $this->personId = $person->id = (new UuidGenerator())->generateId($em, $person);
+        $this->personId = $person->id = Uuid::v4();
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
 
         $this->paymentMethod = new PaymentMethod();
-        $this->paymentMethod->id = (new UuidGenerator())->generateId($em, $this->paymentMethod);
+        $this->paymentMethod->id = Uuid::v4();
         $this->paymentMethod->setPerson($person);
         $this->paymentMethod->token = 'pm_test123';
         $this->paymentMethod->billing_first_address_line = '1 Main St';

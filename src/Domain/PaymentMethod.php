@@ -6,7 +6,7 @@ namespace BigGive\Identity\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @ORM\Entity()
@@ -18,14 +18,14 @@ class PaymentMethod implements JsonSerializable
     use TimestampsTrait;
 
     /**
-     * @var \Ramsey\Uuid\UuidInterface
+     * @var Uuid
      *
      * @ORM\Id
-     * @ORM\Column(type="uuid_binary_ordered_time", unique=true)
+     * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
+     * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
      */
-    public UuidInterface $id;
+    public Uuid $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Person", inversedBy="payment_methods", cascade={"persist"})

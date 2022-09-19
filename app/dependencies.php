@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\Types\Type;
@@ -24,11 +25,13 @@ use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
 use Stripe\StripeClient;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validation;
@@ -58,8 +61,13 @@ return function (ContainerBuilder $containerBuilder) {
             // https://github.com/ramsey/uuid-doctrine#innodb-optimised-binary-uuids
             // Tests seem to hit this multiple times and get unhappy, so we must check
             // for a previous invocation with `hasType()`.
+            // This can be removed in the coming weeks, see ID-20.
             if (!Type::hasType('uuid_binary_ordered_time')) {
                 Type::addType('uuid_binary_ordered_time', UuidBinaryOrderedTimeType::class);
+            }
+
+            if (!Type::hasType('uuid')) {
+                Type::addType('uuid', UuidType::class);
             }
 
             return EntityManager::create(
@@ -155,7 +163,14 @@ return function (ContainerBuilder $containerBuilder) {
 
         SerializerInterface::class => static function (ContainerInterface $c): SerializerInterface {
             $encoders = [new JsonEncoder()];
-            $normalizers = [new ObjectNormalizer()];
+            $normalizers = [
+                new UidNormalizer([
+                    UidNormalizer::NORMALIZATION_FORMAT_KEY => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
+                ]),
+                // TODO figure out how to get this working without breaking Uid normalise.
+//                $c->get(HasPasswordNormalizer::class),
+                new ObjectNormalizer(), // Needs to be last for UID encode not to be overwritten?
+            ];
 
             return new Serializer($normalizers, $encoders);
         },

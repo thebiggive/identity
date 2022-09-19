@@ -4,8 +4,7 @@ namespace BigGive\Identity\Tests;
 
 use BigGive\Identity\Domain\Person;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 
 trait TestPeopleTrait
 {
@@ -36,7 +35,7 @@ trait TestPeopleTrait
         }
 
         if ($withId) {
-            $person->id = (new UuidGenerator())->generateId($this->em, $person);
+            $person->id = Uuid::v4();
         }
 
         return $person;

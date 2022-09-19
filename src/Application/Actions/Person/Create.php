@@ -8,7 +8,7 @@ use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
-use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
@@ -16,6 +16,7 @@ use Slim\Exception\HttpBadRequestException;
 use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
@@ -52,6 +53,7 @@ use TypeError;
  *         description="Captcha verification failed",
  *     ),
  * ),
+ * @see Person
  */
 class Create extends Action
 {
@@ -116,7 +118,7 @@ class Create extends Action
         try {
             $customer = $this->stripeClient->customers->create([
                 'metadata' => [
-                    'personId' => $person->getId()->toString(),
+                    'personId' => (string) $person->getId(),
                 ],
             ]);
         } catch (ApiErrorException $exception) {
@@ -129,9 +131,19 @@ class Create extends Action
         $person->setStripeCustomerId($customer->id);
         $this->personRepository->persist($person);
 
-        $token = Token::create($person->getId()->toString(), false, $person->stripe_customer_id);
+        $token = Token::create((string) $person->getId(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);
 
-        return new JsonResponse($person->jsonSerialize());
+        return new TextResponse(
+            $this->serializer->serialize(
+                $person,
+                'json',
+                [
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => ['hPassword'],
+                ],
+            ),
+            200,
+            ['content-type' => 'application/json']
+        );
     }
 }
