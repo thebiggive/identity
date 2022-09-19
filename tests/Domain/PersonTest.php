@@ -32,7 +32,7 @@ class PersonTest extends TestCase
     public function testGetters(int $id, string $username, string $firstName, string $lastName): void
     {
         $person = new Person();
-        $person->id = Uuid::v4();
+        $person->setId(Uuid::v4());
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
 
@@ -52,7 +52,7 @@ class PersonTest extends TestCase
     public function testJsonSerialize(int $id, string $username, string $firstName, string $lastName): void
     {
         $person = new Person();
-        $person->id = Uuid::v4();
+        $person->setId(Uuid::v4());
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
         $person->email_address = 'loraine@hyperdub.net';

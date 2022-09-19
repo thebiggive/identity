@@ -7,20 +7,19 @@ namespace BigGive\Identity\Tests\Domain;
 use BigGive\Identity\Domain\PaymentMethod;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Tests\TestCase;
-use Doctrine\ORM\EntityManagerInterface;
+use BigGive\Identity\Tests\TestPeopleTrait;
 use Symfony\Component\Uid\Uuid;
 
 class PaymentMethodTest extends TestCase
 {
-    private Uuid $personId;
+    use TestPeopleTrait;
+
     private PaymentMethod $paymentMethod;
 
     public function setUp(): void
     {
-        $em = $this->getAppInstance()->getContainer()->get(EntityManagerInterface::class);
-
         $person = new Person();
-        $this->personId = $person->id = Uuid::v4();
+        $person->setId(static::$testPersonUuid);
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
 
@@ -35,7 +34,7 @@ class PaymentMethodTest extends TestCase
 
     public function testGetters(): void
     {
-        $this->assertEquals($this->personId, $this->paymentMethod->getPerson()->getId());
+        $this->assertEquals(static::$testPersonUuid, $this->paymentMethod->getPerson()->getId());
     }
 
     public function testJsonSerialize(): void
@@ -43,7 +42,7 @@ class PaymentMethodTest extends TestCase
         $jsonArray = $this->paymentMethod->jsonSerialize();
 
         $this->assertEquals('stripe', $jsonArray['psp']);
-        $this->assertEquals($this->personId, $jsonArray['person_id']);
+        $this->assertEquals(static::$testPersonUuid, $jsonArray['person_id']);
         $this->assertEquals('pm_test123', $jsonArray['token']);
         $this->assertEquals('1 Main St', $jsonArray['billing_first_address_line']);
         $this->assertEquals('X1 1YZ', $jsonArray['billing_postcode']);

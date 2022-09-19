@@ -10,8 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Uid\UuidV4;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -49,7 +49,7 @@ class Person
      *  pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
      * )
      */
-    public ?Uuid $id = null;
+    private ?Uuid $id = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -159,8 +159,13 @@ class Person
         return $this->id;
     }
 
-    public function setId(?Uuid $id): void
+    public function setId(UuidV4 | string | null $id): void
     {
+        if (is_string($id)) {
+            $this->id = Uuid::fromRfc4122($id);
+            return;
+        }
+
         $this->id = $id;
     }
 

@@ -8,7 +8,7 @@ use Symfony\Component\Uid\Uuid;
 
 trait TestPeopleTrait
 {
-    private static string $testPersonUuid = '12345678-1234-1234-1234-1234567890ab';
+    private static string $testPersonUuid = 'b51dcb90-7b81-4779-ab3b-79435cbd9999';
     private static string $testPersonStripeCustomerId = 'cus_aaaaaaaaaaaa11';
 
     private EntityManagerInterface $em;
@@ -35,7 +35,7 @@ trait TestPeopleTrait
         }
 
         if ($withId) {
-            $person->id = Uuid::v4();
+            $person->setId(Uuid::v4());
         }
 
         return $person;
@@ -44,7 +44,7 @@ trait TestPeopleTrait
     private function getInitialisedPerson(bool $withPassword): Person
     {
         $person = clone $this->getTestPerson(false, $withPassword);
-        $person->setId(Uuid::fromString(static::$testPersonUuid));
+        $person->setId(static::$testPersonUuid);
         $person->setStripeCustomerId(static::$testPersonStripeCustomerId);
 
         // Call same create/update time initialisers as lifecycle hooks

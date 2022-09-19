@@ -16,6 +16,7 @@ use Slim\Exception\HttpNotFoundException;
 use Stripe\StripeClient;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
@@ -87,7 +88,10 @@ class Update extends Action
                 $body = ((string) $this->request->getBody()),
                 Person::class,
                 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $person]
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE => $person,
+                    UidNormalizer::NORMALIZATION_FORMAT_CANONICAL => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
+                ],
             );
         } catch (UnexpectedValueException | TypeError $exception) {
             // UnexpectedValueException is the Serializer one, not the global one
