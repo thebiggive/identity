@@ -6,20 +6,23 @@ namespace BigGive\Identity\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Uid\Uuid;
 
 /**
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table
+ * @OA\Schema(
+ *  description="Reusable payment method, e.g. a saved credit card. Full card numbers or wallet tokens
+ *  are not stored by us, only a reference to the PSP's record.",
+ * )
  */
 class PaymentMethod implements JsonSerializable
 {
     use TimestampsTrait;
 
     /**
-     * @var Uuid
-     *
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
@@ -40,13 +43,39 @@ class PaymentMethod implements JsonSerializable
 
     /**
      * @ORM\Column(type="string", unique=true)
-     * @var string Unique token to identify a specific PaymentMethod record.
+     * @var string Unique identifier issued by the PSP for this PaymentMethod.
+     * @todo migrate
      */
-    public string $token;
+    public string $stripe_payment_method_id;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @var string|null Stores first line of billing adress, nullable.
+     * @var string|null Issuer, e.g. 'visa'.
+     */
+    public ?string $card_brand = null;
+
+    /**
+     * @todo figure out how we want to map this from month + year
+     * @var \DateTime|null
+     */
+    public ?string $card_expiry = null;
+
+    /**
+     * @ORM\Column(type="string", length=4, nullable=true)
+     * @var string|null Stores last 4 digits of card number.
+     * @todo decide whether to use virtual or real last 4 for wallets, or store both.
+     */
+    public ?string $card_last_four = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null Wallet provider, e.g. 'google_pay'.
+     */
+    public ?string $card_wallet = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
      */
     public ?string $billing_first_address_line = null;
 
