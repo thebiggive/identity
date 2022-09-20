@@ -64,14 +64,6 @@ abstract class Action
     abstract protected function action(): Response;
 
     /**
-     * @return array|object
-     */
-    protected function getFormData()
-    {
-        return $this->request->getParsedBody();
-    }
-
-    /**
      * @return mixed
      * @throws HttpBadRequestException
      */
