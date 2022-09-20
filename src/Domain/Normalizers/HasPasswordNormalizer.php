@@ -6,15 +6,17 @@ namespace BigGive\Identity\Domain\Normalizers;
 
 use BigGive\Identity\Domain\Person;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\Serializer\SerializerAwareInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
-class HasPasswordNormalizer implements NormalizerInterface
+class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInterface
 {
-    public function __construct(private readonly ObjectNormalizer $normalizer)
+    public function __construct(private readonly PropertyNormalizer $normalizer)
     {
     }
 
-    public function normalize(mixed $object, string $format = null, array $context = []): bool
+    public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         $data = $this->normalizer->normalize($object, $format, $context);
         $data['has_password'] = $object->getPasswordHash() !== null;
@@ -25,5 +27,10 @@ class HasPasswordNormalizer implements NormalizerInterface
     public function supportsNormalization(mixed $data, string $format = null): bool
     {
         return $data instanceof Person;
+    }
+
+    public function setSerializer(SerializerInterface $serializer): void
+    {
+        $this->normalizer->setSerializer($serializer);
     }
 }

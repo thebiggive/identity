@@ -71,10 +71,13 @@ class UpdateTest extends TestCase
 
         $this->assertEquals('Loraine', $payload->first_name);
         $this->assertNotEmpty($payload->created_at);
-        $this->assertNotEmpty($payload->updated_at);
 
-        // TODO reinstate when normalisers working as intended.
-//        $this->assertTrue($payload->has_password);
+        $this->assertNotEmpty($payload->updated_at);
+        $this->assertIsString($payload->updated_at);
+        $this->assertTrue(new \DateTime($payload->updated_at) <= new \DateTime());
+        $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
+
+        $this->assertTrue($payload->has_password);
     }
 
     public function testSuccessSettingOnlyPersonInfo(): void
@@ -128,7 +131,12 @@ class UpdateTest extends TestCase
 
         $this->assertEquals('Loraine', $payload->first_name);
         $this->assertNotEmpty($payload->created_at);
+
         $this->assertNotEmpty($payload->updated_at);
+        $this->assertIsString($payload->updated_at);
+        $this->assertTrue(new \DateTime($payload->updated_at) <= new \DateTime());
+        $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
+
         $this->assertFalse($payload->has_password);
     }
 

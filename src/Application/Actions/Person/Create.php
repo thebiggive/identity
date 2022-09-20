@@ -140,7 +140,7 @@ class Create extends Action
                 $person,
                 'json',
                 [
-                    AbstractNormalizer::IGNORED_ATTRIBUTES => ['hPassword'],
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => Person::NON_SERIALISED_ATTRIBUTES,
                 ],
             ),
             200,

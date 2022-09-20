@@ -32,6 +32,15 @@ class Person
     public const MIN_PASSWORD_LENGTH = 10;
 
     /**
+     * Keeping this placeholder for now (used in 3 places) for convenience if we do decide to
+     * exclude public properties, though this is less certain now we're using the Symfony serializer
+     * more appropriately. Keep until we pick up ID-19 and either populate or delete use at that point.
+     * @var string[]
+     */
+    public const NON_SERIALISED_ATTRIBUTES = [
+    ];
+
+    /**
      * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
      * @var Collection|PaymentMethod[]
      */

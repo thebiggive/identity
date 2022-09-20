@@ -89,6 +89,7 @@ class Update extends Action
                 Person::class,
                 'json',
                 [
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => Person::NON_SERIALISED_ATTRIBUTES,
                     AbstractNormalizer::OBJECT_TO_POPULATE => $person,
                     UidNormalizer::NORMALIZATION_FORMAT_CANONICAL => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
                 ],
@@ -156,7 +157,7 @@ class Update extends Action
                 $person,
                 'json',
                 [
-                    AbstractNormalizer::IGNORED_ATTRIBUTES => ['hPassword'],
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => Person::NON_SERIALISED_ATTRIBUTES,
                 ],
             ),
             200,

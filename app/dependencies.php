@@ -30,7 +30,8 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -164,12 +165,12 @@ return function (ContainerBuilder $containerBuilder) {
         SerializerInterface::class => static function (ContainerInterface $c): SerializerInterface {
             $encoders = [new JsonEncoder()];
             $normalizers = [
+                $c->get(HasPasswordNormalizer::class),
                 new UidNormalizer([
                     UidNormalizer::NORMALIZATION_FORMAT_KEY => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
                 ]),
-                // TODO figure out how to get this working without breaking Uid normalise.
-//                $c->get(HasPasswordNormalizer::class),
-                new ObjectNormalizer(), // Needs to be last for UID encode not to be overwritten?
+                new DateTimeNormalizer(), // Default RFC3339 is fine.
+                new PropertyNormalizer(), // ObjectNormalizer tried to do more "magic" than was helpful for us!
             ];
 
             return new Serializer($normalizers, $encoders);
