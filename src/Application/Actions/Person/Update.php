@@ -24,6 +24,16 @@ use TypeError;
 /**
  * @OA\Put(
  *     path="/v1/people/{personId}",
+ *     @OA\PathParameter(
+ *         name="personId",
+ *         description="UUID of the person to update",
+ *         @OA\Schema(
+ *             type="string",
+ *             format="uuid",
+ *             example="f7095caf-7180-4ddf-a212-44bacde69066",
+ *             pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+ *         ),
+ *     ),
  *     summary="Update a Person, e.g. to set a password",
  *     operationId="person_update",
  *     security={
@@ -89,7 +99,10 @@ class Update extends Action
                 Person::class,
                 'json',
                 [
-                    AbstractNormalizer::IGNORED_ATTRIBUTES => Person::NON_SERIALISED_ATTRIBUTES,
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => [
+                        ...Person::NON_SERIALISED_FOR_UPDATE_ATTRIBUTES,
+                        ...Person::NON_SERIALISED_ATTRIBUTES,
+                    ],
                     AbstractNormalizer::OBJECT_TO_POPULATE => $person,
                     UidNormalizer::NORMALIZATION_FORMAT_CANONICAL => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
                 ],

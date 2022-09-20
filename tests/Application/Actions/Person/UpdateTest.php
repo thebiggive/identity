@@ -78,6 +78,9 @@ class UpdateTest extends TestCase
         $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
 
         $this->assertTrue($payload->has_password);
+        // These should be unset by `HasPasswordNormalizer`.
+        $this->assertEmpty($payload->raw_password);
+        $this->assertEmpty($payload->password);
     }
 
     public function testSuccessSettingOnlyPersonInfo(): void
@@ -138,6 +141,8 @@ class UpdateTest extends TestCase
         $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
 
         $this->assertFalse($payload->has_password);
+        $this->assertEmpty($payload->raw_password);
+        $this->assertEmpty($payload->password);
     }
 
     public function testMissingData(): void

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use BigGive\Identity\Application\Security\Password;
-use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Uid\UuidV4;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -30,6 +28,12 @@ class Person
     use TimestampsTrait;
 
     public const MIN_PASSWORD_LENGTH = 10;
+
+    public const NON_SERIALISED_FOR_UPDATE_ATTRIBUTES = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
 
     /**
      * Keeping this placeholder for now (used in 3 places) for convenience if we do decide to
@@ -124,8 +128,15 @@ class Person
      */
     public ?string $completion_jwt = null;
 
+    /**
+     * @OA\Property()
+     */
     public bool $has_password = false;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null Hashed password, if a password has been set.
+     */
     private ?string $password = null;
 
     /**
@@ -168,13 +179,8 @@ class Person
         return $this->id;
     }
 
-    public function setId(UuidV4 | string | null $id): void
+    public function setId(?Uuid $id): void
     {
-        if (is_string($id)) {
-            $this->id = Uuid::fromRfc4122($id);
-            return;
-        }
-
         $this->id = $id;
     }
 

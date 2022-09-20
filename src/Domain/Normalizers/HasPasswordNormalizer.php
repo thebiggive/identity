@@ -21,6 +21,9 @@ class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInter
         $data = $this->normalizer->normalize($object, $format, $context);
         $data['has_password'] = $object->getPasswordHash() !== null;
 
+        // Don't leak unnecessary sensitive password data back in the response object.
+        unset($data['password'], $data['raw_password']);
+
         return $data;
     }
 
