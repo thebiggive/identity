@@ -19,7 +19,7 @@ class PaymentMethodTest extends TestCase
     public function setUp(): void
     {
         $person = new Person();
-        $person->setId(static::$testPersonUuid);
+        $person->setId(Uuid::fromString(static::$testPersonUuid));
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
 

@@ -44,7 +44,7 @@ trait TestPeopleTrait
     private function getInitialisedPerson(bool $withPassword): Person
     {
         $person = clone $this->getTestPerson(false, $withPassword);
-        $person->setId(static::$testPersonUuid);
+        $person->setId(Uuid::fromString(static::$testPersonUuid));
         $person->setStripeCustomerId(static::$testPersonStripeCustomerId);
 
         // Call same create/update time initialisers as lifecycle hooks
