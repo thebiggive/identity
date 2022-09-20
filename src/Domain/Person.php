@@ -45,12 +45,6 @@ class Person
     ];
 
     /**
-     * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
-     * @var Collection|PaymentMethod[]
-     */
-    public Collection | array $payment_methods = [];
-
-    /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
@@ -171,7 +165,6 @@ class Person
 
     public function __construct()
     {
-        $this->payment_methods = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
