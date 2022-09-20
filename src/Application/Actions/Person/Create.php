@@ -118,7 +118,8 @@ class Create extends Action
         try {
             $customer = $this->stripeClient->customers->create([
                 'metadata' => [
-                    'personId' => (string) $person->getId(),
+                    'environment'   => getenv('APP_ENV'),
+                    'personId'      => (string) $person->getId(),
                 ],
             ]);
         } catch (ApiErrorException $exception) {

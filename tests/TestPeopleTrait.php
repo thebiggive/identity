@@ -58,6 +58,7 @@ trait TestPeopleTrait
     {
         return [
             'metadata' => [
+                'environment' => 'test',
                 'personId' => static::$testPersonUuid,
             ],
         ];
