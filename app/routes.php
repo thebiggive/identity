@@ -37,15 +37,5 @@ return function (App $app) {
             ->add(PersonManagementAuthMiddleware::class);
 
         $versionGroup->post('/auth', Login::class);
-
-//    $app->group('/people', function (Group $peopleGroup) {
-//        $peopleGroup->get('/{id}', GetPersonAction::class);
-//
-//        $peopleGroup->group('/payment_methods', function (Group $paymentMethodsGroup) {
-//            $paymentMethodsGroup->post('', CreatePaymentMethod::class);
-//            $paymentMethodsGroup->post('/{id}', DeletePaymentMethod::class);
-//        });
-//    })
-//        ->add(IdentityAuthMiddleware::class);
     });
 };

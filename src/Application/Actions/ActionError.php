@@ -28,28 +28,6 @@ class ActionError implements JsonSerializable
         $this->description = $description;
     }
 
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description = null): self
-    {
-        $this->description = $description;
-        return $this;
-    }
-
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {

@@ -32,19 +32,6 @@ class ActionPayload implements JsonSerializable
         return $this->statusCode;
     }
 
-    /**
-     * @return array|null|object
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function getError(): ?ActionError
-    {
-        return $this->error;
-    }
-
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {

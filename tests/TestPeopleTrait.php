@@ -49,6 +49,11 @@ trait TestPeopleTrait
 
         // Call same create/update time initialisers as lifecycle hooks
         $person->createdNow();
+
+        // This is pretty much funtionally redundant, but validates our on-update setter
+        // in `TimestampsTrait` doesn't crash!
+        $person->updatedNow();
+
         $person->hashPassword();
 
         return $person;

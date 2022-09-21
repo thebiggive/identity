@@ -28,7 +28,7 @@ class Password
         $hash = $person->getPasswordHash();
 
         if ($hash === null) {
-            throw new AuthenticationException(self::BAD_LOGIN_MESSAGE);
+            throw new AuthenticationException(static::BAD_LOGIN_MESSAGE);
         }
 
         if (!password_verify($rawPassword, $hash)) {
