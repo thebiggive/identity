@@ -11,7 +11,6 @@ use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
-use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
@@ -68,13 +67,20 @@ class UpdateTest extends TestCase
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         // Mocked PersonRepsoitory sets a UUID in code.
-        $this->assertIsString($payload->uuid);
-        $this->assertSame(36, strlen($payload->uuid));
+        $this->assertSame(36, strlen((string) $payload->id));
 
         $this->assertEquals('Loraine', $payload->first_name);
         $this->assertNotEmpty($payload->created_at);
+
         $this->assertNotEmpty($payload->updated_at);
+        $this->assertIsString($payload->updated_at);
+        $this->assertTrue(new \DateTime($payload->updated_at) <= new \DateTime());
+        $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
+
         $this->assertTrue($payload->has_password);
+        // These should be unset by `HasPasswordNormalizer`.
+        $this->assertObjectNotHasAttribute('raw_password', $payload);
+        $this->assertObjectNotHasAttribute('password', $payload);
     }
 
     public function testSuccessSettingOnlyPersonInfo(): void
@@ -124,25 +130,39 @@ class UpdateTest extends TestCase
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         // Mocked PersonRepsoitory sets a UUID in code.
-        $this->assertIsString($payload->uuid);
-        $this->assertSame(36, strlen($payload->uuid));
+        $this->assertSame(36, strlen((string) $payload->id));
 
         $this->assertEquals('Loraine', $payload->first_name);
         $this->assertNotEmpty($payload->created_at);
+
         $this->assertNotEmpty($payload->updated_at);
+        $this->assertIsString($payload->updated_at);
+        $this->assertTrue(new \DateTime($payload->updated_at) <= new \DateTime());
+        $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
+
         $this->assertFalse($payload->has_password);
+        $this->assertObjectNotHasAttribute('raw_password', $payload);
+        $this->assertObjectNotHasAttribute('password', $payload);
     }
 
     public function testMissingData(): void
     {
+        // Remove an existing property so test's validation fails even with Symfony serializer
+        // loading in the existing ORM object's data.
         $person = $this->getTestPerson();
+        $person->email_address = null;
+        $person->last_name = null;
+
+        $personFromORM = $this->getInitialisedPerson(false);
+        $personFromORM->email_address = null;
+        $personFromORM->last_name = null;
 
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
-            ->willReturn($this->getInitialisedPerson(false));
+            ->willReturn($personFromORM);
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
@@ -256,7 +276,7 @@ class UpdateTest extends TestCase
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequestRaw(static::$testPersonUuid, '<')
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false));
+            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
 
         $response = $app->handle($request);
         $payloadJSON = (string) $response->getBody();
@@ -277,7 +297,7 @@ class UpdateTest extends TestCase
     private function buildRequest(string $personId, array $payloadValues): ServerRequestInterface
     {
         return $this->buildRequestRaw($personId, json_encode($payloadValues, JSON_THROW_ON_ERROR))
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false));
+            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
     }
 
     private function buildRequestRaw(string $personId, string $payloadLiteral): ServerRequestInterface

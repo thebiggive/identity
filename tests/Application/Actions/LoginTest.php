@@ -28,7 +28,7 @@ class LoginTest extends TestCase
             ->willReturn(Password::hash($person->raw_password));
         $personWithHashMatchingRawPasswordFromLoginObject->getId()
             ->shouldBeCalledOnce()
-            ->willReturn($person->id);
+            ->willReturn($person->getId());
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->findPersonByEmailAddress($person->email_address)

@@ -4,12 +4,11 @@ namespace BigGive\Identity\Tests;
 
 use BigGive\Identity\Domain\Person;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 
 trait TestPeopleTrait
 {
-    private static string $testPersonUuid = '12345678-1234-1234-1234-1234567890ab';
+    private static string $testPersonUuid = 'b51dcb90-7b81-4779-ab3b-79435cbd9999';
     private static string $testPersonStripeCustomerId = 'cus_aaaaaaaaaaaa11';
 
     private EntityManagerInterface $em;
@@ -36,7 +35,7 @@ trait TestPeopleTrait
         }
 
         if ($withId) {
-            $person->id = (new UuidGenerator())->generateId($this->em, $person);
+            $person->setId(Uuid::v4());
         }
 
         return $person;
@@ -59,6 +58,7 @@ trait TestPeopleTrait
     {
         return [
             'metadata' => [
+                'environment' => 'test',
                 'personId' => static::$testPersonUuid,
             ],
         ];

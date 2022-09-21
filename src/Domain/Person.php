@@ -8,9 +8,8 @@ use BigGive\Identity\Application\Security\Password;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
 use OpenApi\Annotations as OA;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -24,11 +23,26 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * )
  * @see Credentials
  */
-class Person implements JsonSerializable
+class Person
 {
     use TimestampsTrait;
 
     public const MIN_PASSWORD_LENGTH = 10;
+
+    public const NON_SERIALISED_FOR_UPDATE_ATTRIBUTES = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
+     * Keeping this placeholder for now (used in 3 places) for convenience if we do decide to
+     * exclude public properties, though this is less certain now we're using the Symfony serializer
+     * more appropriately. Keep until we pick up ID-19 and either populate or delete use at that point.
+     * @var string[]
+     */
+    public const NON_SERIALISED_ATTRIBUTES = [
+    ];
 
     /**
      * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
@@ -38,9 +52,9 @@ class Person implements JsonSerializable
 
     /**
      * @ORM\Id
-     * @ORM\Column(type="uuid_binary_ordered_time", unique=true)
+     * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
+     * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
      * @OA\Property(
      *  property="id",
      *  format="uuid",
@@ -48,7 +62,7 @@ class Person implements JsonSerializable
      *  pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
      * )
      */
-    public ?UuidInterface $id = null;
+    private ?Uuid $id = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -114,8 +128,15 @@ class Person implements JsonSerializable
      */
     public ?string $completion_jwt = null;
 
+    /**
+     * @OA\Property()
+     */
     public bool $has_password = false;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null Hashed password, if a password has been set.
+     */
     private ?string $password = null;
 
     /**
@@ -153,12 +174,12 @@ class Person implements JsonSerializable
         $this->payment_methods = new ArrayCollection();
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(?UuidInterface $id): void
+    public function setId(?Uuid $id): void
     {
         $this->id = $id;
     }
@@ -188,17 +209,6 @@ class Person implements JsonSerializable
     public function setStripeCustomerId(?string $stripe_customer_id): void
     {
         $this->stripe_customer_id = $stripe_customer_id;
-    }
-
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize(): array
-    {
-        $this->has_password = $this->getPasswordHash() !== null;
-
-        $jsonVars = get_object_vars($this);
-        $jsonVars['uuid'] = $this->getId()?->toString();
-
-        return $jsonVars;
     }
 
     /**

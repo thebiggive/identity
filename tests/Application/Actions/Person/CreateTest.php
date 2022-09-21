@@ -11,7 +11,6 @@ use BigGive\Identity\Tests\TestPeopleTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
-use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
@@ -58,13 +57,19 @@ class CreateTest extends TestCase
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         // Mocked PersonRepsoitory sets a UUID in code.
-        $this->assertIsString($payload->uuid);
-        $this->assertSame(36, strlen($payload->uuid));
+        $this->assertSame(36, strlen((string) $payload->id));
 
         $this->assertEquals('Loraine', $payload->first_name);
+
         $this->assertNotEmpty($payload->created_at);
+        $this->assertIsString($payload->created_at);
+        $this->assertTrue(new \DateTime($payload->created_at) <= new \DateTime());
+        $this->assertTrue(new \DateTime($payload->created_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
+
         $this->assertNotEmpty($payload->updated_at);
         $this->assertFalse($payload->has_password);
+        $this->assertObjectNotHasAttribute('raw_password', $payload);
+        $this->assertObjectNotHasAttribute('password', $payload);
     }
 
     public function testFailingCaptcha(): void

@@ -9,7 +9,6 @@ use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Psr\Log\LoggerInterface;
 use ReCaptcha\ReCaptcha;
-use Slim\App;
 use Slim\CallableResolver;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Response;
@@ -23,8 +22,12 @@ class RecaptchaMiddlewareTest extends TestCase
 
     public function testFailure(): void
     {
+        $serializer = $this->getAppInstance()->getContainer()->get(SerializerInterface::class);
+
         $personObject = $this->getTestPerson();
-        $person = $personObject->jsonSerialize();
+
+        $personSerialised = $serializer->serialize($personObject, 'json');
+        $person = json_decode($personSerialised, true, 512, JSON_THROW_ON_ERROR);
         $person['captcha_code'] = 'bad response';
         $body = json_encode($person);
 
@@ -43,8 +46,12 @@ class RecaptchaMiddlewareTest extends TestCase
 
     public function testSuccess(): void
     {
+        $serializer = $this->getAppInstance()->getContainer()->get(SerializerInterface::class);
+
         $personObject = $this->getTestPerson();
-        $person = $personObject->jsonSerialize();
+
+        $personSerialised = $serializer->serialize($personObject, 'json');
+        $person = json_decode($personSerialised, true, 512, JSON_THROW_ON_ERROR);
         $person['captcha_code'] = 'good response';
         $body = json_encode($person);
 

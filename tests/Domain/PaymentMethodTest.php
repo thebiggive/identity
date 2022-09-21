@@ -7,26 +7,24 @@ namespace BigGive\Identity\Tests\Domain;
 use BigGive\Identity\Domain\PaymentMethod;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Tests\TestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\UuidInterface;
+use BigGive\Identity\Tests\TestPeopleTrait;
+use Symfony\Component\Uid\Uuid;
 
 class PaymentMethodTest extends TestCase
 {
-    private UuidInterface $personId;
+    use TestPeopleTrait;
+
     private PaymentMethod $paymentMethod;
 
     public function setUp(): void
     {
-        $em = $this->getAppInstance()->getContainer()->get(EntityManagerInterface::class);
-
         $person = new Person();
-        $this->personId = $person->id = (new UuidGenerator())->generateId($em, $person);
+        $person->setId(Uuid::fromString(static::$testPersonUuid));
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
 
         $this->paymentMethod = new PaymentMethod();
-        $this->paymentMethod->id = (new UuidGenerator())->generateId($em, $this->paymentMethod);
+        $this->paymentMethod->id = Uuid::v4();
         $this->paymentMethod->setPerson($person);
         $this->paymentMethod->token = 'pm_test123';
         $this->paymentMethod->billing_first_address_line = '1 Main St';
@@ -36,7 +34,7 @@ class PaymentMethodTest extends TestCase
 
     public function testGetters(): void
     {
-        $this->assertEquals($this->personId, $this->paymentMethod->getPerson()->getId());
+        $this->assertEquals(static::$testPersonUuid, $this->paymentMethod->getPerson()->getId());
     }
 
     public function testJsonSerialize(): void
@@ -44,7 +42,7 @@ class PaymentMethodTest extends TestCase
         $jsonArray = $this->paymentMethod->jsonSerialize();
 
         $this->assertEquals('stripe', $jsonArray['psp']);
-        $this->assertEquals($this->personId, $jsonArray['person_id']);
+        $this->assertEquals(static::$testPersonUuid, $jsonArray['person_id']);
         $this->assertEquals('pm_test123', $jsonArray['token']);
         $this->assertEquals('1 Main St', $jsonArray['billing_first_address_line']);
         $this->assertEquals('X1 1YZ', $jsonArray['billing_postcode']);

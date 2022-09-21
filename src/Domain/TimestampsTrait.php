@@ -30,8 +30,9 @@ trait TimestampsTrait
      */
     public function createdNow(): void
     {
-        $this->created_at = new \DateTime('now');
-        $this->updated_at = new \DateTime('now');
+        $now = new \DateTime('now');
+        $this->created_at = $now;
+        $this->updated_at = $now;
     }
 
     /**

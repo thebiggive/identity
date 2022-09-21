@@ -122,7 +122,7 @@ class Login extends Action
         Password::verify($credentials->raw_password, $person);
 
         return new JsonResponse([
-            'jwt' => Token::create($person->getId()->toString(), true),
+            'jwt' => Token::create((string) $person->getId(), true, $person->stripe_customer_id),
         ]);
     }
 }

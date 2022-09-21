@@ -7,7 +7,7 @@ namespace BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
-use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
@@ -15,6 +15,8 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Stripe\StripeClient;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
@@ -22,6 +24,16 @@ use TypeError;
 /**
  * @OA\Put(
  *     path="/v1/people/{personId}",
+ *     @OA\PathParameter(
+ *         name="personId",
+ *         description="UUID of the person to update",
+ *         @OA\Schema(
+ *             type="string",
+ *             format="uuid",
+ *             example="f7095caf-7180-4ddf-a212-44bacde69066",
+ *             pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+ *         ),
+ *     ),
  *     summary="Update a Person, e.g. to set a password",
  *     operationId="person_update",
  *     security={
@@ -54,6 +66,7 @@ use TypeError;
  *         description="JWT token verification failed",
  *     ),
  * ),
+ * @see Person
  */
 class Update extends Action
 {
@@ -84,7 +97,15 @@ class Update extends Action
             $person = $this->serializer->deserialize(
                 $body = ((string) $this->request->getBody()),
                 Person::class,
-                'json'
+                'json',
+                [
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => [
+                        ...Person::NON_SERIALISED_FOR_UPDATE_ATTRIBUTES,
+                        ...Person::NON_SERIALISED_ATTRIBUTES,
+                    ],
+                    AbstractNormalizer::OBJECT_TO_POPULATE => $person,
+                    UidNormalizer::NORMALIZATION_FORMAT_CANONICAL => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
+                ],
             );
         } catch (UnexpectedValueException | TypeError $exception) {
             // UnexpectedValueException is the Serializer one, not the global one
@@ -144,6 +165,16 @@ class Update extends Action
 
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
-        return new JsonResponse($person->jsonSerialize());
+        return new TextResponse(
+            $this->serializer->serialize(
+                $person,
+                'json',
+                [
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => Person::NON_SERIALISED_ATTRIBUTES,
+                ],
+            ),
+            200,
+            ['content-type' => 'application/json']
+        );
     }
 }
