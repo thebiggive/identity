@@ -57,6 +57,26 @@ class GetTest extends TestCase
         $this->assertObjectNotHasAttribute('password', $payload);
     }
 
+    public function testIncompleteAuthToken(): void
+    {
+        $this->expectException(HttpUnauthorizedException::class);
+        $this->expectExceptionMessage('Unauthorised');
+
+        $app = $this->getAppInstance();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->find(static::$testPersonUuid)
+            ->shouldNotBeCalled();
+        $personRepoProphecy->persist(Argument::type(Person::class))
+            ->shouldNotBeCalled();
+
+        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+
+        $request = $this->buildRequestRaw(static::$testPersonUuid)
+            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
+        $app->handle($request);
+    }
+
     public function testMissingAuthToken(): void
     {
         $this->expectException(HttpUnauthorizedException::class);
@@ -80,7 +100,7 @@ class GetTest extends TestCase
     private function buildRequest(string $personId): ServerRequestInterface
     {
         return $this->buildRequestRaw($personId)
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
+            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'));
     }
 
     private function buildRequestRaw(string $personId): ServerRequestInterface

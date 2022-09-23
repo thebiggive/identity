@@ -6,7 +6,8 @@ use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Status;
 use BigGive\Identity\Application\Middleware\CredentialsRecaptchaMiddleware;
-use BigGive\Identity\Application\Middleware\PersonManagementAuthMiddleware;
+use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
+use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
@@ -34,11 +35,11 @@ return function (App $app) {
             ->add($ipMiddleware)
             ->add(RateLimitMiddleware::class);
 
-        $versionGroup->group('/people/{personId:[a-z0-9-]{36}}', function (Group $group) {
-            $group->get('', Person\Get::class);
-            $group->put('', Person\Update::class);
-        })
-            ->add(PersonManagementAuthMiddleware::class);
+        $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
+            ->add(PersonPatchAuthMiddleware::class);
+
+        $versionGroup->get('/people/{personId:[a-z0-9-]{36}}', Person\Get::class)
+            ->add(PersonGetAuthMiddleware::class);
 
         $versionGroup->post('/auth', Login::class)
             ->add(CredentialsRecaptchaMiddleware::class) // Runs last
