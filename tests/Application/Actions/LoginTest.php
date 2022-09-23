@@ -60,9 +60,6 @@ class LoginTest extends TestCase
 
     public function testNoUserFound(): void
     {
-        $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage(Password::BAD_LOGIN_MESSAGE);
-
         $person = $this->getTestPerson();
 
         $app = $this->getAppInstance();
@@ -80,14 +77,24 @@ class LoginTest extends TestCase
             'raw_password' => 'notThisOne',
         ]);
 
-        $app->handle($request);
+        $response = $app->handle($request);
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        $expectedJSON = json_encode([
+            'error' => [
+                'description' => 'Invalid credentials',
+                'type' => 'VALIDATION_ERROR',
+            ],
+            'statusCode' => 401,
+        ], JSON_THROW_ON_ERROR);
+        $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
 
     public function testIncorrectPassword(): void
     {
-        $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage(Password::BAD_LOGIN_MESSAGE);
-
         $person = $this->getTestPerson();
 
         $app = $this->getAppInstance();
@@ -110,7 +117,20 @@ class LoginTest extends TestCase
             'raw_password' => 'notThisOne',
         ]);
 
-        $app->handle($request);
+        $response = $app->handle($request);
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        $expectedJSON = json_encode([
+            'error' => [
+                'description' => 'Invalid credentials',
+                'type' => 'VALIDATION_ERROR',
+            ],
+            'statusCode' => 401,
+        ], JSON_THROW_ON_ERROR);
+        $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
 
     public function testFailingCaptcha(): void
