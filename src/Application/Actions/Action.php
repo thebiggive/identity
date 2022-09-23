@@ -117,7 +117,7 @@ abstract class Action
         }
         $error = new ActionError(
             $httpCode === 401 ? ActionError::VALIDATION_ERROR : ActionError::BAD_REQUEST,
-                $publicMessage ?? $logMessage,
+            $publicMessage ?? $logMessage,
         );
 
         return $this->respond(new ActionPayload($httpCode, null, $error));
