@@ -11,6 +11,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\HttpUnauthorizedException;
 
 class LoginTest extends TestCase
 {
@@ -38,8 +39,9 @@ class LoginTest extends TestCase
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
-            'raw_password' => $person->raw_password,
+            'captcha_code' => 'good response',
             'email_address' => $person->email_address,
+            'raw_password' => $person->raw_password,
         ]);
 
         $response = $app->handle($request);
@@ -51,6 +53,9 @@ class LoginTest extends TestCase
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsString($payload->jwt);
+        $this->assertIsString($payload->id);
+        $this->assertNotEmpty($payload->jwt);
+        $this->assertNotEmpty($payload->id);
     }
 
     public function testNoUserFound(): void
@@ -70,8 +75,9 @@ class LoginTest extends TestCase
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
-            'raw_password' => 'notThisOne',
+            'captcha_code' => 'good response',
             'email_address' => $person->email_address,
+            'raw_password' => 'notThisOne',
         ]);
 
         $app->handle($request);
@@ -99,8 +105,37 @@ class LoginTest extends TestCase
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
-            'raw_password' => 'notThisOne',
+            'captcha_code' => 'good response',
             'email_address' => $person->email_address,
+            'raw_password' => 'notThisOne',
+        ]);
+
+        $app->handle($request);
+    }
+
+    public function testFailingCaptcha(): void
+    {
+        $this->expectException(HttpUnauthorizedException::class);
+        $this->expectExceptionMessage('Unauthorised');
+
+        $person = $this->getTestPerson();
+
+        $app = $this->getAppInstance();
+
+        $personWithHashNotMatchingRawPassword = $this->prophesize(Person::class);
+        $personWithHashNotMatchingRawPassword->getPasswordHash()
+            ->shouldNotBeCalled();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->findPersonByEmailAddress($person->email_address)
+            ->shouldNotBeCalled();
+
+        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+
+        $request = $this->buildRequest([
+            'captcha_code' => 'bad response',
+            'email_address' => $person->email_address,
+            'raw_password' => 'notThisOne',
         ]);
 
         $app->handle($request);
