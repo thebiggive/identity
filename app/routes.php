@@ -34,7 +34,10 @@ return function (App $app) {
             ->add($ipMiddleware)
             ->add(RateLimitMiddleware::class);
 
-        $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
+        $versionGroup->group('/people/{personId:[a-z0-9-]{36}}', function (Group $group) {
+            $group->get('', Person\Get::class);
+            $group->put('', Person\Update::class);
+        })
             ->add(PersonManagementAuthMiddleware::class);
 
         $versionGroup->post('/auth', Login::class)
