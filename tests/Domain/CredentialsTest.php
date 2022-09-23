@@ -12,10 +12,12 @@ class CredentialsTest extends TestCase
     public function testBuildAndJsonSerialize(): void
     {
         $credentials = new Credentials();
+        $credentials->captcha_code = 'model-only test code';
         $credentials->email_address = 'noel@example.com';
         $credentials->raw_password = 'mySecurePassword123';
 
         $expected = json_encode([
+            'captcha_code' => 'model-only test code',
             'email_address' => 'noel@example.com',
             'raw_password' => 'mySecurePassword123',
         ], JSON_THROW_ON_ERROR);

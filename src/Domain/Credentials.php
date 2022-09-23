@@ -18,6 +18,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Credentials implements JsonSerializable
 {
     /**
+     * @OA\Property(
+     *  description="One-time code for a solved captcha; required for login",
+     *  type="string",
+     *  example="some-token-123",
+     * )
+     */
+    public ?string $captcha_code = null;
+
+    /**
      * @Assert\NotBlank()
      * @OA\Property(
      *  property="email_address",

@@ -121,8 +121,11 @@ class Login extends Action
         // Throws on bad password.
         Password::verify($credentials->raw_password, $person);
 
+        $id = (string) $person->getId();
+
         return new JsonResponse([
-            'jwt' => Token::create((string) $person->getId(), true, $person->stripe_customer_id),
+            'id' => $id,
+            'jwt' => Token::create($id, true, $person->stripe_customer_id),
         ]);
     }
 }

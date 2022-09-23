@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Middleware;
 
-use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Psr\Log\LoggerInterface;
@@ -16,7 +16,7 @@ use Slim\Routing\Route;
 use Slim\Exception\HttpUnauthorizedException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class RecaptchaMiddlewareTest extends TestCase
+class PersonRecaptchaMiddlewareTest extends TestCase
 {
     use TestPeopleTrait;
 
@@ -39,7 +39,7 @@ class RecaptchaMiddlewareTest extends TestCase
 
         // Because the 401 ends the request, we can dispatch this against realistic, full app
         // middleware and test this piece of middleware in the process.
-        $response = $this->getAppInstance()
+        $this->getAppInstance()
             ->getMiddlewareDispatcher()
             ->handle($request);
     }
@@ -68,7 +68,7 @@ class RecaptchaMiddlewareTest extends TestCase
         // outside the middleware, since that would mean creating a Person and so mocking DB bits
         // etc. So unlike for failure, we create an isolated middleware object to invoke.
 
-        $middleware = new RecaptchaMiddleware(
+        $middleware = new PersonRecaptchaMiddleware(
             $container->get(LoggerInterface::class), // null logger already set up
             $container->get(ReCaptcha::class), // already mocked with success simulation
             $container->get(SerializerInterface::class),
