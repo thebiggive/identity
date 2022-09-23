@@ -38,4 +38,16 @@ class ActionError implements JsonSerializable
 
         return $payload;
     }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function setDescription(?string $description = null): self
+    {
+        $this->description = $description;
+        return $this;
+    }
 }
