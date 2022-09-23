@@ -36,7 +36,8 @@ use Symfony\Component\Serializer\SerializerInterface;
  *     },
  *     @OA\Response(
  *         response=200,
- *         @OA\JsonContent(ref="#/components/schemas/Person"),
+ *         description="Person found",
+ *         @OA\JsonContent(ref="#/components/schemas/Person")
  *     ),
  *     @OA\Response(
  *         response=401,
