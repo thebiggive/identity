@@ -185,6 +185,11 @@ class Person
         return $this->last_name;
     }
 
+    public function getEmailAddress(): string
+    {
+        return $this->email_address;
+    }
+
     public function hashPassword(): void
     {
         if (!empty($this->raw_password)) {
@@ -200,6 +205,21 @@ class Person
     public function setStripeCustomerId(?string $stripe_customer_id): void
     {
         $this->stripe_customer_id = $stripe_customer_id;
+    }
+
+    public function toMailerPayload(): array
+    {
+        $data = [
+            'templateKey' => 'donor-registered',
+            'recipientEmailAddress' => $this->getEmailAddress(),
+            'forGlobalCampaign' => false,
+            'params' => [
+                'donorFirstName' => $this->getFirstName(),
+                'donorEmail' => $this->getEmailAddress(),
+            ],
+        ];
+
+        return $data;
     }
 
     /**

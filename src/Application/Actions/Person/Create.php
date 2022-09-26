@@ -6,6 +6,8 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Client\BadRequestException;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
@@ -59,6 +61,7 @@ class Create extends Action
 {
     public function __construct(
         LoggerInterface $logger,
+        private readonly Mailer $mailerClient,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
         private readonly StripeClient $stripeClient,
@@ -70,6 +73,7 @@ class Create extends Action
     /**
      * @return Response
      * @throws HttpBadRequestException
+     * @throws BadRequestException
      */
     protected function action(): Response
     {
@@ -134,6 +138,14 @@ class Create extends Action
 
         $token = Token::create((string) $person->getId(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);
+
+        // After completely persisting Person, send them a registration success email
+        $requestBody = $person->toMailerPayload();
+        $sendSuccessful = $this->mailerClient->sendEmail($requestBody);
+
+        if (!$sendSuccessful) {
+            throw new BadRequestException('Failed to send registration success email to newly registered donor.');
+        }
 
         return new TextResponse(
             $this->serializer->serialize(
