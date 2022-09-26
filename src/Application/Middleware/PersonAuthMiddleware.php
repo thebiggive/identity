@@ -13,9 +13,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Routing\RouteContext;
 
-class PersonManagementAuthMiddleware implements MiddlewareInterface
+abstract class PersonAuthMiddleware implements MiddlewareInterface
 {
     use ErrorTrait;
+
+    abstract protected function getCompletePropertyRequirement(): bool;
 
     #[Pure]
     public function __construct(
@@ -40,9 +42,8 @@ class PersonManagementAuthMiddleware implements MiddlewareInterface
             $this->unauthorised($this->logger, true, $request);
         }
 
-        // This is used just for setting personal info + password for now. We require the token to have
-        // been issued for managing a *not* complete Person record.
-        if (!Token::check($personId, false, $jws, $this->logger)) {
+
+        if (!Token::check($personId, $this->getCompletePropertyRequirement(), $jws, $this->logger)) {
             $this->unauthorised($this->logger, false, $request);
         }
 
