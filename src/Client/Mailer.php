@@ -33,7 +33,20 @@ class Mailer
                 ]
             );
 
-            return $response->getStatusCode() == 200;
+            if ($response->getStatusCode() === 200) {
+                return true;
+            }
+
+            else {
+                $this->logger->warning(sprintf(
+                    '%s email callout didn\'t return 200. It returned code: %s. Request body: %s. Response body: %s.',
+                    $requestBody['templateKey'],
+                    $response->getStatusCode(),
+                    json_encode($requestBody),
+                    $response->getBody(),
+                ));
+                return false;
+            }
         } catch (GuzzleException | RequestException $ex) {
             $this->logger->error(sprintf(
                 'Donor registration email exception %s with error code %s: %s. Body: %s',
