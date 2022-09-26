@@ -75,6 +75,29 @@ Once the app is more complete, we will copy/paste and publish generated docs to 
 [live home on SwaggerHub](https://app.swaggerhub.com/apis/Noel/TBG-Identity/)
 after any changes.
 
+### Typical registration flow
+
+So that new donors may have even their first, pre-registration donation associated with a
+Stripe Customer, it's necessary for us to know a Stripe Customer ID as soon as we want a
+Payment Intent. Because we take donation amount first, this means the Customer is essentially
+anonymous on creation.
+
+This means that registration when the donor decides to set a password typically has 3 calls:
+
+1. [Person\Create](./src/Application/Actions/Person/Create.php) (precedes all initiated donations)
+2. [Person\Update](./src/Application/Actions/Person/Update.php) with no password (alongside all completed donations)
+3. [Person\Update](./src/Application/Actions/Person/Update.php) with a password (when the donor sets one after donating)
+
+## JWT types
+
+Tokens can currently be issued with the following subject (`"sub"`) claims:
+
+1. Some `"person_id"` and `"complete" false`: short-term (1 day) token permitting only updating a person's core details. Issued upon creation of a placeholder Person
+  and permits setting identifying information and a password for them.
+2. *Some `"person_id"` and `"complete" true`:* – 8-day token issued upon password authentication, allowing read + write access to everything for a
+ complete Person record including saved payment methods. (This doesn't include full card numbers or data
+ that would allow card use outside Big Give.)
+
 ## Service dependencies
 
 It's expected that the a MySQL database will be a dependency. In live environments, MatchBot's RDS

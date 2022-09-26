@@ -25,7 +25,13 @@ class Password
      */
     public static function verify(string $rawPassword, Person $person): void
     {
-        if (!password_verify($rawPassword, $person->getPasswordHash())) {
+        $hash = $person->getPasswordHash();
+
+        if ($hash === null) {
+            throw new AuthenticationException(static::BAD_LOGIN_MESSAGE);
+        }
+
+        if (!password_verify($rawPassword, $hash)) {
             throw new AuthenticationException(static::BAD_LOGIN_MESSAGE);
         }
     }

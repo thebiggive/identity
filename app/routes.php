@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-use BigGive\Identity\Application\Actions\CreatePerson;
 use BigGive\Identity\Application\Actions\Login;
+use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Status;
-use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\CredentialsRecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
+use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
+use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -27,21 +30,20 @@ return function (App $app) {
             ? new ClientIp()
             : (new ClientIp())->proxy([], ['X-Forwarded-For']);
 
-        $versionGroup->post('/people', CreatePerson::class)
-            ->add(RecaptchaMiddleware::class) // Runs last
+        $versionGroup->post('/people', Person\Create::class)
+            ->add(PersonRecaptchaMiddleware::class) // Runs last
             ->add($ipMiddleware)
             ->add(RateLimitMiddleware::class);
 
-        $versionGroup->post('/auth', Login::class);
+        $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
+            ->add(PersonPatchAuthMiddleware::class);
 
-//    $app->group('/people', function (Group $peopleGroup) {
-//        $peopleGroup->get('/{id}', GetPersonAction::class);
-//
-//        $peopleGroup->group('/payment_methods', function (Group $paymentMethodsGroup) {
-//            $paymentMethodsGroup->post('', CreatePaymentMethod::class);
-//            $paymentMethodsGroup->post('/{id}', DeletePaymentMethod::class);
-//        });
-//    })
-//        ->add(IdentityAuthMiddleware::class);
+        $versionGroup->get('/people/{personId:[a-z0-9-]{36}}', Person\Get::class)
+            ->add(PersonGetAuthMiddleware::class);
+
+        $versionGroup->post('/auth', Login::class)
+            ->add(CredentialsRecaptchaMiddleware::class) // Runs last
+            ->add($ipMiddleware)
+            ->add(RateLimitMiddleware::class);
     });
 };

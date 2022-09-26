@@ -16,7 +16,7 @@ use ReCaptcha\ReCaptcha;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class RecaptchaMiddleware implements MiddlewareInterface
+abstract class RecaptchaMiddleware implements MiddlewareInterface
 {
     use ErrorTrait;
 
@@ -24,7 +24,7 @@ class RecaptchaMiddleware implements MiddlewareInterface
     public function __construct(
         private LoggerInterface $logger,
         private ReCaptcha $captcha,
-        private SerializerInterface $serializer,
+        protected SerializerInterface $serializer,
     ) {
     }
 
@@ -36,23 +36,7 @@ class RecaptchaMiddleware implements MiddlewareInterface
         $timesToAttemptCaptchaVerification = 2;
 
         for ($counter = 0; $counter < $timesToAttemptCaptchaVerification; $counter++) {
-            $captchaCode = '';
-
-            $body = (string) $request->getBody();
-
-            /** @var Person $person */
-            try {
-                $person = $this->serializer->deserialize(
-                    $body,
-                    Person::class,
-                    'json'
-                );
-                $captchaCode = $person->captcha_code ?? '';
-            } catch (UnexpectedValueException $exception) { // This is the Serializer one, not the global one
-                // No-op. Allow verification with blank string to occur. This will fail with the live
-                // service, but can be mocked with success in unit tests so we can test handling of other
-                // code that might need to handle deserialise errors.
-            }
+            $captchaCode = $this->getCode($request);
 
             $result = $this->captcha->verify(
                 $captchaCode,
@@ -87,4 +71,6 @@ class RecaptchaMiddleware implements MiddlewareInterface
 
         return $handler->handle($request);
     }
+
+    abstract protected function getCode(ServerRequestInterface $request): string;
 }

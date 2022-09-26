@@ -14,12 +14,19 @@ use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Validator\ConstraintViolation;
 
 /**
- * @OA\Info(title="Big Give Identity service", version="0.0.2"),
+ * @OA\Info(title="Big Give Identity service", version="0.0.4"),
  * @OA\Server(
  *     description="Staging",
  *     url="https://identity-staging.thebiggivetest.org.uk",
  * ),
- * @todo Document app-wide JWT auth in a `SecurityScheme` annotation.
+ * @OA\SecurityScheme(
+ *     securityScheme="personJWT",
+ *     type="apiKey",
+ *     in="header",
+ *     name="x-tbg-auth",
+ * ),
+ *
+ * Swagger Hub doesn't (yet?) support `"bearerFormat": "JWT"`.
  */
 abstract class Action
 {
@@ -55,14 +62,6 @@ abstract class Action
      * @throws HttpBadRequestException
      */
     abstract protected function action(): Response;
-
-    /**
-     * @return array|object
-     */
-    protected function getFormData()
-    {
-        return $this->request->getParsedBody();
-    }
 
     /**
      * @return mixed
@@ -102,21 +101,26 @@ abstract class Action
      * @param string|null   $publicMessage  Falls back to $logMessage if null.
      * @param bool          $reduceSeverity Whether to log this error only at INFO level. Used to
      *                                      avoid noise from known issues.
-     * @return Response with 400 HTTP response code.
+     * @param int|null      $httpCode       Falls back to 400 if null.
+     * @return Response with 400 (or custom) HTTP response code.
      */
     protected function validationError(
         string $logMessage,
         ?string $publicMessage = null,
         bool $reduceSeverity = false,
+        ?int $httpCode = 400,
     ): Response {
         if ($reduceSeverity) {
             $this->logger->info($logMessage);
         } else {
             $this->logger->warning($logMessage);
         }
-        $error = new ActionError(ActionError::BAD_REQUEST, $publicMessage ?? $logMessage);
+        $error = new ActionError(
+            $httpCode === 401 ? ActionError::VALIDATION_ERROR : ActionError::BAD_REQUEST,
+            $publicMessage ?? $logMessage,
+        );
 
-        return $this->respond(new ActionPayload(400, null, $error));
+        return $this->respond(new ActionPayload($httpCode, null, $error));
     }
 
     protected function summariseConstraintViolation(ConstraintViolation $violation): string

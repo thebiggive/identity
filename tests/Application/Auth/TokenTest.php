@@ -12,29 +12,36 @@ class TokenTest extends TestCase
 {
     public function testCreateReturnsValidLookingToken(): void
     {
-        $token = Token::create('somePersonId');
+        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertMatchesRegularExpression('/^[^.]+\.[^.]+\.[^.]+$/', $token);
     }
 
     public function testCheckPassesWhenAllValid(): void
     {
-        $token = Token::create('somePersonId');
+        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
-        $this->assertTrue(Token::check('somePersonId', $token, new NullLogger()));
+        $this->assertTrue(Token::check('somePersonId', true, $token, new NullLogger()));
     }
 
     public function testCheckFailsWhenWrongPersonId(): void
     {
-        $token = Token::create('somePersonId');
+        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
-        $this->assertFalse(Token::check('someOtherPersonId', $token, new NullLogger()));
+        $this->assertFalse(Token::check('someOtherPersonId', true, $token, new NullLogger()));
     }
 
     public function testCheckFailsWhenSignatureGarbled(): void
     {
-        $token = Token::create('somePersonId');
+        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
-        $this->assertFalse(Token::check('somePersonId', $token . 'X', new NullLogger()));
+        $this->assertFalse(Token::check('somePersonId', true, $token . 'X', new NullLogger()));
+    }
+
+    public function testCheckFailsWithWrongCompletenessFlag(): void
+    {
+        $token = Token::create('somePersonId', false, 'cus_aaaaaaaaaaaa11');
+
+        $this->assertFalse(Token::check('somePersonId', true, $token, new NullLogger()));
     }
 }

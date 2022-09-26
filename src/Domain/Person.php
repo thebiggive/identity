@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use BigGive\Identity\Application\Security\Password;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
 use OpenApi\Annotations as OA;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -19,27 +16,37 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table
  * @OA\Schema(
- *  required={"first_name", "last_name", "email_address"},
+ *  description="Person – initially anonymous. To be login-ready, first_name,
+ *  last_name, email_address and password are required.",
  * )
  * @see Credentials
  */
-class Person implements JsonSerializable
+class Person
 {
     use TimestampsTrait;
 
     public const MIN_PASSWORD_LENGTH = 10;
 
+    public const NON_SERIALISED_FOR_UPDATE_ATTRIBUTES = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
+
     /**
-     * @ORM\OneToMany(targetEntity="PaymentMethod", mappedBy="person", fetch="EAGER")
-     * @var Collection|PaymentMethod[]
+     * Keeping this placeholder for now (used in 3 places) for convenience if we do decide to
+     * exclude public properties, though this is less certain now we're using the Symfony serializer
+     * more appropriately. Keep until we pick up ID-19 and either populate or delete use at that point.
+     * @var string[]
      */
-    public Collection | array $payment_methods = [];
+    public const NON_SERIALISED_ATTRIBUTES = [
+    ];
 
     /**
      * @ORM\Id
-     * @ORM\Column(type="uuid_binary_ordered_time", unique=true)
+     * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
+     * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
      * @OA\Property(
      *  property="id",
      *  format="uuid",
@@ -47,11 +54,11 @@ class Person implements JsonSerializable
      *  pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
      * )
      */
-    public ?UuidInterface $id = null;
+    private ?Uuid $id = null;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="first_name",
      *  description="The person's first name",
@@ -59,11 +66,11 @@ class Person implements JsonSerializable
      * )
      * @var string The person's first name.
      */
-    public string $first_name;
+    public ?string $first_name = null;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="last_name",
      *  description="The person's surname",
@@ -71,11 +78,11 @@ class Person implements JsonSerializable
      * )
      * @var string The person's last name / surname.
      */
-    public string $last_name;
+    public ?string $last_name = null;
 
     /**
-     * @ORM\Column(type="string", unique=true)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="email_address",
      *  format="email",
@@ -83,9 +90,46 @@ class Person implements JsonSerializable
      * )
      * @var string The email address of the person. Email address must be unique.
      */
-    public string $email_address;
+    public ?string $email_address = null;
 
-    private string $password;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
+     * @var string|null From residential address, if donor is claiming Gift Aid.
+     */
+    public ?string $home_address_line_1 = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
+     * @var string|null From residential address, if donor is claiming Gift Aid and is GB-resident.
+     */
+    public ?string $home_postcode = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
+     * @var string|null From residential address, if donor is claiming Gift Aid. Can be 'GB' or 'OVERSEAS',
+     *                  or null if not applicable. Consuming code should assume that additional ISO 3166-1
+     *                  alpha-2 country codes could be set in the future.
+     */
+    public ?string $home_country_code = null;
+
+    /**
+     * JSON Web Token that lets somebody set a password to make the account reusable.
+     */
+    public ?string $completion_jwt = null;
+
+    /**
+     * @OA\Property()
+     */
+    public bool $has_password = false;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string|null Hashed password, if a password has been set.
+     */
+    private ?string $password = null;
 
     /**
      * @OA\Property(
@@ -111,19 +155,22 @@ class Person implements JsonSerializable
      */
     public ?string $raw_password = null;
 
-    private ?string $stripe_customer_id = null;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @OA\Property()
+     */
+    public ?string $stripe_customer_id = null;
 
     public function __construct()
     {
-        $this->payment_methods = new ArrayCollection();
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function setId(?UuidInterface $id): void
+    public function setId(?Uuid $id): void
     {
         $this->id = $id;
     }
@@ -138,50 +185,28 @@ class Person implements JsonSerializable
         return $this->last_name;
     }
 
-    public function getEmailAddress(): string
-    {
-        return $this->email_address;
-    }
-
     public function hashPassword(): void
     {
-        $this->password = Password::hash($this->raw_password);
+        if (!empty($this->raw_password)) {
+            $this->password = Password::hash($this->raw_password);
+        }
     }
 
-    public function getPasswordHash(): string
+    public function getPasswordHash(): ?string
     {
         return $this->password;
     }
 
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize(): array
+    public function setStripeCustomerId(?string $stripe_customer_id): void
     {
-        $jsonVars = get_object_vars($this);
-        $jsonVars['uuid'] = $this->getId()?->toString();
-        return $jsonVars;
-    }
-
-    public function toMailerPayload(): array
-    {
-        $data = [
-            'templateKey' => 'donor-registered',
-            'recipientEmailAddress' => $this->getEmailAddress(),
-            'forGlobalCampaign' => false,
-            'params' => [
-                'donorFirstName' => $this->getFirstName(),
-                'donorEmail' => $this->getEmailAddress(),
-            ],
-        ];
-
-        return $data;
+        $this->stripe_customer_id = $stripe_customer_id;
     }
 
     /**
-     * @Assert\Callback()
+     * @Assert\Callback(groups={"new"})
      * @see Person::$captcha_code
-     * @see Person::$raw_password
      */
-    public function validateCaptchaAndRawPasswordSetIfNew(ExecutionContextInterface $context): void
+    public function validateCaptchaExistsIfNew(ExecutionContextInterface $context): void
     {
         // Brand new entity + no captcha solved.
         if (empty($this->id) && empty($this->captcha_code)) {
@@ -189,19 +214,30 @@ class Person implements JsonSerializable
                 ->atPath('captcha_code')
                 ->addViolation();
         }
+    }
 
-        // Entity brand new or somehow otherwise without a password, and none set.
-        $passwordMissingOrInvalid = (
-            empty($this->password) &&
-            (empty($this->raw_password) || mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH)
+    /**
+     * @Assert\Callback(groups={"complete"})
+     * @see Person::$raw_password
+     */
+    public function validatePasswordIfNotBlank(ExecutionContextInterface $context): void
+    {
+        $passwordUpdatedAndTooShort = (
+            !empty($this->raw_password) &&
+            mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH
         );
-        if ($passwordMissingOrInvalid) {
+        if ($passwordUpdatedAndTooShort) {
             $context->buildViolation(sprintf(
-                'Password of %d or more characters is required to create an account',
+                'Password must be %d or more characters',
                 static::MIN_PASSWORD_LENGTH
             ))
                 ->atPath('raw_password')
                 ->addViolation();
         }
+    }
+
+    public function addCompletionJWT(string $completionJWT): void
+    {
+        $this->completion_jwt = $completionJWT;
     }
 }

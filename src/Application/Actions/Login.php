@@ -115,14 +115,31 @@ class Login extends Action
 
         $person = $this->personRepository->findPersonByEmailAddress($credentials->email_address);
         if (!$person) {
-            throw new AuthenticationException(Password::BAD_LOGIN_MESSAGE);
+            return $this->fail(Password::BAD_LOGIN_MESSAGE);
         }
 
         // Throws on bad password.
-        Password::verify($credentials->raw_password, $person);
+        try {
+            Password::verify($credentials->raw_password, $person);
+        } catch (AuthenticationException $exception) {
+            return $this->fail($exception->getMessage());
+        }
+
+        $id = (string) $person->getId();
 
         return new JsonResponse([
-            'jwt' => Token::create($person->getId()->toString()),
+            'id' => $id,
+            'jwt' => Token::create($id, true, $person->stripe_customer_id),
         ]);
+    }
+
+    private function fail(string $message): Response
+    {
+        return $this->validationError(
+            $message,
+            null,
+            true,
+            401
+        );
     }
 }
