@@ -3,9 +3,7 @@
 namespace BigGive\Identity\Client;
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
-use BigGive\Identity\Domain\Person;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
@@ -13,7 +11,7 @@ use Psr\Log\LoggerInterface;
 class Mailer
 {
     public function __construct(
-        private readonly ClientInterface $client,
+        private readonly Client $client,
         private readonly SettingsInterface $settings,
         private readonly LoggerInterface $logger,
     ) {
