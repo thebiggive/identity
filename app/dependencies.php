@@ -93,7 +93,13 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         Mailer::class => static function (ContainerInterface $c): Mailer {
-            return new Mailer($c->get(SettingsInterface::class));
+            $settings = $c->get(SettingsInterface::class);
+            return new Mailer(
+                $settings,
+                new Client([
+                    'timeout' => $settings->get('apiClient')['global']['timeout'],
+                ]),
+            );
         },
 
         ORM\Configuration::class => static function (ContainerInterface $c): ORM\Configuration {
