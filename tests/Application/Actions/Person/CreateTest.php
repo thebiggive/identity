@@ -173,17 +173,30 @@ class CreateTest extends TestCase
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->persist(Argument::type(Person::class))
-            ->shouldBeCalledOnce()
+            ->shouldBeCalledTimes(2) // Currently once for stable UUID, once w/ Stripe Customer ID.
             ->willReturn($personWithPostPersistData);
 
         $mailerClientProphecy = $this->prophesize(Mailer::class);
         $mailerClientProphecy
             ->sendEmail($personWithPostPersistData->toMailerPayload())
             ->shouldBeCalledOnce()
-            ->willReturn(false);
+            ->willReturn(false); // simulate a failed `sendEmail()` call
+
+        $customerMockResult = (object) [
+            'id' => static::$testPersonStripeCustomerId,
+            'object' => 'customer',
+        ];
+
+        $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
+        $stripeCustomersProphecy->create($this->getStripeCustomerCommonArgs())
+            ->willReturn($customerMockResult)
+            ->shouldBeCalledOnce();
+        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
         $app->getContainer()->set(Mailer::class, $mailerClientProphecy->reveal());
+        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
 
         $this->expectException(BadRequestException::class);
         $this->expectExceptionMessage('Failed to send registration success email to newly registered donor.');

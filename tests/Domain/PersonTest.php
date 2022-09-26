@@ -74,8 +74,6 @@ class PersonTest extends TestCase
      */
     public function testToMailerPayload(): void
     {
-        $em = $this->getAppInstance()->getContainer()->get(EntityManagerInterface::class);
-
         $person = new Person();
         $person->first_name = 'Loraine';
         $person->email_address = 'loraine@hyperdub.net';
