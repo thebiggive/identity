@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
-use BigGive\Identity\Client\BadRequestException;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -13,6 +12,7 @@ use BigGive\Identity\Tests\TestPeopleTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
@@ -198,7 +198,7 @@ class CreateTest extends TestCase
         $app->getContainer()->set(Mailer::class, $mailerClientProphecy->reveal());
         $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
 
-        $this->expectException(BadRequestException::class);
+        $this->expectException(HttpBadRequestException::class);
         $this->expectExceptionMessage('Failed to send registration success email to newly registered donor.');
 
         $request = $this->buildRequest([

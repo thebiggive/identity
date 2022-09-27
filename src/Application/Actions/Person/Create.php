@@ -6,11 +6,11 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Auth\Token;
-use BigGive\Identity\Client\BadRequestException;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
@@ -72,7 +72,6 @@ class Create extends Action
     /**
      * @return Response
      * @throws HttpBadRequestException
-     * @throws BadRequestException
      */
     protected function action(): Response
     {
@@ -143,7 +142,7 @@ class Create extends Action
         $sendSuccessful = $this->mailerClient->sendEmail($requestBody);
 
         if (!$sendSuccessful) {
-            throw new BadRequestException('Failed to send registration success email to newly registered donor.');
+            throw new HttpBadRequestException($this->request, 'Failed to send registration success email to newly registered donor.');
         }
 
         return new TextResponse(
