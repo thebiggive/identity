@@ -17,7 +17,8 @@ class MailerTest extends TestCase
 {
     use TestPeopleTrait;
 
-    public function testSuccessfulSendMail(): void {
+    public function testSuccessfulSendMail(): void
+    {
         $app = $this->getAppInstance();
         $container = $app->getContainer();
         $settings = $container->get(SettingsInterface::class);
@@ -51,7 +52,8 @@ class MailerTest extends TestCase
         $this->assertEquals(true, $sendSuccessful);
     }
 
-    public function testFailedSendMailDueTo400(): void {
+    public function testFailedSendMailDueTo400(): void
+    {
         $app = $this->getAppInstance();
         $container = $app->getContainer();
         $settings = $container->get(SettingsInterface::class);
@@ -73,9 +75,9 @@ class MailerTest extends TestCase
                 'headers' => [
                     'x-send-verify-hash' => '672132c155bca0f63211da07a70304a3c9eba4c57f4f4702bc220aa85ee04ac8',
                 ],
-            ])
-            ->shouldBeCalledOnce()
-            ->willReturn($mockedResponse);
+            ]
+        )->shouldBeCalledOnce()
+        ->willReturn($mockedResponse);
 
         $container->set(Client::class, $clientProphecy->reveal());
 
@@ -98,7 +100,7 @@ class MailerTest extends TestCase
 
         $clientProphecy = $this->prophesize(Client::class);
         $clientProphecy->post(
-        $settings->get('apiClient')['mailer']['baseUri'] . '/v1/send',
+            $settings->get('apiClient')['mailer']['baseUri'] . '/v1/send',
             [
                 'json' => $requestBody,
                 'headers' => [
