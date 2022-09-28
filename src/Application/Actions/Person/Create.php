@@ -142,7 +142,9 @@ class Create extends Action
         $sendSuccessful = $this->mailerClient->sendEmail($requestBody);
 
         if (!$sendSuccessful) {
-            throw new HttpBadRequestException($this->request, 'Failed to send registration success email to newly registered donor.');
+            throw new HttpBadRequestException(
+                $this->request, 'Failed to send registration success email to newly registered donor.'
+            );
         }
 
         return new TextResponse(
