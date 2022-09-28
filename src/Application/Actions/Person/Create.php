@@ -143,7 +143,8 @@ class Create extends Action
 
         if (!$sendSuccessful) {
             throw new HttpBadRequestException(
-                $this->request, 'Failed to send registration success email to newly registered donor.'
+                $this->request,
+                'Failed to send registration success email to newly registered donor.'
             );
         }
 
