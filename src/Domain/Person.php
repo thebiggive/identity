@@ -175,12 +175,12 @@ class Person
         $this->id = $id;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->first_name;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->last_name;
     }

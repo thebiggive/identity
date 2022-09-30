@@ -21,7 +21,9 @@ class UpdateTest extends TestCase
 
     public function testSuccessSettingPassword(): void
     {
-        $person = $this->getTestPerson();
+        // Start without password.
+        $person = $this->getTestPerson(false, false);
+        // Come back from EM with password.
         $personWithPostPersistData = $this->getInitialisedPerson(true);
 
         $app = $this->getAppInstance();
@@ -29,10 +31,13 @@ class UpdateTest extends TestCase
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
-            ->willReturn($personWithPostPersistData);
+            ->willReturn($person);
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn($personWithPostPersistData);
+        $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
 
         // We don't use the returned properties so they're omitted for now, but in reality
         // `name` etc. will be set.
@@ -81,6 +86,55 @@ class UpdateTest extends TestCase
         // These should be unset by `HasPasswordNormalizer`.
         $this->assertObjectNotHasAttribute('raw_password', $payload);
         $this->assertObjectNotHasAttribute('password', $payload);
+    }
+
+    public function testSettingPasswordWithFailedMailerCallout(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Failed to send registration success email');
+
+        // As above.
+        $person = $this->getTestPerson(false, false);
+        $personWithPostPersistData = $this->getInitialisedPerson(true);
+
+        $app = $this->getAppInstance();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->find(static::$testPersonUuid)
+            ->shouldBeCalledOnce()
+            ->willReturn($person);
+        $personRepoProphecy->persist(Argument::type(Person::class))
+            ->shouldBeCalledOnce()
+            ->willReturn($personWithPostPersistData);
+        $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
+            ->shouldBeCalledOnce()
+            ->willReturn(false);
+
+        // We don't use the returned properties so they're omitted for now, but in reality
+        // `name` etc. will be set.
+        $customerMockResult = (object) [
+            'id' => static::$testPersonStripeCustomerId,
+            'object' => 'customer',
+        ];
+        $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
+        $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
+            ->willReturn($customerMockResult)
+            ->shouldBeCalledOnce();
+        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
+
+        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+
+        $request = $this->buildRequest(static::$testPersonUuid, [
+            'first_name' => $person->first_name,
+            'last_name' => $person->last_name,
+            'raw_password' => $person->raw_password,
+            'email_address' => $person->email_address,
+            'captcha_code' => 'good response',
+        ]);
+
+        $app->handle($request);
     }
 
     public function testSuccessSettingOnlyPersonInfo(): void
