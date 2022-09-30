@@ -22,7 +22,7 @@ return function (ContainerBuilder $containerBuilder) {
                         'timeout' => getenv('CLIENT_TIMEOUT'), // in seconds
                     ],
                     'mailer' => [
-                        'baseUri' => getenv('MAILER_BASE_API'),
+                        'baseUri' => getenv('MAILER_BASE_URI'),
                         'sendSecret' => getenv('MAILER_SEND_SECRET'),
                     ],
                 ],

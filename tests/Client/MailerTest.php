@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Client;
 
+use DI\Container;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Psr\Http\Client\RequestExceptionInterface;
 
 class MailerTest extends TestCase
 {
@@ -20,10 +22,9 @@ class MailerTest extends TestCase
     public function testSuccessfulSendMail(): void
     {
         $app = $this->getAppInstance();
+        /** @var Container $container */
         $container = $app->getContainer();
         $settings = $container->get(SettingsInterface::class);
-
-        $mailerClient = $container->get(Mailer::class);
 
         $string = json_encode([
             'status' => 'queued',
@@ -40,13 +41,16 @@ class MailerTest extends TestCase
             [
                 'json' => $requestBody,
                 'headers' => [
-                    'x-send-verify-hash' => '672132c155bca0f63211da07a70304a3c9eba4c57f4f4702bc220aa85ee04ac8',
+                    'x-send-verify-hash' => 'f47f4a3a0b898619d6402620f9b0f521cad714370e188e90b7529a2a9b85ffd5',
                 ],
             ]
         )->shouldBeCalledOnce()
         ->willReturn($mockedResponse);
 
         $container->set(Client::class, $clientProphecy->reveal());
+
+        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
+        $mailerClient = $container->get(Mailer::class);
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
         $this->assertEquals(true, $sendSuccessful);
@@ -58,11 +62,9 @@ class MailerTest extends TestCase
         $container = $app->getContainer();
         $settings = $container->get(SettingsInterface::class);
 
-        $mailerClient = $container->get(Mailer::class);
-
-        $mockedResponse = new Response(400, ['Content-Type' => 'application/json'], [
+        $mockedResponse = new Response(400, ['Content-Type' => 'application/json'], json_encode([
             'status' => 'failed'
-        ]);
+        ]));
 
         $personWithPostPersistData = $this->getInitialisedPerson(false);
         $requestBody = $personWithPostPersistData->toMailerPayload();
@@ -73,13 +75,16 @@ class MailerTest extends TestCase
             [
                 'json' => $requestBody,
                 'headers' => [
-                    'x-send-verify-hash' => '672132c155bca0f63211da07a70304a3c9eba4c57f4f4702bc220aa85ee04ac8',
+                    'x-send-verify-hash' => 'f47f4a3a0b898619d6402620f9b0f521cad714370e188e90b7529a2a9b85ffd5',
                 ],
             ]
         )->shouldBeCalledOnce()
         ->willReturn($mockedResponse);
 
         $container->set(Client::class, $clientProphecy->reveal());
+
+        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
+        $mailerClient = $container->get(Mailer::class);
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
@@ -93,8 +98,6 @@ class MailerTest extends TestCase
         $container = $app->getContainer();
         $settings = $container->get(SettingsInterface::class);
 
-        $mailerClient = $container->get(Mailer::class);
-
         $personWithPostPersistData = $this->getInitialisedPerson(false);
         $requestBody = $personWithPostPersistData->toMailerPayload();
 
@@ -104,13 +107,25 @@ class MailerTest extends TestCase
             [
                 'json' => $requestBody,
                 'headers' => [
-                    'x-send-verify-hash' => '672132c155bca0f63211da07a70304a3c9eba4c57f4f4702bc220aa85ee04ac8',
+                    'x-send-verify-hash' => 'f47f4a3a0b898619d6402620f9b0f521cad714370e188e90b7529a2a9b85ffd5',
                 ],
             ]
         )->shouldBeCalledOnce()
-        ->willThrow(GuzzleException::class);
+        ->willThrow(
+            new BadResponseException( // BadResponseException is a type of GuzzleException
+                'Mocked exception thrown',
+                new Request(
+                    'POST',
+                    $settings->get('apiClient')['mailer']['baseUri'] . '/v1/send'
+                ),
+                new Response(404)
+            )
+        );
 
         $container->set(Client::class, $clientProphecy->reveal());
+
+        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
+        $mailerClient = $container->get(Mailer::class);
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
@@ -124,8 +139,6 @@ class MailerTest extends TestCase
         $container = $app->getContainer();
         $settings = $container->get(SettingsInterface::class);
 
-        $mailerClient = $container->get(Mailer::class);
-
         $personWithPostPersistData = $this->getInitialisedPerson(false);
         $requestBody = $personWithPostPersistData->toMailerPayload();
 
@@ -135,13 +148,24 @@ class MailerTest extends TestCase
             [
                 'json' => $requestBody,
                 'headers' => [
-                    'x-send-verify-hash' => '672132c155bca0f63211da07a70304a3c9eba4c57f4f4702bc220aa85ee04ac8',
+                    'x-send-verify-hash' => 'f47f4a3a0b898619d6402620f9b0f521cad714370e188e90b7529a2a9b85ffd5',
                 ],
             ]
         )->shouldBeCalledOnce()
-        ->willThrow(RequestExceptionInterface::class);
+        ->willThrow(
+            new RequestException(
+                'Mocked exception thrown',
+                new Request(
+                    'POST',
+                    $settings->get('apiClient')['mailer']['baseUri'] . '/v1/send'
+                )
+            )
+        );
 
         $container->set(Client::class, $clientProphecy->reveal());
+
+        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
+        $mailerClient = $container->get(Mailer::class);
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
