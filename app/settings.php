@@ -17,6 +17,15 @@ return function (ContainerBuilder $containerBuilder) {
             }
 
             return new Settings([
+                'apiClient' => [
+                    'global' => [
+                        'timeout' => getenv('CLIENT_TIMEOUT'), // in seconds
+                    ],
+                    'mailer' => [
+                        'baseUri' => getenv('MAILER_BASE_URI'),
+                        'sendSecret' => getenv('MAILER_SEND_SECRET'),
+                    ],
+                ],
                 'appEnv' => getenv('APP_ENV'),
                 'displayErrorDetails' => true, // Should be set to false in production
                 'doctrine' => [

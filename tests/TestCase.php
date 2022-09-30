@@ -61,7 +61,7 @@ class TestCase extends PHPUnit_TestCase
 
         // For tests, we need to stub out Redis so that rate limiting middleware doesn't
         // crash trying to actually connect to REDIS_HOST "dummy-redis-hostname". (We also
-        // don't want tests dependending upon *real* Redis.)
+        // don't want tests depending upon *real* Redis.)
         $redisProphecy = $this->prophesize(Redis::class);
         $redisProphecy->isConnected()->willReturn(true);
         $redisProphecy->mget(['identity-test:10d49f663215e991d10df22692f03e89'])->willReturn(null);

@@ -64,4 +64,31 @@ class PersonTest extends TestCase
         $this->assertEquals('James', $jsonData['last_name']);
         $this->assertEquals('loraine@hyperdub.net', $jsonData['email_address']);
     }
+
+    /**
+     * @dataProvider personProvider
+     * @param int    $id
+     * @param string $username
+     * @param string $firstName
+     * @param string $lastName
+     */
+    public function testToMailerPayload(): void
+    {
+        $person = new Person();
+        $person->first_name = 'Loraine';
+        $person->email_address = 'loraine@hyperdub.net';
+        $payload = $person->toMailerPayload();
+
+        $expectedPayload = [
+            'templateKey' => 'donor-registered',
+            'recipientEmailAddress' => 'loraine@hyperdub.net',
+            'forGlobalCampaign' => false,
+            'params' => [
+                'donorFirstName' => 'Loraine',
+                'donorEmail' => 'loraine@hyperdub.net',
+            ],
+        ];
+
+        $this->assertEquals($expectedPayload, $payload);
+    }
 }
