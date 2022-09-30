@@ -185,11 +185,6 @@ class Person
         return $this->last_name;
     }
 
-    public function getEmailAddress(): string
-    {
-        return $this->email_address;
-    }
-
     public function hashPassword(): void
     {
         if (!empty($this->raw_password)) {
@@ -211,11 +206,11 @@ class Person
     {
         $data = [
             'templateKey' => 'donor-registered',
-            'recipientEmailAddress' => $this->getEmailAddress(),
+            'recipientEmailAddress' => $this->email_address,
             'forGlobalCampaign' => false,
             'params' => [
                 'donorFirstName' => $this->getFirstName(),
-                'donorEmail' => $this->getEmailAddress(),
+                'donorEmail' => $this->email_address,
             ],
         ];
 
