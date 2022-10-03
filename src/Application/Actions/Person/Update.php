@@ -82,8 +82,8 @@ class Update extends Action
 
     /**
      * @return Response
-     * @throws HttpBadRequestException
      * @throws HttpNotFoundException
+     * @throws \Exception on email callout errors
      */
     protected function action(): Response
     {
@@ -91,6 +91,9 @@ class Update extends Action
         if (!$person) {
             throw new HttpNotFoundException($this->request, 'Person not found');
         }
+
+        // `has_password` is only set when the Normalizer's run.
+        $personHadPassword = $person->getPasswordHash() !== null;
 
         try {
             /** @var Person $person */
@@ -164,6 +167,13 @@ class Update extends Action
         }
 
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
+
+        if (!$personHadPassword && $person->getPasswordHash() !== null) {
+            // If the person didn't have a password before, but now does, send them a welcome email.
+            if (!$this->personRepository->sendRegisteredEmail($person)) {
+                throw new \Exception('Failed to send registration success email');
+            }
+        }
 
         return new TextResponse(
             $this->serializer->serialize(

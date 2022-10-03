@@ -175,19 +175,14 @@ class Person
         $this->id = $id;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->first_name;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->last_name;
-    }
-
-    public function getEmailAddress(): string
-    {
-        return $this->email_address;
     }
 
     public function hashPassword(): void
@@ -211,11 +206,11 @@ class Person
     {
         $data = [
             'templateKey' => 'donor-registered',
-            'recipientEmailAddress' => $this->getEmailAddress(),
+            'recipientEmailAddress' => $this->email_address,
             'forGlobalCampaign' => false,
             'params' => [
                 'donorFirstName' => $this->getFirstName(),
-                'donorEmail' => $this->getEmailAddress(),
+                'donorEmail' => $this->email_address,
             ],
         ];
 

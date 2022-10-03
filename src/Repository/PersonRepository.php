@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Repository;
 
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 class PersonRepository extends EntityRepository
 {
+    private Mailer $mailerClient;
+
+    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
+    {
+        parent::__construct($em, $class);
+    }
+
     public function findPersonByEmailAddress(string $emailAddress): ?Person
     {
         return $this->findOneBy(['email_address' => $emailAddress]);
@@ -32,5 +42,19 @@ class PersonRepository extends EntityRepository
         $this->getEntityManager()->flush();
 
         return $person;
+    }
+
+    /**
+     * This gets its own method instead so we can use `DefaultRepositoryFactory` to load
+     * the repo and not worry about constructor args.
+     */
+    public function setMailerClient(Mailer $mailerClient): void
+    {
+        $this->mailerClient = $mailerClient;
+    }
+
+    public function sendRegisteredEmail(Person $person): bool
+    {
+        return $this->mailerClient->sendEmail($person->toMailerPayload());
     }
 }
