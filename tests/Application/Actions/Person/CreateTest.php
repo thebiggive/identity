@@ -103,6 +103,9 @@ class CreateTest extends TestCase
 
     public function testMissingCaptcha(): void
     {
+        $this->expectException(HttpUnauthorizedException::class);
+        $this->expectExceptionMessage('Unauthorised');
+
         $person = $this->getTestPerson();
 
         $app = $this->getAppInstance();
@@ -120,20 +123,7 @@ class CreateTest extends TestCase
             'email_address' => $person->email_address,
         ]);
 
-        $response = $app->handle($request);
-        $payloadJSON = (string) $response->getBody();
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJson($payloadJSON);
-
-        $expectedJSON = json_encode([
-            'error' => [
-                'description' => 'Validation error: Captcha is required to create an account',
-                'type' => 'BAD_REQUEST',
-            ],
-            'statusCode' => 400,
-        ], JSON_THROW_ON_ERROR);
-        $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
+        $app->handle($request);
     }
 
     public function testBadJSON(): void

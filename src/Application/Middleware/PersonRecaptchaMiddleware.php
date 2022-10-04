@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
 class PersonRecaptchaMiddleware extends RecaptchaMiddleware
 {
-    protected function getCode(ServerRequestInterface $request): string
+    protected function getCode(ServerRequestInterface $request): ?string
     {
         $body = (string) $request->getBody();
 
@@ -23,7 +23,7 @@ class PersonRecaptchaMiddleware extends RecaptchaMiddleware
                 Person::class,
                 'json'
             );
-            $captchaCode = $person->captcha_code ?? '';
+            $captchaCode = $person->captcha_code ?? null;
         } catch (UnexpectedValueException $exception) { // This is the Serializer one, not the global one
             // No-op. Allow verification with blank string to occur. This will fail with the live
             // service, but can be mocked with success in unit tests so we can test handling of other

@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class CredentialsRecaptchaMiddleware extends RecaptchaMiddleware
 {
-    protected function getCode(ServerRequestInterface $request): string
+    protected function getCode(ServerRequestInterface $request): ?string
     {
         $body = (string) $request->getBody();
 
