@@ -17,21 +17,22 @@ trait TimestampsTrait
      * @ORM\Column(type="datetime")
      * @var DateTime
      */
-    protected DateTime $createdAt;
+    public DateTime $created_at;
 
     /**
      * @ORM\Column(type="datetime")
      * @var DateTime
      */
-    protected DateTime $updatedAt;
+    public DateTime $updated_at;
 
     /**
      * @ORM\PrePersist Set created + updated timestamps
      */
     public function createdNow(): void
     {
-        $this->createdAt = new \DateTime('now');
-        $this->updatedAt = new \DateTime('now');
+        $now = new \DateTime('now');
+        $this->created_at = $now;
+        $this->updated_at = $now;
     }
 
     /**
@@ -39,22 +40,6 @@ trait TimestampsTrait
      */
     public function updatedNow(): void
     {
-        $this->updatedAt = new \DateTime('now');
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getCreatedDate(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getUpdatedDate(): DateTime
-    {
-        return $this->updatedAt;
+        $this->updated_at = new \DateTime('now');
     }
 }

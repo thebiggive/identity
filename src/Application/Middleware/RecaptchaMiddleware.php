@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Middleware;
 
-use BigGive\Identity\Application\HttpModels\PersonRegistration;
+use BigGive\Identity\Domain\Person;
 use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,7 +16,7 @@ use ReCaptcha\ReCaptcha;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class RecaptchaMiddleware implements MiddlewareInterface
+abstract class RecaptchaMiddleware implements MiddlewareInterface
 {
     use ErrorTrait;
 
@@ -24,7 +24,7 @@ class RecaptchaMiddleware implements MiddlewareInterface
     public function __construct(
         private LoggerInterface $logger,
         private ReCaptcha $captcha,
-        private SerializerInterface $serializer,
+        protected SerializerInterface $serializer,
     ) {
     }
 
@@ -36,22 +36,11 @@ class RecaptchaMiddleware implements MiddlewareInterface
         $timesToAttemptCaptchaVerification = 2;
 
         for ($counter = 0; $counter < $timesToAttemptCaptchaVerification; $counter++) {
-            $captchaCode = '';
+            $captchaCode = $this->getCode($request);
 
-            $body = (string) $request->getBody();
-
-            /** @var PersonRegistration $person */
-            try {
-                $person = $this->serializer->deserialize(
-                    $body,
-                    PersonRegistration::class,
-                    'json'
-                );
-                $captchaCode = $person->creationRecaptchaCode ?? '';
-            } catch (UnexpectedValueException $exception) { // This is the Serializer one, not the global one
-                // No-op. Allow verification with blank string to occur. This will fail with the live
-                // service, but can be mocked with success in unit tests so we can test handling of other
-                // code that might need to handle deserialise errors.
+            if ($captchaCode === null) {
+                $this->logger->log(LogLevel::WARNING, 'Security: captcha code not sent');
+                $this->unauthorised($this->logger, true, $request);
             }
 
             $result = $this->captcha->verify(
@@ -87,4 +76,6 @@ class RecaptchaMiddleware implements MiddlewareInterface
 
         return $handler->handle($request);
     }
+
+    abstract protected function getCode(ServerRequestInterface $request): ?string;
 }

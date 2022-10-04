@@ -17,10 +17,20 @@ return function (ContainerBuilder $containerBuilder) {
             }
 
             return new Settings([
+                'apiClient' => [
+                    'global' => [
+                        'timeout' => getenv('CLIENT_TIMEOUT'), // in seconds
+                    ],
+                    'mailer' => [
+                        'baseUri' => getenv('MAILER_BASE_URI'),
+                        'sendSecret' => getenv('MAILER_SEND_SECRET'),
+                    ],
+                ],
+                'appEnv' => getenv('APP_ENV'),
                 'displayErrorDetails' => true, // Should be set to false in production
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
-                    'dev_mode' => (getenv('APP_ENV') === 'local'),
+                    'dev_mode' => in_array(getenv('APP_ENV'), ['local', 'test'], true),
 
                     'cache_dir' => __DIR__ . '/../var/doctrine',
                     'metadata_dirs' => [__DIR__ . '/../src/Domain'],
@@ -42,9 +52,32 @@ return function (ContainerBuilder $containerBuilder) {
                 'logError'            => false,
                 'logErrorDetails'     => false,
                 'logger' => [
-                    'name' => 'slim-app',
-                    'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
-                    'level' => Logger::DEBUG,
+                    'name' => 'identity',
+                    'path' => 'php://stdout',
+                    'level' => getenv('APP_ENV') === 'local' ? Logger::DEBUG : Logger::INFO,
+                ],
+                'los_rate_limit' => [
+                    // Dynamic so we can increase it for load tests or as needed based on observed
+                    // Production behaviour.
+                    'ip_max_requests'   => (int) (getenv('MAX_CREATES_PER_IP_PER_5M') ?: '1'),
+                    'ip_reset_time'     => 300, // 5 minutes
+                    // All non-local envs, including 'test', assume ALB-style forwarded headers will be used.
+                    'prefer_forwarded' => getenv('APP_ENV') !== 'local',
+                    'trust_forwarded' => getenv('APP_ENV') !== 'local',
+                    'forwarded_headers_allowed' => [
+                        'X-Forwarded-For',
+                    ],
+                    'hash_ips' => true, // Required for Redis storage of IPv6 addresses.
+                ],
+                'recaptcha' => [
+                    'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
+                ],
+                'redis' => [
+                    'host' => getenv('REDIS_HOST'),
+                ],
+                'stripe' => [
+                    'apiKey' => getenv('STRIPE_SECRET_KEY'),
+                    'apiVersion' => getenv('STRIPE_API_VERSION'),
                 ],
             ]);
         }

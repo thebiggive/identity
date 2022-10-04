@@ -16,4 +16,16 @@
       <directory>./tests/</directory>
     </testsuite>
   </testsuites>
+  <php>
+    <env name="APP_ENV" value="test" force="true" />
+    <env name="BASE_URI" value="https://unit-test-fake-id-sub.thebiggivetest.org.uk" force="true"/>
+    <env name="JWT_ID_SECRET" value="unitTestJWTSecret" force="true"/>
+    <env name="MAX_CREATES_PER_IP_PER_5M" value="1" force="true" />
+    <env name="MYSQL_HOST" value="dummy-mysql-hostname" force="true"/>
+    <env name="REDIS_HOST" value="dummy-redis-hostname" force="true"/>
+    <env name="STRIPE_API_VERSION" value="2022-08-01" />
+    <env name="STRIPE_SECRET_KEY" value="sk_test_unitTestFakeKey" force="true"/>
+    <env name="MAILER_BASE_URI" value="https://mailer-fake-site.thebiggivetest.org.uk" force="true"/>
+    <env name="MAILER_SEND_SECRET" value="Abcdefghijklmnopqrstuvwxyz" force="true"/>
+  </php>
 </phpunit>

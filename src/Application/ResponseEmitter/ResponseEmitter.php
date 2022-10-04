@@ -22,7 +22,7 @@ class ResponseEmitter extends SlimResponseEmitter
             ->withHeader('Access-Control-Allow-Origin', $origin)
             ->withHeader(
                 'Access-Control-Allow-Headers',
-                'X-Requested-With, Content-Type, Accept, Origin, Authorization',
+                'X-Tbg-Auth, X-Requested-With, Content-Type, Accept, Origin, Authorization',
             )
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')

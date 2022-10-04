@@ -4,24 +4,57 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Repository;
 
-use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
-use Ramsey\Uuid\UuidInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-/**
- * @todo implement or drop.
- */
-interface PersonRepository
+class PersonRepository extends EntityRepository
 {
-    /**
-     * @return Person[]
-     */
-    public function findAll(): array;
+    private Mailer $mailerClient;
+
+    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
+    {
+        parent::__construct($em, $class);
+    }
+
+    public function findPersonByEmailAddress(string $emailAddress): ?Person
+    {
+        return $this->findOneBy(['email_address' => $emailAddress]);
+    }
 
     /**
-     * @param UuidInterface $id
-     * @return Person
-     * @throws DomainRecordNotFoundException
+     * This has its own thin repo method largely so we can mock it in tests and simulate
+     * side effects like setting a binary UUID, without having tests depend upon a real
+     * database.
+     *
+     * It also sets the password hash and EM-flushes the entity as side effects.
+     *
+     * @return Person   The Person, with any persist side effect properties set (or simulated
+     *                  set when testing).
      */
-    public function findPersonById(UuidInterface $id): Person;
+    public function persist(Person $person): Person
+    {
+        $person->hashPassword();
+
+        $this->getEntityManager()->persist($person);
+        $this->getEntityManager()->flush();
+
+        return $person;
+    }
+
+    /**
+     * This gets its own method instead so we can use `DefaultRepositoryFactory` to load
+     * the repo and not worry about constructor args.
+     */
+    public function setMailerClient(Mailer $mailerClient): void
+    {
+        $this->mailerClient = $mailerClient;
+    }
+
+    public function sendRegisteredEmail(Person $person): bool
+    {
+        return $this->mailerClient->sendEmail($person->toMailerPayload());
+    }
 }

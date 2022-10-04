@@ -7,8 +7,11 @@ namespace BigGive\Identity\Tests;
 use DI\ContainerBuilder;
 use Exception;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use ReCaptcha\ReCaptcha;
+use Redis;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Factory\StreamFactory;
@@ -39,20 +42,45 @@ class TestCase extends PHPUnit_TestCase
         $dependencies = require __DIR__ . '/../app/dependencies.php';
         $dependencies($containerBuilder);
 
-        // Set up repositories – TODO reinstate if using this for Doctrine ones.
-//        $repositories = require __DIR__ . '/../app/repositories.php';
-//        $repositories($containerBuilder);
+        $repositories = require __DIR__ . '/../app/repositories.php';
+        $repositories($containerBuilder);
 
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
 
+        $recaptchaProphecy = $this->prophesize(ReCaptcha::class);
+        $recaptchaProphecy->verify('good response', '1.2.3.4')
+            ->willReturn(new \ReCaptcha\Response(true));
+        $recaptchaProphecy->verify('bad response', '1.2.3.4')
+            ->willReturn(new \ReCaptcha\Response(false));
+        // Blank is mocked succeeding so that the deserialise error unit test behaves
+        // as it did before we had captcha verification.
+        $recaptchaProphecy->verify('', '1.2.3.4')
+            ->willReturn(new \ReCaptcha\Response(true));
+        $container->set(ReCaptcha::class, $recaptchaProphecy->reveal());
+
+        // For tests, we need to stub out Redis so that rate limiting middleware doesn't
+        // crash trying to actually connect to REDIS_HOST "dummy-redis-hostname". (We also
+        // don't want tests depending upon *real* Redis.)
+        $redisProphecy = $this->prophesize(Redis::class);
+        $redisProphecy->isConnected()->willReturn(true);
+        $redisProphecy->mget(['identity-test:10d49f663215e991d10df22692f03e89'])->willReturn(null);
+        $redisProphecy->mget(['identity-test:BigGive__Identity__Domain__Person__CLASSMETADATA__'])->wilLReturn(null);
+        // symfony/cache Redis adapter apparently does something around prepping value-setting
+        // through a fancy pipeline() and calls this.
+        $redisProphecy->multi(Argument::any())->willReturn();
+        // Accept cache bits trying to set *anything* on the mocked Redis. We don't list exact calls
+        // because this will include every bit of frequently-changing class metadata that Doctrine
+        // caches, amongst other things.
+        $redisProphecy
+            ->setex(Argument::type('string'), 3600, Argument::type('string'))
+            ->willReturn(true);
+        $redisProphecy->exec()->willReturn(); // Commits the multi() operation.
+        $container->set(Redis::class, $redisProphecy->reveal());
+
         // Instantiate the app
         AppFactory::setContainer($container);
         $app = AppFactory::create();
-
-        // Register middleware
-        $middleware = require __DIR__ . '/../app/middleware.php';
-        $middleware($app);
 
         // Register routes
         $routes = require __DIR__ . '/../app/routes.php';
@@ -72,7 +100,10 @@ class TestCase extends PHPUnit_TestCase
     protected function createRequest(
         string $method,
         string $path,
-        array $headers = ['HTTP_ACCEPT' => 'application/json'],
+        array $headers = [
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_X-Forwarded-For' => '1.2.3.4', // Simulate ALB in unit tests by default.
+        ],
         array $cookies = [],
         array $serverParams = []
     ): Request {

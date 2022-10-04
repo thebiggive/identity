@@ -10,25 +10,19 @@ use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
 
-require __DIR__ . '/../vendor/autoload.php';
+$container = require __DIR__ . '/../bootstrap.php';
 
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
-if (getenv('APP_ENV') !== 'local') { // Compile cache on staging & production
+if (!in_array(getenv('APP_ENV'), ['local', 'test'], true)) { // Compile cache on staging & production
     $containerBuilder->enableCompilation(__DIR__ . '/var/cache');
 }
-
-$container = require __DIR__ . '/../bootstrap.php';
 
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 $callableResolver = $app->getCallableResolver();
-
-// Register middleware
-$middleware = require __DIR__ . '/../app/middleware.php';
-$middleware($app);
 
 // Register routes
 $routes = require __DIR__ . '/../app/routes.php';

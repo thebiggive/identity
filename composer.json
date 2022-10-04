@@ -13,14 +13,16 @@
     "require": {
         "php": "^8.1",
         "ext-json": "*",
+        "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
         "doctrine/annotations": "^1.13",
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^2.12",
-        "firebase/php-jwt": "^5.5",
+        "firebase/php-jwt": "^6.3",
         "google/recaptcha": "^1.2",
+        "guzzlehttp/guzzle": "^7.5",
         "los/los-rate-limit": "^3.3",
         "middlewares/client-ip": "^2.0",
         "monolog/monolog": "^2.6",
@@ -28,9 +30,14 @@
         "ramsey/uuid-doctrine": "^1.8",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
-        "stripe/stripe-php": "^7.128",
+        "stripe/stripe-php": "^9.1.0",
         "symfony/cache": "^6.1",
-        "symfony/serializer": "^6.1"
+        "symfony/doctrine-bridge": "^6.1",
+        "symfony/property-access": "^6.1",
+        "symfony/serializer": "^6.1",
+        "symfony/uid": "^6.1",
+        "symfony/validator": "^6.1",
+        "zircote/swagger-php": "^4.4.7"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
@@ -39,8 +46,7 @@
         "phpstan/phpstan": "^1.7",
         "phpunit/phpunit": "^9.5.20",
         "roave/security-advisories": "dev-latest",
-        "squizlabs/php_codesniffer": "^3.6",
-        "zircote/swagger-php": "^3.3"
+        "squizlabs/php_codesniffer": "^3.6"
     },
     "config": {
         "optimize-autoloader": true,
@@ -50,7 +56,7 @@
             "phpstan/extension-installer": true
         },
         "platform": {
-            "php": "8.1.6"
+            "php": "8.1.9"
         }
     },
     "autoload": {
