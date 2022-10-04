@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class CredentialsRecaptchaMiddlewareTest extends TestCase
 {
-    public function testFailure(): void
+    public function testFailureWithBadCode(): void
     {
         $serializer = $this->getAppInstance()->getContainer()->get(SerializerInterface::class);
 
@@ -27,6 +27,30 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
         $credentialsSerialised = $serializer->serialize($credentialsObject, 'json');
         $credentials = json_decode($credentialsSerialised, true, 512, JSON_THROW_ON_ERROR);
         $credentials['captcha_code'] = 'bad response';
+        $body = json_encode($credentials);
+
+        $request = $this->createRequest('POST', '/v1/auth');
+        $request->getBody()->write($body);
+
+        $this->expectException(HttpUnauthorizedException::class);
+        $this->expectExceptionMessage('Unauthorised');
+
+        // Because the 401 ends the request, we can dispatch this against realistic, full app
+        // middleware and test this piece of middleware in the process.
+        $this->getAppInstance()
+            ->getMiddlewareDispatcher()
+            ->handle($request);
+    }
+
+    public function testFailureWithNoCode(): void
+    {
+        $serializer = $this->getAppInstance()->getContainer()->get(SerializerInterface::class);
+
+        $credentialsObject = $this->getTestCredentials();
+
+        $credentialsSerialised = $serializer->serialize($credentialsObject, 'json');
+        $credentials = json_decode($credentialsSerialised, true, 512, JSON_THROW_ON_ERROR);
+        unset($credentials['captcha_code']);
         $body = json_encode($credentials);
 
         $request = $this->createRequest('POST', '/v1/auth');

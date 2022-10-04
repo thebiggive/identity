@@ -38,6 +38,11 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
         for ($counter = 0; $counter < $timesToAttemptCaptchaVerification; $counter++) {
             $captchaCode = $this->getCode($request);
 
+            if ($captchaCode === null) {
+                $this->logger->log(LogLevel::WARNING, 'Security: captcha code not sent');
+                $this->unauthorised($this->logger, true, $request);
+            }
+
             $result = $this->captcha->verify(
                 $captchaCode,
                 $request->getAttribute('client-ip') // Set to original IP by previous middleware
@@ -72,5 +77,5 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    abstract protected function getCode(ServerRequestInterface $request): string;
+    abstract protected function getCode(ServerRequestInterface $request): ?string;
 }

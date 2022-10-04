@@ -20,7 +20,7 @@ class PersonRecaptchaMiddlewareTest extends TestCase
 {
     use TestPeopleTrait;
 
-    public function testFailure(): void
+    public function testFailureWithBadCode(): void
     {
         $serializer = $this->getAppInstance()->getContainer()->get(SerializerInterface::class);
 
@@ -29,6 +29,30 @@ class PersonRecaptchaMiddlewareTest extends TestCase
         $personSerialised = $serializer->serialize($personObject, 'json');
         $person = json_decode($personSerialised, true, 512, JSON_THROW_ON_ERROR);
         $person['captcha_code'] = 'bad response';
+        $body = json_encode($person);
+
+        $request = $this->createRequest('POST', '/v1/people');
+        $request->getBody()->write($body);
+
+        $this->expectException(HttpUnauthorizedException::class);
+        $this->expectExceptionMessage('Unauthorised');
+
+        // Because the 401 ends the request, we can dispatch this against realistic, full app
+        // middleware and test this piece of middleware in the process.
+        $this->getAppInstance()
+            ->getMiddlewareDispatcher()
+            ->handle($request);
+    }
+
+    public function testFailureWithNoCode(): void
+    {
+        $serializer = $this->getAppInstance()->getContainer()->get(SerializerInterface::class);
+
+        $personObject = $this->getTestPerson();
+
+        $personSerialised = $serializer->serialize($personObject, 'json');
+        $person = json_decode($personSerialised, true, 512, JSON_THROW_ON_ERROR);
+        unset($person['captcha_code']);
         $body = json_encode($person);
 
         $request = $this->createRequest('POST', '/v1/people');
