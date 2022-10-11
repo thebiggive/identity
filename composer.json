@@ -27,7 +27,6 @@
         "middlewares/client-ip": "^2.0",
         "monolog/monolog": "^2.6",
         "php-di/php-di": "^6.4",
-        "ramsey/uuid-doctrine": "^1.8",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "stripe/stripe-php": "^9.1.0",
