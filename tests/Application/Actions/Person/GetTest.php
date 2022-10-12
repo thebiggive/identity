@@ -63,7 +63,7 @@ class GetTest extends TestCase
         $this->assertIsObject($payload->cash_balance);
         $this->assertEquals((object) [
             'eur' => 123,
-            'gbp' => 55000,
+            'gbp' => 55500,
         ], $payload->cash_balance);
     }
 
