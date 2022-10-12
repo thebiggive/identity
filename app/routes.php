@@ -24,16 +24,14 @@ return function (App $app) {
 
     $app->get('/ping', Status::class);
 
-    $app->group('/v1', function (Group $versionGroup) {
-        // Provides real IP for reCAPTCHA
-        $ipMiddleware = getenv('APP_ENV') === 'local'
-            ? new ClientIp()
-            : (new ClientIp())->proxy([], ['X-Forwarded-For']);
+    // Provides real IP for reCAPTCHA
+    $ipMiddleware = getenv('APP_ENV') === 'local'
+        ? new ClientIp()
+        : (new ClientIp())->proxy([], ['X-Forwarded-For']);
 
+    $app->group('/v1', function (Group $versionGroup) {
         $versionGroup->post('/people', Person\Create::class)
-            ->add(PersonRecaptchaMiddleware::class) // Runs last
-            ->add($ipMiddleware)
-            ->add(RateLimitMiddleware::class);
+            ->add(PersonRecaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
 
         $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
             ->add(PersonPatchAuthMiddleware::class);
@@ -42,8 +40,8 @@ return function (App $app) {
             ->add(PersonGetAuthMiddleware::class);
 
         $versionGroup->post('/auth', Login::class)
-            ->add(CredentialsRecaptchaMiddleware::class) // Runs last
-            ->add($ipMiddleware)
-            ->add(RateLimitMiddleware::class);
-    });
+            ->add(CredentialsRecaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+    })
+        ->add($ipMiddleware)
+        ->add(RateLimitMiddleware::class);
 };
