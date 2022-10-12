@@ -43,6 +43,20 @@ class Person
     ];
 
     /**
+     * @OA\Property(
+     *     type="object",
+     *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
+     *     available amounts in smallest denomination, e.g. 123 pence.",
+     *     example={
+     *         "eur": 0,
+     *         "gbp": 123,
+     *     }
+     * )
+     * @var int[] Balances in smallest unit (cents/pence) keyed on lowercase currency code.
+     */
+    public array $cash_balance = [];
+
+    /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")

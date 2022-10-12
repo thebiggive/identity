@@ -1,0 +1,32 @@
+{
+  "id": "cus_aaaaaaaaaaaa11",
+  "object": "customer",
+  "address": null,
+  "balance": 0,
+  "created": 1665573801,
+  "currency": null,
+  "default_source": null,
+  "delinquent": false,
+  "description": null,
+  "discount": null,
+  "email": "loraine@example.org",
+  "invoice_prefix": "A38A9043",
+  "invoice_settings": {
+    "custom_fields": null,
+    "default_payment_method": null,
+    "footer": null,
+    "rendering_options": null
+  },
+  "livemode": false,
+  "metadata": {
+    "environment": "local",
+    "personId": "b51dcb90-7b81-4779-ab3b-79435cbd9999"
+  },
+  "name": "Loraine James",
+  "phone": null,
+  "preferred_locales": [
+  ],
+  "shipping": null,
+  "tax_exempt": "none",
+  "test_clock": null
+}
