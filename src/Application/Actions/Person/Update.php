@@ -143,7 +143,16 @@ class Update extends Action
             );
         }
 
-        $person = $this->personRepository->persist($person);
+        try {
+            $person = $this->personRepository->persist($person);
+        } catch (\LogicException $exception) {
+            $this->logger->warning(sprintf(
+                '%s failed to persist Person: %s',
+                __CLASS__,
+                $exception->getMessage(),
+            ));
+            throw new HttpBadRequestException($this->request, $exception->getMessage());
+        }
 
         $customerDetails = [
             'email' => $person->email_address,

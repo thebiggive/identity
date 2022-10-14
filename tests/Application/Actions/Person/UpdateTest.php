@@ -9,11 +9,13 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
+use BigGive\Identity\Tests\TestPromises\NullThenPersonPromise;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
+use Symfony\Component\Uid\Uuid;
 
 class UpdateTest extends TestCase
 {
@@ -86,6 +88,82 @@ class UpdateTest extends TestCase
         // These should be unset by `HasPasswordNormalizer`.
         $this->assertObjectNotHasAttribute('raw_password', $payload);
         $this->assertObjectNotHasAttribute('password', $payload);
+    }
+
+    public function testSettingPasswordForASecondPersonWithSameEmailAddress(): void
+    {
+        // Start without password.
+        $person = $this->getTestPerson(false, false);
+        // Come back from EM with password.
+        $personWithPostPersistData = $this->getInitialisedPerson(true);
+
+        $person2 = clone $person;
+        $newUuid = Uuid::v4();
+        $person2->setId($newUuid);
+
+        $app = $this->getAppInstance();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->find(static::$testPersonUuid)
+            ->shouldBeCalledOnce()
+            ->willReturn($person);
+        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
+            ->shouldBeCalledTimes(2)
+            ->will(new NullThenPersonPromise($person));
+        $personRepoProphecy->find($newUuid)
+            ->shouldBeCalledOnce()
+            ->willReturn($person2);
+        $personRepoProphecy->persist(Argument::type(Person::class))
+            ->shouldBeCalledOnce()
+            ->willReturn($personWithPostPersistData);
+        $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
+
+        // We don't use the returned properties so they're omitted for now, but in reality
+        // `name` etc. will be set.
+        $customerMockResult = (object) [
+            'id' => static::$testPersonStripeCustomerId,
+            'object' => 'customer',
+        ];
+        $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
+        $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
+            ->willReturn($customerMockResult)
+            ->shouldBeCalledOnce();
+        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
+
+        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+
+        $request = $this->buildRequest(static::$testPersonUuid, [
+            'first_name' => $person->first_name,
+            'last_name' => $person->last_name,
+            'raw_password' => $person->raw_password,
+            'email_address' => $person->email_address,
+            'captcha_code' => 'good response',
+        ]);
+
+        $response = $app->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        // Don't assert more stuff about the response because so far it's identical to
+        // `testSuccessSettingPassword()`.
+
+        // Now doing it again for a new Person should fail.
+        $request2 = $this->buildRequestRaw((string) $newUuid, json_encode([
+            'first_name' => $person2->first_name,
+            'last_name' => $person2->last_name,
+            'raw_password' => $person2->raw_password,
+            'email_address' => $person2->email_address,
+            'captcha_code' => 'good response',
+        ]))
+            ->withHeader('x-tbg-auth', Token::create((string) $newUuid, false, 'cus_aaaaaaaaaaaa12'));
+
+        $response = $app->handle($request2);
+        $this->assertEquals(400, $response->getStatusCode());
+        // todo fix this assertion
+        $this->assertEquals('{"error":"Email address already in use"}', (string) $response->getBody());
     }
 
     public function testSettingPasswordWithFailedMailerCallout(): void
