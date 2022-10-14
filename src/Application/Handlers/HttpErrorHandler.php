@@ -6,7 +6,6 @@ namespace BigGive\Identity\Application\Handlers;
 
 use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Application\Actions\ActionPayload;
-use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
