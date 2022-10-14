@@ -1,0 +1,24 @@
+{
+  "object": "funding_instructions",
+  "bank_transfer": {
+    "country": "GB",
+    "financial_addresses": [
+      {
+        "sort_code": {
+          "account_holder_name": "The Big Give",
+          "account_number": "04349584",
+          "sort_code": "108800"
+        },
+        "supported_networks": [
+          "bacs",
+          "fps"
+        ],
+        "type": "sort_code"
+      }
+    ],
+    "type": "gb_bank_transfer"
+  },
+  "currency": "gbp",
+  "funding_type": "bank_transfer",
+  "livemode": false
+}
