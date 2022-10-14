@@ -14,7 +14,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * @ORM\Entity(repositoryClass="BigGive\Identity\Repository\PersonRepository")
  * @ORM\HasLifecycleCallbacks
- * @ORM\Table
+ * @ORM\Table(name="person", indexes={
+ *     @ORM\Index(name="email_and_password", columns={"email_address", "password"}),
+ * })
  * @OA\Schema(
  *  description="Person – initially anonymous. To be login-ready, first_name,
  *  last_name, email_address and password are required.",
@@ -95,14 +97,15 @@ class Person
     public ?string $last_name = null;
 
     /**
-     * @ORM\Column(type="string", unique=true, nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="email_address",
      *  format="email",
      *  example="loraine@example.org",
      * )
-     * @var string The email address of the person. Email address must be unique.
+     * @var string The email address of the person. Email address must be unique amongst
+     * password-enabled Person records.
      */
     public ?string $email_address = null;
 
