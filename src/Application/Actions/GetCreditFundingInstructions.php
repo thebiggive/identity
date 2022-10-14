@@ -33,7 +33,8 @@ use Stripe\StripeClient;
  *     },
  *     @OA\Response(
  *         response=200,
- *         description="Funding instructions object as documented at https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk",
+ *         description="Funding instructions object as documented at
+ *         https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk",
  *         @OA\JsonContent(),
  *     ),
  *     @OA\Response(
