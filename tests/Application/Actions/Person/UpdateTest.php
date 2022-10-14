@@ -9,7 +9,7 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
-use BigGive\Identity\Tests\TestPromises\NullThenPersonPromise;
+use BigGive\Identity\Tests\TestPromises\SucceedThenThrowWithDuplicateEmailPromise;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
@@ -97,9 +97,11 @@ class UpdateTest extends TestCase
         // Come back from EM with password.
         $personWithPostPersistData = $this->getInitialisedPerson(true);
 
-        $person2 = clone $person;
         $newUuid = Uuid::v4();
+        $newStripeCustomerId = 'cus_aaaaaaaaaaaa12';
+        $person2 = clone $personWithPostPersistData;
         $person2->setId($newUuid);
+        $person2->stripe_customer_id = $newStripeCustomerId;
 
         $app = $this->getAppInstance();
 
@@ -107,15 +109,12 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
-            ->shouldBeCalledTimes(2)
-            ->will(new NullThenPersonPromise($person));
         $personRepoProphecy->find($newUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person2);
         $personRepoProphecy->persist(Argument::type(Person::class))
-            ->shouldBeCalledOnce()
-            ->willReturn($personWithPostPersistData);
+            ->shouldBeCalledTimes(2)
+            ->will(new SucceedThenThrowWithDuplicateEmailPromise($personWithPostPersistData));
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -130,6 +129,9 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->willReturn($customerMockResult)
             ->shouldBeCalledOnce();
+        // Expected failure is before we push to Stripe so no call with this ID expected.
+        $stripeCustomersProphecy->update($newStripeCustomerId, Argument::type('array'))
+            ->shouldNotBeCalled();
         $stripeClientProphecy = $this->prophesize(StripeClient::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
@@ -156,14 +158,22 @@ class UpdateTest extends TestCase
             'last_name' => $person2->last_name,
             'raw_password' => $person2->raw_password,
             'email_address' => $person2->email_address,
+            'stripe_customer_id' => $newStripeCustomerId,
             'captcha_code' => 'good response',
-        ]))
-            ->withHeader('x-tbg-auth', Token::create((string) $newUuid, false, 'cus_aaaaaaaaaaaa12'));
+        ], JSON_THROW_ON_ERROR))
+            ->withHeader('x-tbg-auth', Token::create((string) $newUuid, false, $newStripeCustomerId));
 
-        $response = $app->handle($request2);
-        $this->assertEquals(400, $response->getStatusCode());
-        // todo fix this assertion
-        $this->assertEquals('{"error":"Email address already in use"}', (string) $response->getBody());
+        $responseFromSecondUpdate = $app->handle($request2);
+        $this->assertEquals(400, $responseFromSecondUpdate->getStatusCode());
+
+        $expectedJSON = json_encode([
+            'error' => [
+                'description' => 'Update not valid: Person already exists with password and email address loraine@hyperdub.net',
+                'type' => 'BAD_REQUEST',
+            ],
+            'statusCode' => 400,
+        ], JSON_THROW_ON_ERROR);
+        $this->assertJsonStringEqualsJsonString($expectedJSON, (string) $responseFromSecondUpdate->getBody());
     }
 
     public function testSettingPasswordWithFailedMailerCallout(): void

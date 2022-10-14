@@ -151,7 +151,8 @@ class Update extends Action
                 __CLASS__,
                 $exception->getMessage(),
             ));
-            throw new HttpBadRequestException($this->request, $exception->getMessage());
+
+            return $this->validationError("Update not valid: {$exception->getMessage()}");
         }
 
         $customerDetails = [

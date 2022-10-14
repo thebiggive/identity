@@ -12,7 +12,6 @@ use BigGive\Identity\Tests\TestPeopleTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;

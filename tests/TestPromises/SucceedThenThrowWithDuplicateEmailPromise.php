@@ -9,7 +9,7 @@ use Prophecy\Promise\PromiseInterface;
 use Prophecy\Prophecy\MethodProphecy;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class NullThenPersonPromise implements PromiseInterface
+class SucceedThenThrowWithDuplicateEmailPromise implements PromiseInterface
 {
     private int $callsCount = 0;
     private Person $personToReturn;
@@ -24,9 +24,12 @@ class NullThenPersonPromise implements PromiseInterface
         if ($this->callsCount === 0) {
             $this->callsCount++;
 
-            return null;
+            return $this->personToReturn;
         }
 
-        return $this->personToReturn;
+        throw new \LogicException(sprintf(
+            'Person already exists with password and email address %s',
+            $this->personToReturn->email_address,
+        ));
     }
 }
