@@ -44,7 +44,10 @@ class PersonRepository extends EntityRepository
      */
     public function persist(Person $person): Person
     {
-        $existingPerson = $this->findPasswordEnabledPersonByEmailAddress($person->email_address);
+        if (!empty($person->email_address)) {
+            $existingPerson = $this->findPasswordEnabledPersonByEmailAddress($person->email_address);
+        }
+
         if ($existingPerson) {
             throw new \LogicException(sprintf(
                 'Person already exists with password and email address %s' . $person->email_address
