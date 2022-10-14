@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Actions\GetCreditFundingInstructions;
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Status;
@@ -36,7 +37,10 @@ return function (App $app) {
         $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
             ->add(PersonPatchAuthMiddleware::class);
 
-        $versionGroup->get('/people/{personId:[a-z0-9-]{36}}', Person\Get::class)
+        $versionGroup->group('/people/{personId:[a-z0-9-]{36}}', function (Group $personGetGroup) {
+            $personGetGroup->get('', Person\Get::class);
+            $personGetGroup->get('/funding_instructions', GetCreditFundingInstructions::class);
+        })
             ->add(PersonGetAuthMiddleware::class);
 
         $versionGroup->post('/auth', Login::class)

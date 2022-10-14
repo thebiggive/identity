@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  *     path="/v1/people/{personId}",
  *     @OA\PathParameter(
  *         name="personId",
- *         description="UUID of the person to update",
+ *         description="UUID of the person",
  *         @OA\Schema(
  *             type="string",
  *             format="uuid",
