@@ -25,7 +25,7 @@ class PersonRepository extends EntityRepository
         $qb = new QueryBuilder($this->getEntityManager());
         $qb->select('p')
             ->from(Person::class, 'p')
-            ->where('p.emailAddress = :emailAddress')
+            ->where('p.email_address = :emailAddress')
             ->andWhere('p.password IS NOT NULL')
             ->setParameter('emailAddress', $emailAddress);
 

@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * @ORM\Entity(repositoryClass="BigGive\Identity\Repository\PersonRepository")
  * @ORM\HasLifecycleCallbacks
- * @ORM\Table(name="person", indexes={
+ * @ORM\Table(name="Person", indexes={
  *     @ORM\Index(name="email_and_password", columns={"email_address", "password"}),
  * })
  * @OA\Schema(
