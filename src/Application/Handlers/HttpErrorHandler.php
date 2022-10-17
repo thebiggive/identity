@@ -33,8 +33,7 @@ class HttpErrorHandler extends SlimErrorHandler
 
         $this->logger->error('HttpErrorHandler exception.' .
             'Message: ' . $this->exception->getMessage() .
-            '\nTrace: ' . $this->exception->getTraceAsString()
-        );
+            '\nTrace: ' . $this->exception->getTraceAsString());
 
         if ($exception instanceof HttpException) {
             $statusCode = $exception->getCode();
