@@ -88,7 +88,6 @@ class LoginTest extends TestCase
                 'description' => 'Invalid credentials',
                 'type' => 'VALIDATION_ERROR',
             ],
-            'statusCode' => 401,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
@@ -128,7 +127,6 @@ class LoginTest extends TestCase
                 'description' => 'Invalid credentials',
                 'type' => 'VALIDATION_ERROR',
             ],
-            'statusCode' => 401,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }

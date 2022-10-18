@@ -142,7 +142,6 @@ class CreateTest extends TestCase
                 'description' => 'Person Create data deserialise error',
                 'type' => 'BAD_REQUEST',
             ],
-            'statusCode' => 400,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }

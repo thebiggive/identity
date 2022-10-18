@@ -172,7 +172,6 @@ class UpdateTest extends TestCase
                     'Update not valid: Person already exists with password and email address loraine@hyperdub.net',
                 'type' => 'BAD_REQUEST',
             ],
-            'statusCode' => 400,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, (string) $responseFromSecondUpdate->getBody());
     }
@@ -327,7 +326,6 @@ class UpdateTest extends TestCase
                 'description' => 'Validation error: last_name must not be blank; email_address must not be blank',
                 'type' => 'BAD_REQUEST',
             ],
-            'statusCode' => 400,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
@@ -366,7 +364,6 @@ class UpdateTest extends TestCase
                 'description' => 'Validation error: Password must be 10 or more characters',
                 'type' => 'BAD_REQUEST',
             ],
-            'statusCode' => 400,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
@@ -432,7 +429,6 @@ class UpdateTest extends TestCase
                 'description' => 'Person Update data deserialise error',
                 'type' => 'BAD_REQUEST',
             ],
-            'statusCode' => 400,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
