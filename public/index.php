@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Handlers\HttpErrorHandler;
 use BigGive\Identity\Application\Handlers\ShutdownHandler;
-use BigGive\Identity\Application\ResponseEmitter\ResponseEmitter;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
+use Slim\ResponseEmitter;
 
 $container = require __DIR__ . '/../bootstrap.php';
 
