@@ -13,6 +13,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
+use Stripe\StripeClient;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -21,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  *     path="/v1/people/{personId}",
  *     @OA\PathParameter(
  *         name="personId",
- *         description="UUID of the person to update",
+ *         description="UUID of the person",
  *         @OA\Schema(
  *             type="string",
  *             format="uuid",
@@ -52,6 +53,7 @@ class Get extends Action
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
+        private readonly StripeClient $stripeClient,
     ) {
         parent::__construct($logger);
     }
@@ -63,9 +65,33 @@ class Get extends Action
      */
     protected function action(): Response
     {
+        /** @var Person|null $person */
         $person = $this->personRepository->find($this->resolveArg('personId'));
         if (!$person) {
             throw new HttpNotFoundException($this->request, 'Person not found');
+        }
+
+        if ($person->stripe_customer_id) {
+            $stripeCustomer = $this->stripeClient->customers->retrieve($person->stripe_customer_id, [
+                'expand' => ['cash_balance'],
+            ]);
+
+            // The hash must be non-null and reconciliation automatic for us to consider balances potentially
+            // spendable. Note this does _not_ imply that any balances are non-zero right now, just that we
+            // should check balances.
+            $balanceIsApplicable = (
+                !empty($stripeCustomer->cash_balance) &&
+                $stripeCustomer->cash_balance->available !== null &&
+                $stripeCustomer->cash_balance->settings->reconciliation_mode === 'automatic'
+            );
+
+            if ($balanceIsApplicable) {
+                foreach ($stripeCustomer->cash_balance->available as $currenyCode => $amount) {
+                    if ($amount > 0) {
+                        $person->cash_balance[$currenyCode] = $amount;
+                    }
+                }
+            }
         }
 
         return new TextResponse(

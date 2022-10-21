@@ -12,7 +12,6 @@ use BigGive\Identity\Tests\TestPeopleTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
@@ -143,7 +142,6 @@ class CreateTest extends TestCase
                 'description' => 'Person Create data deserialise error',
                 'type' => 'BAD_REQUEST',
             ],
-            'statusCode' => 400,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }

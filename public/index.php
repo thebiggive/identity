@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Handlers\HttpErrorHandler;
 use BigGive\Identity\Application\Handlers\ShutdownHandler;
-use BigGive\Identity\Application\ResponseEmitter\ResponseEmitter;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
+use Psr\Log\LoggerInterface;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
+use Slim\ResponseEmitter;
 
 $container = require __DIR__ . '/../bootstrap.php';
 
@@ -41,7 +42,12 @@ $request = $serverRequestCreator->createServerRequestFromGlobals();
 
 // Create Error Handler
 $responseFactory = $app->getResponseFactory();
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+
+$errorHandler = new HttpErrorHandler(
+    $callableResolver,
+    $responseFactory,
+    $app->getContainer()->get(LoggerInterface::class),
+);
 
 // Create Shutdown Handler
 $shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);

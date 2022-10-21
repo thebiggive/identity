@@ -32,7 +32,7 @@ class LoginTest extends TestCase
             ->willReturn($person->getId());
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->findPersonByEmailAddress($person->email_address)
+        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
             ->shouldBeCalledOnce()
             ->willReturn($personWithHashMatchingRawPasswordFromLoginObject);
 
@@ -65,7 +65,7 @@ class LoginTest extends TestCase
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->findPersonByEmailAddress($person->email_address)
+        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
             ->shouldBeCalledOnce()
             ->willReturn(null);
 
@@ -88,7 +88,6 @@ class LoginTest extends TestCase
                 'description' => 'Invalid credentials',
                 'type' => 'VALIDATION_ERROR',
             ],
-            'statusCode' => 401,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
@@ -105,7 +104,7 @@ class LoginTest extends TestCase
             ->willReturn('$2y$10$someOtherHash');
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->findPersonByEmailAddress($person->email_address)
+        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
             ->shouldBeCalledOnce()
             ->willReturn($personWithHashNotMatchingRawPassword);
 
@@ -128,7 +127,6 @@ class LoginTest extends TestCase
                 'description' => 'Invalid credentials',
                 'type' => 'VALIDATION_ERROR',
             ],
-            'statusCode' => 401,
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, $payloadJSON);
     }
@@ -147,7 +145,7 @@ class LoginTest extends TestCase
             ->shouldNotBeCalled();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->findPersonByEmailAddress($person->email_address)
+        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());

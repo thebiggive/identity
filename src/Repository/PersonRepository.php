@@ -9,6 +9,7 @@ use BigGive\Identity\Domain\Person;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\QueryBuilder;
 
 class PersonRepository extends EntityRepository
 {
@@ -19,9 +20,16 @@ class PersonRepository extends EntityRepository
         parent::__construct($em, $class);
     }
 
-    public function findPersonByEmailAddress(string $emailAddress): ?Person
+    public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
-        return $this->findOneBy(['email_address' => $emailAddress]);
+        $qb = new QueryBuilder($this->getEntityManager());
+        $qb->select('p')
+            ->from(Person::class, 'p')
+            ->where('p.email_address = :emailAddress')
+            ->andWhere('p.password IS NOT NULL')
+            ->setParameter('emailAddress', $emailAddress);
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**
@@ -36,6 +44,18 @@ class PersonRepository extends EntityRepository
      */
     public function persist(Person $person): Person
     {
+        $passwordIsToBeSet = !empty($person->raw_password) && !empty($person->email_address);
+
+        if ($passwordIsToBeSet) {
+            $existingPerson = $this->findPasswordEnabledPersonByEmailAddress($person->email_address);
+            if ($existingPerson !== null) {
+                throw new \LogicException(sprintf(
+                    'Person already exists with password and email address %s',
+                    $person->email_address
+                ));
+            }
+        }
+
         $person->hashPassword();
 
         $this->getEntityManager()->persist($person);

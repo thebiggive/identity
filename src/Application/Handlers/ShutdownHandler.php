@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Handlers;
 
-use BigGive\Identity\Application\ResponseEmitter\ResponseEmitter;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpInternalServerErrorException;
+use Slim\ResponseEmitter;
 
 class ShutdownHandler
 {
@@ -81,8 +81,8 @@ class ShutdownHandler
                 $this->request,
                 $exception,
                 $this->displayErrorDetails,
-                false,
-                false,
+                true,
+                true,
             );
 
             $responseEmitter = new ResponseEmitter();

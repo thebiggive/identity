@@ -8,7 +8,7 @@ RUN echo 'opcache.validate_timestamps = 0' >> /usr/local/etc/php/conf.d/opcache-
 RUN apt-get update -qq && apt-get install -y awscli && \
     rm -rf /var/lib/apt/lists/* /var/cache/apk/*
 
-ADD . /var/www/html
+COPY . /var/www/html
 
 # Ensure Apache can run as www-data and still write to these when the Docker build creates them as root.
 RUN chmod 777 /var/www/html/var/cache /var/www/html/var/doctrine /var/www/html/var/doctrine/proxies

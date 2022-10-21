@@ -143,7 +143,17 @@ class Update extends Action
             );
         }
 
-        $person = $this->personRepository->persist($person);
+        try {
+            $person = $this->personRepository->persist($person);
+        } catch (\LogicException $exception) {
+            $this->logger->warning(sprintf(
+                '%s failed to persist Person: %s',
+                __CLASS__,
+                $exception->getMessage(),
+            ));
+
+            return $this->validationError("Update not valid: {$exception->getMessage()}");
+        }
 
         $customerDetails = [
             'email' => $person->email_address,

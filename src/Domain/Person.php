@@ -14,7 +14,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * @ORM\Entity(repositoryClass="BigGive\Identity\Repository\PersonRepository")
  * @ORM\HasLifecycleCallbacks
- * @ORM\Table
+ * @ORM\Table(name="Person", indexes={
+ *     @ORM\Index(name="email_and_password", columns={"email_address", "password"}),
+ * })
  * @OA\Schema(
  *  description="Person – initially anonymous. To be login-ready, first_name,
  *  last_name, email_address and password are required.",
@@ -41,6 +43,20 @@ class Person
      */
     public const NON_SERIALISED_ATTRIBUTES = [
     ];
+
+    /**
+     * @OA\Property(
+     *     type="object",
+     *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
+     *     available amounts in smallest denomination, e.g. 123 pence.",
+     *     example={
+     *         "eur": 0,
+     *         "gbp": 123,
+     *     }
+     * )
+     * @var int[] Balances in smallest unit (cents/pence) keyed on lowercase currency code.
+     */
+    public array $cash_balance = [];
 
     /**
      * @ORM\Id
@@ -81,14 +97,15 @@ class Person
     public ?string $last_name = null;
 
     /**
-     * @ORM\Column(type="string", unique=true, nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="email_address",
      *  format="email",
      *  example="loraine@example.org",
      * )
-     * @var string The email address of the person. Email address must be unique.
+     * @var string The email address of the person. Email address must be unique amongst
+     * password-enabled Person records.
      */
     public ?string $email_address = null;
 

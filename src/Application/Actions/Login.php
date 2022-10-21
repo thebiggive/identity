@@ -113,7 +113,7 @@ class Login extends Action
             );
         }
 
-        $person = $this->personRepository->findPersonByEmailAddress($credentials->email_address);
+        $person = $this->personRepository->findPasswordEnabledPersonByEmailAddress($credentials->email_address);
         if (!$person) {
             return $this->fail(Password::BAD_LOGIN_MESSAGE);
         }

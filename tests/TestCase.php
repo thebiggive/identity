@@ -65,7 +65,7 @@ class TestCase extends PHPUnit_TestCase
         $redisProphecy = $this->prophesize(Redis::class);
         $redisProphecy->isConnected()->willReturn(true);
         $redisProphecy->mget(['identity-test:10d49f663215e991d10df22692f03e89'])->willReturn(null);
-        $redisProphecy->mget(['identity-test:BigGive__Identity__Domain__Person__CLASSMETADATA__'])->wilLReturn(null);
+        $redisProphecy->mget(['identity-test:BigGive__Identity__Domain__Person__CLASSMETADATA__'])->willReturn(null);
         // symfony/cache Redis adapter apparently does something around prepping value-setting
         // through a fancy pipeline() and calls this.
         $redisProphecy->multi(Argument::any())->willReturn();
