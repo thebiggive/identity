@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Stripe\StripeClient;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -86,7 +87,7 @@ class Get extends Action
             );
 
             if ($balanceIsApplicable) {
-                foreach ($stripeCustomer->cash_balance->available as $currenyCode => $amount) {
+                foreach ($stripeCustomer->cash_balance->available->toArray() as $currenyCode => $amount) {
                     if ($amount > 0) {
                         $person->cash_balance[$currenyCode] = $amount;
                     }
@@ -100,6 +101,7 @@ class Get extends Action
                 'json',
                 [
                     AbstractNormalizer::IGNORED_ATTRIBUTES => Person::NON_SERIALISED_ATTRIBUTES,
+                    JsonEncode::OPTIONS => JSON_FORCE_OBJECT,
                 ],
             ),
             200,

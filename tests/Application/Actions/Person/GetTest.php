@@ -14,6 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
+use Stripe\StripeObject;
 
 class GetTest extends TestCase
 {
@@ -107,7 +108,8 @@ class GetTest extends TestCase
         $this->assertObjectNotHasAttribute('raw_password', $payload);
         $this->assertObjectNotHasAttribute('password', $payload);
 
-        $this->assertEmpty($payload->cash_balance);
+        $this->assertIsObject($payload->cash_balance);
+        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
     }
 
     public function testSuccessWithNoStripeBalances(): void
@@ -150,7 +152,8 @@ class GetTest extends TestCase
         $this->assertObjectNotHasAttribute('raw_password', $payload);
         $this->assertObjectNotHasAttribute('password', $payload);
 
-        $this->assertEmpty($payload->cash_balance);
+        $this->assertIsObject($payload->cash_balance);
+        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
     }
 
     public function testSuccessWithNonAutomaticallyReconcileStripeBalances(): void
@@ -193,7 +196,9 @@ class GetTest extends TestCase
         $this->assertObjectNotHasAttribute('raw_password', $payload);
         $this->assertObjectNotHasAttribute('password', $payload);
 
-        $this->assertEmpty($payload->cash_balance);
+        $this->assertIsObject($payload->cash_balance);
+        $this->assertObjectNotHasAttribute('eur', $payload->cash_balance);
+        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
     }
 
     public function testIncompleteAuthToken(): void
@@ -250,12 +255,12 @@ class GetTest extends TestCase
 
     private function getStripeClientWithMock(string $mockName): StripeClient
     {
-        $mockResponse = json_decode(
+        $mockResponse = StripeObject::constructFrom(json_decode(
             file_get_contents(dirname(__DIR__, 3) . '/MockStripeResponses/' . $mockName . '.json'),
-            false,
+            true,
             512,
             JSON_THROW_ON_ERROR,
-        );
+        ));
 
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->retrieve(static::$testPersonStripeCustomerId, ['expand' => ['cash_balance']])
