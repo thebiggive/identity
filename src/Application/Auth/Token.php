@@ -91,7 +91,7 @@ class Token
         }
 
         if ($complete !== $decodedJwtBody->sub->complete) {
-            $logger->error(
+            $logger->warning(
                 sprintf("JWT error: Not authorised for %s status", $complete ? 'complete' : 'incomplete'),
             );
 
