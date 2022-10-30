@@ -72,7 +72,10 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
         $app = $this->getAppInstance();
         $container = $app->getContainer();
 
+        $standardSettings = $container->get(SettingsInterface::class);
+
         $settingsProphecy = $this->prophesize(SettingsInterface::class);
+        $settingsProphecy->get('logger')->willReturn($standardSettings->get('logger'));
         $settingsProphecy->get('recaptcha')->willReturn(['bypass' => true]);
 
         $container->set(SettingsInterface::class, $settingsProphecy->reveal());
@@ -82,7 +85,6 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
 
         $credentialsSerialised = $serializer->serialize($credentialsObject, 'json');
         $credentials = json_decode($credentialsSerialised, true, 512, JSON_THROW_ON_ERROR);
-        $credentials['captcha_code'] = 'good response';
         $body = json_encode($credentials);
 
         $request = $this->createRequest('POST', '/v1/auth')
@@ -92,11 +94,6 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
             ->withAttribute('client-ip', '1.2.3.4');
         $request->getBody()->write($body);
 
-        $container = $this->getAppInstance()->getContainer();
-
-        // For the success case we can't fully handle the request without covering a lot of stuff
-        // outside the middleware, which is covered in `LoginTest`'s end to end action test already.
-        // So we are better creating an isolated middleware object to invoke.
         $middleware = new CredentialsRecaptchaMiddleware(
             $container->get(LoggerInterface::class), // null logger already set up
             $container->get(ReCaptcha::class), // already mocked with success simulation
