@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Middleware;
 
 use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Psr\Log\LoggerInterface;
@@ -96,6 +97,7 @@ class PersonRecaptchaMiddlewareTest extends TestCase
             $container->get(LoggerInterface::class), // null logger already set up
             $container->get(ReCaptcha::class), // already mocked with success simulation
             $container->get(SerializerInterface::class),
+            $container->get(SettingsInterface::class),
         );
         $response = $middleware->process($request, $this->getSuccessHandler());
 

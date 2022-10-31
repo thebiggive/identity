@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Middleware;
 
-use BigGive\Identity\Domain\Person;
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,9 +22,10 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
 
     #[Pure]
     public function __construct(
-        private LoggerInterface $logger,
-        private ReCaptcha $captcha,
+        private readonly LoggerInterface $logger,
+        private readonly ReCaptcha $captcha,
         protected SerializerInterface $serializer,
+        protected readonly SettingsInterface $settings,
     ) {
     }
 
@@ -33,6 +34,11 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        if ($this->settings->get('recaptcha')['bypass']) {
+            $this->logger->warning('Recaptcha verification bypassed');
+            return $handler->handle($request);
+        }
+
         $timesToAttemptCaptchaVerification = 2;
 
         for ($counter = 0; $counter < $timesToAttemptCaptchaVerification; $counter++) {
