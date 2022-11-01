@@ -6,6 +6,7 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
@@ -61,6 +62,7 @@ class Create extends Action
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
+        private readonly SettingsInterface $settings,
         private readonly StripeClient $stripeClient,
         private readonly ValidatorInterface $validator,
     ) {
@@ -92,6 +94,10 @@ class Create extends Action
                 $message,
                 empty($body), // Suspected bot / junk traffic sometimes sends blank payload.
             );
+        }
+
+        if ($this->settings->get('recaptcha')['bypass']) {
+            $person->skipCaptchaPresenceValidation();
         }
 
         $violations = $this->validator->validate($person, null, ['new']);

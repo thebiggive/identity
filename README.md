@@ -82,7 +82,7 @@ Stripe Customer, it's necessary for us to know a Stripe Customer ID as soon as w
 Payment Intent. Because we take donation amount first, this means the Customer is essentially
 anonymous on creation.
 
-This means that registration when the donor decides to set a password typically has 3 calls:
+This means that registration when the donor decides to set a password typically has 3 important calls:
 
 1. [Person\Create](./src/Application/Actions/Person/Create.php) (precedes all initiated donations)
 2. [Person\Update](./src/Application/Actions/Person/Update.php) with no password (alongside all completed donations)

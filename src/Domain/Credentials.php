@@ -46,7 +46,7 @@ class Credentials implements JsonSerializable
      *  example="mySecurePassword123",
      * )
      * @var string|null Used on create; only hash of this is persisted.
-     * @see Person::validateCaptchaAndRawPasswordSetIfNew()
+     * @see Person::validateCaptchaExistsIfNew()
      */
     public ?string $raw_password = null;
 

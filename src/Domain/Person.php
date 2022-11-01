@@ -148,6 +148,8 @@ class Person
      */
     private ?string $password = null;
 
+    private bool $skipCaptchaCheck = false;
+
     /**
      * @OA\Property(
      *  description="One-time code for a solved captcha; required on new registration",
@@ -155,7 +157,7 @@ class Person
      *  example="some-token-123",
      * )
      * @var string|null Used only on create; not persisted.
-     * @see Person::validateCaptchaAndRawPasswordSetIfNew()
+     * @see Person::validateCaptchaExistsIfNew()
      */
     public ?string $captcha_code = null;
 
@@ -168,7 +170,7 @@ class Person
      *  example="mySecurePassword123",
      * )
      * @var string|null Used on create; only hash of this is persisted.
-     * @see Person::validateCaptchaAndRawPasswordSetIfNew()
+     * @see Person::validateCaptchaExistsIfNew()
      */
     public ?string $raw_password = null;
 
@@ -241,7 +243,7 @@ class Person
     public function validateCaptchaExistsIfNew(ExecutionContextInterface $context): void
     {
         // Brand new entity + no captcha solved.
-        if (empty($this->id) && empty($this->captcha_code)) {
+        if (!$this->skipCaptchaCheck && empty($this->id) && empty($this->captcha_code)) {
             $context->buildViolation('Captcha is required to create an account')
                 ->atPath('captcha_code')
                 ->addViolation();
@@ -271,5 +273,10 @@ class Person
     public function addCompletionJWT(string $completionJWT): void
     {
         $this->completion_jwt = $completionJWT;
+    }
+
+    public function skipCaptchaPresenceValidation(): void
+    {
+        $this->skipCaptchaCheck = true;
     }
 }
