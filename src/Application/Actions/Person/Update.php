@@ -97,7 +97,7 @@ class Update extends Action
 
         try {
             /** @var Person $person */
-            $person = $this->serializer->deserialize(
+            $this->serializer->deserialize(
                 $body = ((string) $this->request->getBody()),
                 Person::class,
                 'json',
