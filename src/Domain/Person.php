@@ -33,6 +33,8 @@ class Person
         'id',
         'created_at',
         'updated_at',
+        'has_password',
+        'stripe_customer_id',
     ];
 
     /**
@@ -164,7 +166,7 @@ class Person
     /**
      * @OA\Property(
      *  property="raw_password",
-     *  description="Plain text password; required on new registration",
+     *  description="Plain text password; required to enable future logins",
      *  type="string",
      *  format="password",
      *  example="mySecurePassword123",
