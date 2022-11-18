@@ -75,6 +75,8 @@ class UpdateTest extends TestCase
             'raw_password' => $person->raw_password,
             'email_address' => $person->email_address,
             'captcha_code' => 'good response',
+            // The requirements of `$personToken` implicitly validate that we are not passing
+            // this fake value to the EntityManager's `persist(...)`.
             'stripe_customer_id' => 'cus_MyFakeId',
         ]);
 
@@ -102,6 +104,8 @@ class UpdateTest extends TestCase
         $this->assertObjectNotHasAttribute('raw_password', $payload);
         $this->assertObjectNotHasAttribute('password', $payload);
 
+        // Validate that the response contains the original, not the fake overridden, Stripe
+        // customer ID.
         $this->assertEquals($payload->stripe_customer_id, static::$testPersonStripeCustomerId);
     }
 
