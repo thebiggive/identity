@@ -29,12 +29,14 @@ class Person
 
     public const MIN_PASSWORD_LENGTH = 10;
 
-    public const NON_SERIALISED_FOR_UPDATE_ATTRIBUTES = [
-        'id',
-        'created_at',
-        'updated_at',
-        'has_password',
-        'stripe_customer_id',
+    public const SERIALISED_FOR_UPDATE_ATTRIBUTES = [
+        'first_name',
+        'last_name',
+        'email_address',
+        'home_address_line_1',
+        'home_postcode',
+        'home_country_code',
+        'raw_password',
     ];
 
     /**
