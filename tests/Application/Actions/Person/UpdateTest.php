@@ -21,6 +21,9 @@ class UpdateTest extends TestCase
 {
     use TestPeopleTrait;
 
+    /**
+     * Includes confirming that setting a Stripe Customer ID too is ignored.
+     */
     public function testSuccessSettingPassword(): void
     {
         // Start without password.
@@ -34,7 +37,16 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+
+        // It's important we are prescriptive about the most essential properties of the mock-persisted
+        // object in at least 1 test. Otherwise we can end up with bugs like ID-30 where properties
+        // are set unexpectedly but unit tests do not surface a problem.
+        /** @var Argument\Token\CallbackToken $personToken */
+        $personToken = Argument::that(function ($actual) {
+            return $actual instanceof Person && $actual->stripe_customer_id === static::$testPersonStripeCustomerId;
+        });
+
+        $personRepoProphecy->persist($personToken)
             ->shouldBeCalledOnce()
             ->willReturn($personWithPostPersistData);
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
@@ -63,6 +75,9 @@ class UpdateTest extends TestCase
             'raw_password' => $person->raw_password,
             'email_address' => $person->email_address,
             'captcha_code' => 'good response',
+            // The requirements of `$personToken` implicitly validate that we are not passing
+            // this fake value to the EntityManager's `persist(...)`.
+            'stripe_customer_id' => 'cus_MyFakeId',
         ]);
 
         $response = $app->handle($request);
@@ -88,6 +103,10 @@ class UpdateTest extends TestCase
         // These should be unset by `HasPasswordNormalizer`.
         $this->assertObjectNotHasAttribute('raw_password', $payload);
         $this->assertObjectNotHasAttribute('password', $payload);
+
+        // Validate that the response contains the original, not the fake overridden, Stripe
+        // customer ID.
+        $this->assertEquals($payload->stripe_customer_id, static::$testPersonStripeCustomerId);
     }
 
     public function testSettingPasswordForASecondPersonWithSameEmailAddress(): void
