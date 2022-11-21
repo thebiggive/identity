@@ -11,9 +11,9 @@ use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
-use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Stripe\StripeClient;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
@@ -97,15 +97,12 @@ class Update extends Action
 
         try {
             /** @var Person $person */
-            $person = $this->serializer->deserialize(
+            $this->serializer->deserialize(
                 $body = ((string) $this->request->getBody()),
                 Person::class,
                 'json',
                 [
-                    AbstractNormalizer::IGNORED_ATTRIBUTES => [
-                        ...Person::NON_SERIALISED_FOR_UPDATE_ATTRIBUTES,
-                        ...Person::NON_SERIALISED_ATTRIBUTES,
-                    ],
+                    AbstractNormalizer::ATTRIBUTES => Person::SERIALISED_FOR_UPDATE_ATTRIBUTES,
                     AbstractNormalizer::OBJECT_TO_POPULATE => $person,
                     UidNormalizer::NORMALIZATION_FORMAT_CANONICAL => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
                 ],
@@ -191,6 +188,7 @@ class Update extends Action
                 'json',
                 [
                     AbstractNormalizer::IGNORED_ATTRIBUTES => Person::NON_SERIALISED_ATTRIBUTES,
+                    JsonEncode::OPTIONS => JSON_FORCE_OBJECT,
                 ],
             ),
             200,

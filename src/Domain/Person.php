@@ -29,10 +29,14 @@ class Person
 
     public const MIN_PASSWORD_LENGTH = 10;
 
-    public const NON_SERIALISED_FOR_UPDATE_ATTRIBUTES = [
-        'id',
-        'created_at',
-        'updated_at',
+    public const SERIALISED_FOR_UPDATE_ATTRIBUTES = [
+        'first_name',
+        'last_name',
+        'email_address',
+        'home_address_line_1',
+        'home_postcode',
+        'home_country_code',
+        'raw_password',
     ];
 
     /**
@@ -164,7 +168,7 @@ class Person
     /**
      * @OA\Property(
      *  property="raw_password",
-     *  description="Plain text password; required on new registration",
+     *  description="Plain text password; required to enable future logins",
      *  type="string",
      *  format="password",
      *  example="mySecurePassword123",

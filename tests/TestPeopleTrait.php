@@ -29,6 +29,7 @@ trait TestPeopleTrait
         $person->first_name = 'Loraine';
         $person->last_name = 'James';
         $person->email_address = 'loraine@hyperdub.net';
+        $person->stripe_customer_id = 'cus_aaaaaaaaaaaa11';
 
         if ($withPassword) {
             $person->raw_password = 'superSecure123';
