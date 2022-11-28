@@ -7,8 +7,9 @@ use Doctrine\ORM\EntityRepository;
 
 class PasswordResetTokenRepository extends EntityRepository
 {
-    public function persist(PasswordResetToken $passwordResetToken): void
+    public function persist(PasswordResetToken $token): void
     {
-        // @todo implementation
+        $this->getEntityManager()->persist($token);
+        $this->getEntityManager()->flush();
     }
 }

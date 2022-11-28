@@ -20,4 +20,8 @@ class PasswordResetToken
      */
     private Uuid $secret;
 
+    public function __construct()
+    {
+        $this->secret = Uuid::v4();
+    }
 }
