@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Actions\CreatePasswordResetToken;
 use BigGive\Identity\Application\Actions\GetCreditFundingInstructions;
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
@@ -39,6 +40,11 @@ return function (App $app) {
 
         $versionGroup->post('/auth', Login::class)
             ->add(CredentialsRecaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+
+        $versionGroup->post(
+            '/password-reset-token',
+            CreatePasswordResetToken::class
+        );
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
