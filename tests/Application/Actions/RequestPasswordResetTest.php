@@ -2,6 +2,7 @@
 
 namespace BigGive\Identity\Tests\Application\Actions;
 
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\PasswordResetToken;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
@@ -12,7 +13,6 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Uid\UuidV4;
 
 class RequestPasswordResetTest extends TestCase
 {
@@ -20,14 +20,56 @@ class RequestPasswordResetTest extends TestCase
 
     public function testRequestingPasswordResetStoresToken(): void
     {
-        // arrange
         $app = $this->getAppInstance();
-
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personId = Uuid::v4();
+        $emailAddress = 'donor@weliketodonatebutweforgotpasswords.com';
+
+        // arrange
         $person = new Person();
         $person->setId($personId);
-        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress('donor@weliketodonatebutweforgotpasswords.com')
+
+        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($emailAddress)
+            ->willReturn($person);
+
+        $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
+
+        $mailerProphecy = $this->prophesize(Mailer::class);
+        $mailerProphecy->sendEmail(Argument::any())->willReturn(true);
+
+        $container = $app->getContainer();
+        assert($container instanceof Container);
+        $container->set(PasswordResetTokenRepository::class, $passwordResetTokenProphecy->reveal());
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $container->set(Mailer::class, $mailerProphecy->reveal());
+
+        // asert
+
+        $passwordResetTokenProphecy->persist(Argument::that(function (PasswordResetToken $token) use ($personId){
+            return $token->personId->equals($personId);
+        }))->shouldBeCalledOnce();
+
+        // act
+        $app->handle($this->buildRequest([
+            'email_address' => $emailAddress,
+        ]));
+    }
+
+    public function testRequestingPasswordResetSendsEmail(): void
+    {
+        $app = $this->getAppInstance();
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personId = Uuid::v4();
+        $emailAddress = 'donor@weliketodonatebutweforgotpasswords.com';
+
+        // arrange
+        $person = new Person();
+        $person->setId($personId);
+        $person->email_address = $emailAddress;
+        $person->first_name = "Joe";
+        $person->last_name = "Bloggs";
+
+        $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($emailAddress)
             ->willReturn($person);
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
@@ -37,13 +79,22 @@ class RequestPasswordResetTest extends TestCase
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         // assert
-        $passwordResetTokenProphecy->persist(Argument::that(function (PasswordResetToken $token) use ($personId){
-            return $token->personId->equals($personId);
-        }))->shouldBeCalledOnce();
+        $mailerProphecy = $this->prophesize(Mailer::class);
+        $container->set(Mailer::class, $mailerProphecy->reveal());
+
+        $mailerProphecy->sendEmail(Argument::that(function (array $params) use ($emailAddress) {
+            $this->assertSame('password-reset-requested', $params['templateKey']);
+            $this->assertSame($emailAddress, $params['recipientEmailAddress']);
+            $this->assertMatchesRegularExpression('/https.*/', $params['resetLink']);
+            $this->assertSame('Joe', $params['first_name']);
+            $this->assertSame('Bloggs', $params['last_name']);
+
+            return true;
+        }))->shouldBeCalledOnce()->willReturn(true);
 
         // act
         $app->handle($this->buildRequest([
-            'email_address' => 'donor@weliketodonatebutweforgotpasswords.com',
+            'email_address' => $emailAddress,
         ]));
     }
 

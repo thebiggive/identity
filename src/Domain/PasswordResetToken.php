@@ -30,4 +30,9 @@ class PasswordResetToken
         $this->personId = $personId;
         $this->secret = Uuid::v4();
     }
+
+    public function toBase58Secret(): string
+    {
+        return $this->secret->toBase58();
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace BigGive\Identity\Application\Actions;
 
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\PasswordResetToken;
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
@@ -19,6 +20,7 @@ class CreatePasswordResetToken extends Action
         private readonly PersonRepository $personRepository,
         private readonly PasswordResetTokenRepository $tokenRepository,
         private readonly ValidatorInterface $validator,
+        private readonly Mailer $mailer,
     ) {
         parent::__construct($logger);
     }
@@ -40,6 +42,14 @@ class CreatePasswordResetToken extends Action
         }
 
         $token = new PasswordResetToken($person->getId());
+
+        $this->mailer->sendEmail([
+            'templateKey' => 'password-reset-requested',
+            'recipientEmailAddress' => $person->email_address,
+            'resetLink' => 'https://example.com/' . $token->toBase58Secret(), // @todo work out proper link
+            'first_name' => $person->first_name,
+           'last_name' => $person->last_name,
+        ]);
 
         $this->tokenRepository->persist($token);
 
