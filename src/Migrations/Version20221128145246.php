@@ -27,7 +27,7 @@ final class Version20221128145246 extends AbstractMigration
                 person_id BINARY(16) not null,
                 created_at DATETIME NOT NULL DEFAULT NOW(),
                 updated_at DATETIME NOT NULL DEFAULT NOW() ON UPDATE now(),
-                used             DATETIME default null
+                used DATETIME default null
             );
         SQL);
     }
