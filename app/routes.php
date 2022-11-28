@@ -44,7 +44,7 @@ return function (App $app) {
         $versionGroup->post(
             '/password-reset-token',
             CreatePasswordResetToken::class
-        );
+        ); // @todo probably should put  recapcha on this. Also needs rate limiting.
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
