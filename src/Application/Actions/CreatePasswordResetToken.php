@@ -39,7 +39,8 @@ class CreatePasswordResetToken extends Action
             return new JsonResponse([]);
         }
 
-        $token = new PasswordResetToken();
+        $token = new PasswordResetToken($person->getId());
+
         $this->tokenRepository->persist($token);
 
         return new JsonResponse([]);

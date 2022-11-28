@@ -11,6 +11,8 @@ use DI\Container;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Uid\UuidV4;
 
 class RequestPasswordResetTest extends TestCase
 {
@@ -22,8 +24,11 @@ class RequestPasswordResetTest extends TestCase
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personId = Uuid::v4();
+        $person = new Person();
+        $person->setId($personId);
         $personRepoProphecy->findPasswordEnabledPersonByEmailAddress('donor@weliketodonatebutweforgotpasswords.com')
-            ->willReturn(new Person());
+            ->willReturn($person);
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
         $container = $app->getContainer();
@@ -33,7 +38,9 @@ class RequestPasswordResetTest extends TestCase
 
 
         // assert
-        $passwordResetTokenProphecy->persist(Argument::type(PasswordResetToken::class))->shouldBeCalledOnce();
+        $passwordResetTokenProphecy->persist(Argument::that(function (PasswordResetToken $token) use ($personId){
+            return $token->personId->equals($personId);
+        }))->shouldBeCalledOnce();
 
         // act
         $app->handle($this->buildRequest([
