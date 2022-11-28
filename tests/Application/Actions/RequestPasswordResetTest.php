@@ -36,7 +36,6 @@ class RequestPasswordResetTest extends TestCase
         $container->set(PasswordResetTokenRepository::class, $passwordResetTokenProphecy->reveal());
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
 
-
         // assert
         $passwordResetTokenProphecy->persist(Argument::that(function (PasswordResetToken $token) use ($personId){
             return $token->personId->equals($personId);
