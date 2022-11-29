@@ -23,14 +23,15 @@ class ChangePasswordWithTokenTest extends TestCase
     {
         $secret = Uuid::v4();
         $personId = Uuid::v4();
+        $person = new Person();
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
-        $passwordResetToken = new PasswordResetToken($personId);
+        $passwordResetToken = new PasswordResetToken($person);
         $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findBySecret($secret)->willReturn($passwordResetToken);
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->find($personId->toRfc4122())->willReturn(new Person());
+        $personRepoProphecy->find($personId->toRfc4122())->willReturn($person);
 
         $app = $this->getAppInstance();
         $container = $app->getContainer();
@@ -53,7 +54,9 @@ class ChangePasswordWithTokenTest extends TestCase
     {
         $secret = Uuid::v4();
         $personId = Uuid::v4();
-        $passwordResetToken = new PasswordResetToken($personId);
+        $person = new Person();
+
+        $passwordResetToken = new PasswordResetToken($person);
         $passwordResetToken->created_at = new \DateTime("61 minutes ago");
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
@@ -61,7 +64,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $passwordResetTokenProphecy->findBySecret($secret)->willReturn($passwordResetToken);
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->find($personId->toRfc4122())->willReturn(new Person());
+        $personRepoProphecy->find($personId->toRfc4122())->willReturn($person);
 
         $app = $this->getAppInstance();
         $container = $app->getContainer();

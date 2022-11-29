@@ -3,6 +3,8 @@
 namespace BigGive\Identity\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -20,16 +22,18 @@ class PasswordResetToken
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
      */
-    private Uuid $secret;
+    private readonly Uuid $secret;
 
     /**
      * @ORM\Column(type="uuid", unique=true)
+     * @ManyToOne(targetEntity="Person")
+     * @JoinColumn(name="address_id", referencedColumnName="id")
      */
-    public readonly Uuid $person_id;
+    public readonly Person $person;
 
-    public function __construct(Uuid $personId)
+    public function __construct(Person $person)
     {
-        $this->person_id = $personId;
+        $this->person = $person;
         $this->secret = Uuid::v4();
         $this->createdNow();
     }

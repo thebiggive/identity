@@ -41,7 +41,7 @@ class CreatePasswordResetToken extends Action
             return new JsonResponse([]);
         }
 
-        $token = new PasswordResetToken($person->getId());
+        $token = new PasswordResetToken($person);
 
         $this->mailer->sendEmail([
             'templateKey' => 'password-reset-requested',
