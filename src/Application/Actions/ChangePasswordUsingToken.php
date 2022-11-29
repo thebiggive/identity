@@ -28,11 +28,12 @@ class ChangePasswordUsingToken extends Action
 
     protected function action(): Response
     {
+        /** @var array $requestData */
         $requestData = json_decode($this->request->getBody(), true);
 
         $secret = $requestData['secret'] ?? throw new \Exception('Missing secret');
 
-        $secretUuid = Uuid::fromBase58($secret);
+        $secretUuid = Uuid::fromBase58((string) $secret);
 
         $token = $this->tokenRepository->findForUse($secretUuid);
 
@@ -51,7 +52,7 @@ class ChangePasswordUsingToken extends Action
         }
 
         $person = $token->person;
-        $person->raw_password = $requestData['new-password'];
+        $person->raw_password = (string) $requestData['new-password'];
         // @todo - get Symfony validator to call Person::validatePasswordIfNotBlank
 
         $this->personRepository->persistForPasswordChange($person);

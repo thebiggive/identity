@@ -28,7 +28,9 @@ class CreatePasswordResetToken extends Action
 
     protected function action(): Response
     {
-        $email = json_decode($this->request->getBody(), true)['email_address'];
+        /** @var array $decoded */
+        $decoded = json_decode($this->request->getBody()->getContents(), true);
+        $email = (string) $decoded['email_address'];
         $violations = $this->validator->validate($email, constraints: new Email());
         if (count($violations) > 0) {
             throw new HttpBadRequestException($this->request, 'Invalid email address');
