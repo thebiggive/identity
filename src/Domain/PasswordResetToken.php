@@ -18,7 +18,16 @@ class PasswordResetToken
     use TimestampsTrait;
 
     /**
+     * @todo find out why Doctrine Diff doesn't seem to be picking up this column.
+     *
      * @ORM\Id
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
+     */
+    private ?Uuid $id = null;
+
+    /**
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
      */
