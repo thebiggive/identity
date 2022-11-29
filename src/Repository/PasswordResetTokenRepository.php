@@ -14,10 +14,19 @@ class PasswordResetTokenRepository extends EntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function findBySecret(Uuid $secret): ?PasswordResetToken
+    public function findForUse(Uuid $secret): ?PasswordResetToken
     {
-        /** @var ?PasswordResetToken $token */
-        $token = $this->find($secret);
+        $query = $this->_em->createQuery(
+            'SELECT p from \BigGive\Identity\Domain\PasswordResetToken u 
+            WHERE p.secret = :secret
+            AND p.used IS NULL
+            AND p.created > DATE_SUB(NOW(), 1, "HOUR") 
+            '
+        );
+        $query->setParameter('secret', $secret);
+
+        /** @var PasswordResetToken $token */
+        $token = $query->getOneOrNullResult();
 
         return $token;
     }

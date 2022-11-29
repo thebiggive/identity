@@ -28,7 +28,8 @@ class ChangePasswordWithTokenTest extends TestCase
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
         $passwordResetToken = new PasswordResetToken($person);
         $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
-        $passwordResetTokenProphecy->findBySecret($secret)->willReturn($passwordResetToken);
+        $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
+        $passwordResetTokenProphecy->persist($passwordResetToken)->shouldBeCalled();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find($personId->toRfc4122())->willReturn($person);
@@ -48,6 +49,8 @@ class ChangePasswordWithTokenTest extends TestCase
             'secret' => $secret->toBase58(),
             'new-password' => 'n3w-p4ssw0rd',
         ]));
+
+        $this->assertTrue($passwordResetToken->isUsed());
     }
 
     public function testCannotChangePasswordUsingExpiredToken(): void
@@ -61,7 +64,7 @@ class ChangePasswordWithTokenTest extends TestCase
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
 
-        $passwordResetTokenProphecy->findBySecret($secret)->willReturn($passwordResetToken);
+        $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find($personId->toRfc4122())->willReturn($person);
@@ -81,6 +84,48 @@ class ChangePasswordWithTokenTest extends TestCase
             ]));
         } catch (HttpBadRequestException $_e) {
             // not sure tbh why I need to catch this here, I would have expected the app to catch it.
+        }
+    }
+
+    public function testCannotChangePasswordTwiceWithSameToken(): void
+    {
+        $secret = Uuid::v4();
+        $personId = Uuid::v4();
+        $person = new Person();
+
+        $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
+        $passwordResetToken = new PasswordResetToken($person);
+        $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
+        $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
+        $passwordResetTokenProphecy->persist($passwordResetToken)->shouldBeCalled();
+
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->find($personId->toRfc4122())->willReturn($person);
+
+        $app = $this->getAppInstance();
+        $container = $app->getContainer();
+        assert($container instanceof Container);
+        $container->set(PasswordResetTokenRepository::class, $passwordResetTokenProphecy->reveal());
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+
+        $personRepoProphecy->persistForPasswordChange(Argument::that(function (Person $person) {
+            $this->assertSame('n3w-p4ssw0rd', $person->raw_password);
+            return true;
+        }))->shouldBeCalledOnce();
+
+        $app->handle($this->buildRequest([
+            'secret' => $secret->toBase58(),
+            'new-password' => 'n3w-p4ssw0rd',
+        ]));
+
+        try {
+            $app->handle($this->buildRequest([
+                'secret' => $secret->toBase58(),
+                'new-password' => 's3cond-n3w-p4ssw0rd',
+            ]));
+        } catch (HttpBadRequestException $_e) {
+            // no-op
         }
     }
 

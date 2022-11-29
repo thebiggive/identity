@@ -40,6 +40,11 @@ class PasswordResetToken
      */
     public readonly Person $person;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private ?\DateTimeImmutable $used = null;
+
     public function __construct(Person $person)
     {
         $this->person = $person;
@@ -50,5 +55,15 @@ class PasswordResetToken
     public function toBase58Secret(): string
     {
         return $this->secret->toBase58();
+    }
+
+    public function setUsed(\DateTimeImmutable $used): void
+    {
+        $this->used = $used;
+    }
+
+    public function isUsed(): bool
+    {
+        return $this->used !== null;
     }
 }

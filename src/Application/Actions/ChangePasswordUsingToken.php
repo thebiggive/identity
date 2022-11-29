@@ -34,10 +34,20 @@ class ChangePasswordUsingToken extends Action
 
         $secretUuid = Uuid::fromBase58($secret);
 
-        $token = $this->tokenRepository->findBySecret($secretUuid);
+        $token = $this->tokenRepository->findForUse($secretUuid);
 
+        if ($token === null) {
+            throw new HttpBadRequestException($this->request, 'Token not found or not valid');
+        }
+
+        // The following two checks should be not necassary in production, because they are done in the DQL query
+        // when we called findForUse. But leaving them in for now for belt-and-braces and because they are unit tested
+        // but we don't have a way to unit test DQL.
         if ($token->created_at < new \DateTime("1 hour ago")) {
-            throw new HttpBadRequestException($this->request, 'Token expired');
+            throw new HttpBadRequestException($this->request, 'Token not found or not valid');
+        }
+        if ($token->isUsed()) {
+            throw new HttpBadRequestException($this->request, 'Token not found or not valid');
         }
 
         $person = $token->person;
@@ -45,6 +55,9 @@ class ChangePasswordUsingToken extends Action
         // @todo - get Symfony validator to call Person::validatePasswordIfNotBlank
 
         $this->personRepository->persistForPasswordChange($person);
+        $token->setUsed(new \DateTimeImmutable());
+        $this->tokenRepository->persist($token);
+
         return new JsonResponse([]);
     }
 }
