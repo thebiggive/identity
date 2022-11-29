@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Actions\ChangePasswordUsingToken;
 use BigGive\Identity\Application\Actions\CreatePasswordResetToken;
 use BigGive\Identity\Application\Actions\GetCreditFundingInstructions;
 use BigGive\Identity\Application\Actions\Login;
@@ -45,6 +46,8 @@ return function (App $app) {
             '/password-reset-token',
             CreatePasswordResetToken::class
         ); // @todo probably should put  recapcha on this. Also needs rate limiting.
+
+        $versionGroup->post('/change-forgotten-password', ChangePasswordUsingToken::class);
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
