@@ -9,6 +9,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -34,6 +35,11 @@ class ChangePasswordUsingToken extends Action
         $secretUuid = Uuid::fromBase58($secret);
 
         $token = $this->tokenRepository->findBySecret($secretUuid);
+
+        if ($token->created_at < new \DateTime("1 hour ago")) {
+            throw new HttpBadRequestException($this->request, 'Token expired');
+        }
+
         $person = $this->personRepository->find($token->personId->toRfc4122());
         $person->raw_password = $requestData['new-password'];
         // @todo - get Symfony validator to call Person::validatePasswordIfNotBlank

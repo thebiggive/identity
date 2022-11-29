@@ -13,6 +13,8 @@ use Symfony\Component\Uid\Uuid;
  */
 class PasswordResetToken
 {
+    use TimestampsTrait;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -29,6 +31,7 @@ class PasswordResetToken
     {
         $this->personId = $personId;
         $this->secret = Uuid::v4();
+        $this->createdNow();
     }
 
     public function toBase58Secret(): string
