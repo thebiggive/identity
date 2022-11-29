@@ -9,6 +9,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -30,8 +31,7 @@ class CreatePasswordResetToken extends Action
         $email = json_decode($this->request->getBody(), true)['email_address'];
         $violations = $this->validator->validate($email, constraints: new Email());
         if (count($violations) > 0) {
-            // todo return nicer error response here
-            throw new \Exception('Invalid email');
+            throw new HttpBadRequestException($this->request, 'Invalid email address');
         }
 
         $person = $this->personRepository->findPasswordEnabledPersonByEmailAddress($email);
@@ -46,7 +46,7 @@ class CreatePasswordResetToken extends Action
         $this->mailer->sendEmail([
             'templateKey' => 'password-reset-requested',
             'recipientEmailAddress' => $person->email_address,
-            'resetLink' => 'https://example.com/' . $token->toBase58Secret(), // @todo work out proper link
+            'resetLink' => 'https://example.com/' . $token->toBase58Secret(), // @todo work out proper link, possibly as part of DON-272
             'first_name' => $person->first_name,
            'last_name' => $person->last_name,
         ]);
