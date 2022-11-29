@@ -25,11 +25,11 @@ class PasswordResetToken
     /**
      * @ORM\Column(type="uuid", unique=true)
      */
-    public readonly Uuid $personId;
+    public readonly Uuid $person_id;
 
     public function __construct(Uuid $personId)
     {
-        $this->personId = $personId;
+        $this->person_id = $personId;
         $this->secret = Uuid::v4();
         $this->createdNow();
     }

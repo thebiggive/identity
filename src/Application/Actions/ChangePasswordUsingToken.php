@@ -40,7 +40,7 @@ class ChangePasswordUsingToken extends Action
             throw new HttpBadRequestException($this->request, 'Token expired');
         }
 
-        $person = $this->personRepository->find($token->personId->toRfc4122());
+        $person = $this->personRepository->find($token->person_id->toRfc4122());
         $person->raw_password = $requestData['new-password'];
         // @todo - get Symfony validator to call Person::validatePasswordIfNotBlank
 
