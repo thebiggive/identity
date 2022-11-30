@@ -29,7 +29,7 @@ class CreatePasswordResetToken extends Action
     protected function action(): Response
     {
         /** @var array $decoded */
-        $decoded = json_decode($this->request->getBody()->getContents(), true);
+        $decoded = json_decode($this->request->getBody()->__toString(), true, 512, \JSON_THROW_ON_ERROR);
         $email = (string) $decoded['email_address'];
         $violations = $this->validator->validate($email, constraints: new Email());
         if (count($violations) > 0) {
