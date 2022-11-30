@@ -49,8 +49,8 @@ class CreatePasswordResetToken extends Action
             'templateKey' => 'password-reset-requested',
             'recipientEmailAddress' => $person->email_address,
             'resetLink' => 'https://example.com/' . $token->toBase58Secret(), // @todo work out proper link, possibly as part of DON-272
-            'first_name' => $person->first_name,
-           'last_name' => $person->last_name,
+            'firstName' => $person->first_name,
+            'lastName' => $person->last_name,
         ]);
 
         $this->tokenRepository->persist($token);
