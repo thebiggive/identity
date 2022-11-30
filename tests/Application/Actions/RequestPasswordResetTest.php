@@ -9,6 +9,7 @@ use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use DI\Container;
+use Laminas\Diactoros\ServerRequest;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
@@ -87,8 +88,8 @@ class RequestPasswordResetTest extends TestCase
             $this->assertSame('password-reset-requested', $params['templateKey']);
             $this->assertSame($emailAddress, $params['recipientEmailAddress']);
             $this->assertMatchesRegularExpression('/https.*/', $params['resetLink']);
-            $this->assertSame('Joe', $params['first_name']);
-            $this->assertSame('Bloggs', $params['last_name']);
+            $this->assertSame('Joe', $params['firstName']);
+            $this->assertSame('Bloggs', $params['lastName']);
 
             return true;
         }))->shouldBeCalledOnce()->willReturn(true);
