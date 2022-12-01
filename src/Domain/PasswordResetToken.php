@@ -32,7 +32,6 @@ class PasswordResetToken
     private readonly Uuid $secret;
 
     /**
-     * @ORM\Column(type="uuid", unique=true)
      * @ManyToOne(targetEntity="Person")
      * @JoinColumn(name="address_id", referencedColumnName="id")
      */
