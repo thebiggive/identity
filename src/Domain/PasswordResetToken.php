@@ -33,7 +33,7 @@ class PasswordResetToken
 
     /**
      * @ManyToOne(targetEntity="Person")
-     * @JoinColumn(name="address_id", referencedColumnName="id")
+     * @JoinColumn(name="person_id", referencedColumnName="id")
      */
     public readonly Person $person;
 
