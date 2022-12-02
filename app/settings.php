@@ -83,6 +83,9 @@ return function (ContainerBuilder $containerBuilder) {
                     'apiKey' => getenv('STRIPE_SECRET_KEY'),
                     'apiVersion' => getenv('STRIPE_API_VERSION'),
                 ],
+                'donateFrontEnd' => [
+                    'baseUri' => getenv('DONATE_FRONT_END_BASE_URI') ?: 'https://donate.thebiggive.org.uk',
+                ],
             ]);
         }
     ]);

@@ -2,6 +2,7 @@
 
 namespace BigGive\Identity\Application\Actions;
 
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\PasswordResetToken;
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
@@ -21,6 +22,7 @@ class CreatePasswordResetToken extends Action
         private readonly PersonRepository $personRepository,
         private readonly PasswordResetTokenRepository $tokenRepository,
         private readonly ValidatorInterface $validator,
+        private readonly SettingsInterface $settings,
         private readonly Mailer $mailer,
     ) {
         parent::__construct($logger);
@@ -28,6 +30,10 @@ class CreatePasswordResetToken extends Action
 
     protected function action(): Response
     {
+        // I'd prefer to just inject the baseUri instead of the entire settings, but this seems easier for now.
+        $donateFrontendBaseUrl = ($this->settings->get('donateFrontEnd')['baseUri']);
+        \assert(is_string($donateFrontendBaseUrl));
+
         /** @var array $decoded */
         $decoded = json_decode($this->request->getBody()->__toString(), true, 512, \JSON_THROW_ON_ERROR);
         $email = (string) $decoded['email_address'];
@@ -45,8 +51,7 @@ class CreatePasswordResetToken extends Action
 
         $token = new PasswordResetToken($person);
 
-        // todo make this environment specific instead of always pointing to the prod instance of donate
-        $resetLink = 'https://donate.thebiggive.org.uk/reset-password/' . urlencode($token->toBase58Secret());
+        $resetLink = $donateFrontendBaseUrl . '/reset-password/' . urlencode($token->toBase58Secret());
 
         $this->mailer->sendEmail([
             'templateKey' => 'password-reset-requested',
