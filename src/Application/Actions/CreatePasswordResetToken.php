@@ -45,13 +45,16 @@ class CreatePasswordResetToken extends Action
 
         $token = new PasswordResetToken($person);
 
+        // todo make this environment specific instead of always pointing to the prod instance of donate
+        $resetLink = 'https://donate.thebiggive.org.uk/reset-password/' . urlencode($token->toBase58Secret());
+
         $this->mailer->sendEmail([
             'templateKey' => 'password-reset-requested',
             'recipientEmailAddress' => $person->email_address,
             'params' => [
                 'firstName' => $person->getFirstName(),
                 'lastName' => $person->getLastName(),
-                'resetLink' => 'https://example.com/' . $token->toBase58Secret(), // @todo work out proper link, possibly as part of DON-272
+                'resetLink' => $resetLink,
             ],
         ]);
 
