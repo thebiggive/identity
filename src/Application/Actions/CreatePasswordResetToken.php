@@ -31,8 +31,8 @@ class CreatePasswordResetToken extends Action
     protected function action(): Response
     {
         // I'd prefer to just inject the baseUri instead of the entire settings, but this seems easier for now.
-        $donateFrontendBaseUrl = ($this->settings->get('donateFrontEnd')['baseUri']);
-        \assert(is_string($donateFrontendBaseUrl));
+        $accountManagementBaseUrl = ($this->settings->get('accountManagement')['baseUri']);
+        \assert(is_string($accountManagementBaseUrl));
 
         /** @var array $decoded */
         $decoded = json_decode($this->request->getBody()->__toString(), true, 512, \JSON_THROW_ON_ERROR);
@@ -51,7 +51,7 @@ class CreatePasswordResetToken extends Action
 
         $token = new PasswordResetToken($person);
 
-        $resetLink = $donateFrontendBaseUrl . '/reset-password/' . urlencode($token->toBase58Secret());
+        $resetLink = $accountManagementBaseUrl . '/reset-password/' . urlencode($token->toBase58Secret());
 
         $this->mailer->sendEmail([
             'templateKey' => 'password-reset-requested',
