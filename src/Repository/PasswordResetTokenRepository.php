@@ -23,7 +23,7 @@ class PasswordResetTokenRepository extends EntityRepository
             AND p.created_at > DATE_SUB(CURRENT_TIMESTAMP(), 1, 'HOUR') 
             "
         );
-        $query->setParameter('secret', $secret);
+        $query->setParameter('secret', $secret->toBinary());
 
         /** @var PasswordResetToken $token */
         $token = $query->getOneOrNullResult();
