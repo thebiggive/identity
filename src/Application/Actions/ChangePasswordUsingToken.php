@@ -41,10 +41,6 @@ class ChangePasswordUsingToken extends Action
             throw new HttpBadRequestException($this->request, 'Token not found or not valid');
         }
 
-        // The following two checks should be not necassary in production, because they are done in the DQL query
-        // when we called findForUse. But leaving them in for now for belt-and-braces and because they are unit tested
-        // but we don't have a way to unit test DQL.
-
 
         $person = $token->person;
         $person->raw_password = (string) $requestData['new-password'];
