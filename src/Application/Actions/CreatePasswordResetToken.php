@@ -51,7 +51,7 @@ class CreatePasswordResetToken extends Action
 
         $token = new PasswordResetToken($person);
 
-        $resetLink = $accountManagementBaseUrl . '/reset-password/' . urlencode($token->toBase58Secret());
+        $resetLink = $accountManagementBaseUrl . '/reset-password/' . "?token=" . urlencode($token->toBase58Secret());
 
         $this->mailer->sendEmail([
             'templateKey' => 'password-reset-requested',
