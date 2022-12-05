@@ -85,7 +85,7 @@ class Token
         }
 
         if ($personId !== $decodedJwtBody->sub->person_id) {
-            $logger->error("JWT error: Not authorised for person ID $personId");
+            $logger->warning("JWT error: Not authorised for person ID $personId");
 
             return false;
         }
