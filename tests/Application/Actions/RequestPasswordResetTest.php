@@ -87,7 +87,7 @@ class RequestPasswordResetTest extends TestCase
             /** @var array<string, string> $params */
             $this->assertSame('password-reset-requested', $params['templateKey']);
             $this->assertSame($emailAddress, $params['recipientEmailAddress']);
-            $this->assertMatchesRegularExpression('/https.*/', $params['params']['resetLink']);
+            $this->assertMatchesRegularExpression('/http.*/', $params['params']['resetLink']);
             $this->assertSame('Joe', $params['params']['firstName']);
             $this->assertSame('Bloggs', $params['params']['lastName']);
 

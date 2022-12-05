@@ -55,12 +55,14 @@ class ChangePasswordWithTokenTest extends TestCase
 
     public function testCannotChangePasswordUsingExpiredToken(): void
     {
+        // may not be worth doing now the test is written, but we could simplify by testing just PasswordResetToken class directly instead of the whole app.
+
         $secret = Uuid::v4();
         $personId = Uuid::v4();
         $person = new Person();
 
         $passwordResetToken = new PasswordResetToken($person);
-        $passwordResetToken->created_at = new \DateTime("61 minutes ago");
+        $passwordResetToken->created_at = new \DateTime("62 minutes ago");
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
 
@@ -77,18 +79,16 @@ class ChangePasswordWithTokenTest extends TestCase
 
         $personRepoProphecy->persistForPasswordChange(Argument::any())->shouldNotBeCalled();
 
-        try {
-            $app->handle($this->buildRequest([
-                'secret' => $secret->toBase58(),
-                'new-password' => 'n3w-p4ssw0rd',
-            ]));
-        } catch (HttpBadRequestException $_e) {
-            // not sure tbh why I need to catch this here, I would have expected the app to catch it.
-        }
+        $this->expectExceptionMessage('Token expired');
+        $app->handle($this->buildRequest([
+            'secret' => $secret->toBase58(),
+            'new-password' => 'n3w-p4ssw0rd',
+        ]));
     }
 
     public function testCannotChangePasswordTwiceWithSameToken(): void
     {
+        //  may not be worth doing now the test is written, but we could simplify by testing just PasswordResetToken class directly instead of the whole app.
         $secret = Uuid::v4();
         $personId = Uuid::v4();
         $person = new Person();
@@ -119,14 +119,11 @@ class ChangePasswordWithTokenTest extends TestCase
             'new-password' => 'n3w-p4ssw0rd',
         ]));
 
-        try {
-            $app->handle($this->buildRequest([
-                'secret' => $secret->toBase58(),
-                'new-password' => 's3cond-n3w-p4ssw0rd',
-            ]));
-        } catch (HttpBadRequestException $_e) {
-            // no-op
-        }
+        $this->expectExceptionMessage('Token already used');
+        $app->handle($this->buildRequest([
+            'secret' => $secret->toBase58(),
+            'new-password' => 's3cond-n3w-p4ssw0rd',
+        ]));
     }
 
     private function buildRequest(array $payload): ServerRequestInterface
