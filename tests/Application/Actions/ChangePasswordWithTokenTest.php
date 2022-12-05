@@ -47,7 +47,7 @@ class ChangePasswordWithTokenTest extends TestCase
 
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
-            'new-password' => 'n3w-p4ssw0rd',
+            'new_password' => 'n3w-p4ssw0rd',
         ]));
 
         $this->assertTrue($passwordResetToken->isUsed());
@@ -82,7 +82,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $this->expectExceptionMessage('Token expired');
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
-            'new-password' => 'n3w-p4ssw0rd',
+            'new_password' => 'n3w-p4ssw0rd',
         ]));
     }
 
@@ -116,13 +116,13 @@ class ChangePasswordWithTokenTest extends TestCase
 
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
-            'new-password' => 'n3w-p4ssw0rd',
+            'new_password' => 'n3w-p4ssw0rd',
         ]));
 
         $this->expectExceptionMessage('Token already used');
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
-            'new-password' => 's3cond-n3w-p4ssw0rd',
+            'new_password' => 's3cond-n3w-p4ssw0rd',
         ]));
     }
 
@@ -152,7 +152,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $this->expectExceptionMessage('Password must be 10 or more characters');
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
-            'new-password' => 'short',
+            'new_password' => 'short',
         ]));
     }
 

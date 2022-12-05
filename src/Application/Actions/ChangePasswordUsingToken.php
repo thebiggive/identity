@@ -42,7 +42,7 @@ class ChangePasswordUsingToken extends Action
         }
 
         $person = $token->person;
-        $person->raw_password = (string) $requestData['new-password'];
+        $person->raw_password = (string) $requestData['new_password'];
         $violations = $this->validator->validate($person, null, ['complete']);
 
         foreach ($violations as $violation) {
