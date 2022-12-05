@@ -126,6 +126,36 @@ class ChangePasswordWithTokenTest extends TestCase
         ]));
     }
 
+    public function testCannotSetPasswordShorterThanMinLength(): void
+    {
+        //  may not be worth doing now the test is written, but we could simplify by testing just PasswordResetToken class directly instead of the whole app.
+        $secret = Uuid::v4();
+        $personId = Uuid::v4();
+        $person = new Person();
+
+        $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
+        $passwordResetToken = new PasswordResetToken($person);
+        $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
+        $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
+  //      $passwordResetTokenProphecy->persist($passwordResetToken)->shouldBeCalled();
+
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->find($personId->toRfc4122())->willReturn($person);
+
+        $app = $this->getAppInstance();
+        $container = $app->getContainer();
+        assert($container instanceof Container);
+        $container->set(PasswordResetTokenRepository::class, $passwordResetTokenProphecy->reveal());
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+
+        $this->expectExceptionMessage('Password must be 10 or more characters');
+        $app->handle($this->buildRequest([
+            'secret' => $secret->toBase58(),
+            'new-password' => 'short',
+        ]));
+    }
+
     private function buildRequest(array $payload): ServerRequestInterface
     {
         // Accept JSON is the `createRequest()` default.

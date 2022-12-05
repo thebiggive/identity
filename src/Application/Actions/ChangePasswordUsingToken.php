@@ -41,10 +41,16 @@ class ChangePasswordUsingToken extends Action
             throw new HttpBadRequestException($this->request, 'Token not found or not valid');
         }
 
-
         $person = $token->person;
         $person->raw_password = (string) $requestData['new-password'];
         // @todo - get Symfony validator to call Person::validatePasswordIfNotBlank
+        $violations = $this->validator->validate($person, null, ['complete']);
+
+        foreach ($violations as $violation) {
+            if ($violation->getPropertyPath() === 'raw_password') {
+                throw new HttpBadRequestException($this->request, $violation->getMessage());
+            }
+        }
 
         $token->consume(new \DateTimeImmutable());
         $this->personRepository->persistForPasswordChange($person);
