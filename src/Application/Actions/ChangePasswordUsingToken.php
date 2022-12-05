@@ -43,7 +43,6 @@ class ChangePasswordUsingToken extends Action
 
         $person = $token->person;
         $person->raw_password = (string) $requestData['new-password'];
-        // @todo - get Symfony validator to call Person::validatePasswordIfNotBlank
         $violations = $this->validator->validate($person, null, ['complete']);
 
         foreach ($violations as $violation) {
