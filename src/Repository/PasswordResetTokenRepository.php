@@ -17,11 +17,11 @@ class PasswordResetTokenRepository extends EntityRepository
     public function findForUse(Uuid $secret): ?PasswordResetToken
     {
         $query = $this->_em->createQuery(
-            'SELECT p from \BigGive\Identity\Domain\PasswordResetToken u 
+            "SELECT p from \BigGive\Identity\Domain\PasswordResetToken p
             WHERE p.secret = :secret
             AND p.used IS NULL
-            AND p.created > DATE_SUB(NOW(), 1, "HOUR") 
-            '
+            AND p.created_at > DATE_SUB(CURRENT_TIMESTAMP(), 1, 'HOUR') 
+            "
         );
         $query->setParameter('secret', $secret);
 
