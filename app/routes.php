@@ -12,6 +12,7 @@ use BigGive\Identity\Application\Middleware\CredentialsRecaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\PlainRecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -45,9 +46,12 @@ return function (App $app) {
         $versionGroup->post(
             '/password-reset-token',
             CreatePasswordResetToken::class
-        ); // @todo probably should put  recapcha on this. Also needs rate limiting.
+        )
+            ->add(PlainRecaptchaMiddleware::class)
+        ;
 
-        $versionGroup->post('/change-forgotten-password', ChangePasswordUsingToken::class);
+        $versionGroup->post('/change-forgotten-password', ChangePasswordUsingToken::class)
+        ;
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
