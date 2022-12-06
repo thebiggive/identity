@@ -67,7 +67,6 @@ class PersonRepository extends EntityRepository
     public function persistForPasswordChange(Person $person): void
     {
         $person->hashPassword();
-
         $this->getEntityManager()->persist($person);
         $this->getEntityManager()->flush();
     }
