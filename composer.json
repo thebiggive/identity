@@ -27,7 +27,6 @@
         "middlewares/client-ip": "^2.0",
         "monolog/monolog": "^2.6",
         "php-di/php-di": "^6.4",
-        "psalm/plugin-phpunit": "^0.18.4",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "stripe/stripe-php": "^9.1.0",
@@ -37,8 +36,6 @@
         "symfony/serializer": "^6.1",
         "symfony/uid": "^6.1",
         "symfony/validator": "^6.1",
-        "vimeo/psalm": "^5.1",
-        "weirdan/doctrine-psalm-plugin": "^2.6",
         "zircote/swagger-php": "^4.4.7"
     },
     "require-dev": {
@@ -48,8 +45,11 @@
         "phpstan/extension-installer": "^1.1.0",
         "phpstan/phpstan": "^1.7",
         "phpunit/phpunit": "^9.5.20",
+        "psalm/plugin-phpunit": "^0.18.4",
         "roave/security-advisories": "dev-latest",
-        "squizlabs/php_codesniffer": "^3.6"
+        "squizlabs/php_codesniffer": "^3.6",
+        "vimeo/psalm": "^5.1",
+        "weirdan/doctrine-psalm-plugin": "^2.6"
     },
     "config": {
         "optimize-autoloader": true,
