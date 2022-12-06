@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.1.0@4defa177c89397c5e14737a80fe4896584130674">
+  <file src="src/Application/Actions/Action.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>string</code>
+    </ImplicitToStringCast>
+    <PossiblyNullArgument occurrences="1">
+      <code>$httpCode</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>$args</code>
+      <code>$request</code>
+      <code>$response</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Actions/ActionError.php">
+    <PossiblyNullPropertyAssignmentValue occurrences="2">
+      <code>$description</code>
+      <code>$description</code>
+    </PossiblyNullPropertyAssignmentValue>
+  </file>
+  <file src="src/Application/Actions/GetCreditFundingInstructions.php">
+    <PossiblyNullArgument occurrences="1">
+      <code>$person-&gt;stripe_customer_id</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>GetCreditFundingInstructions</code>
+      <code>GetCreditFundingInstructions</code>
+      <code>GetCreditFundingInstructions</code>
+    </PropertyNotSetInConstructor>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>Person|null</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="src/Application/Actions/Login.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$violation</code>
+    </ArgumentTypeCoercion>
+    <PossiblyNullArgument occurrences="1">
+      <code>$credentials-&gt;raw_password</code>
+    </PossiblyNullArgument>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$body</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Login</code>
+      <code>Login</code>
+      <code>Login</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Actions/Person/Create.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$violation</code>
+    </ArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="1">
+      <code>$this-&gt;settings-&gt;get('recaptcha')['bypass']</code>
+    </MixedArrayAccess>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$body</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Create</code>
+      <code>Create</code>
+      <code>Create</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Actions/Person/Get.php">
+    <MixedAssignment occurrences="1">
+      <code>$amount</code>
+    </MixedAssignment>
+    <MixedPropertyTypeCoercion occurrences="1">
+      <code>$person-&gt;cash_balance</code>
+    </MixedPropertyTypeCoercion>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Get</code>
+      <code>Get</code>
+      <code>Get</code>
+    </PropertyNotSetInConstructor>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>Person|null</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="src/Application/Actions/Person/Update.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$violation</code>
+    </ArgumentTypeCoercion>
+    <PossiblyNullArgument occurrences="3">
+      <code>$person-&gt;first_name</code>
+      <code>$person-&gt;last_name</code>
+      <code>$person-&gt;stripe_customer_id</code>
+    </PossiblyNullArgument>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$body</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Update</code>
+      <code>Update</code>
+      <code>Update</code>
+    </PropertyNotSetInConstructor>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>Person</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="src/Application/Actions/Status.php">
+    <InternalMethod occurrences="1">
+      <code>connect</code>
+    </InternalMethod>
+    <PossiblyNullArgument occurrences="2">
+      <code>$emConfig-&gt;getProxyDir()</code>
+      <code>$emConfig-&gt;getProxyNamespace()</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Status</code>
+      <code>Status</code>
+      <code>Status</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Auth/Token.php">
+    <FalsableReturnStatement occurrences="1">
+      <code>getenv('JWT_ID_SECRET')</code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType occurrences="1">
+      <code>string</code>
+    </InvalidFalsableReturnType>
+    <MixedAssignment occurrences="1">
+      <code>$durationInDays</code>
+    </MixedAssignment>
+    <MixedOperand occurrences="2">
+      <code>$durationInDays</code>
+      <code>$durationInDays * 86400</code>
+    </MixedOperand>
+    <MixedPropertyFetch occurrences="2">
+      <code>$decodedJwtBody-&gt;sub-&gt;complete</code>
+      <code>$decodedJwtBody-&gt;sub-&gt;person_id</code>
+    </MixedPropertyFetch>
+  </file>
+  <file src="src/Application/Handlers/HttpErrorHandler.php">
+    <PropertyNotSetInConstructor occurrences="7">
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Middleware/PersonAuthMiddleware.php">
+    <PossiblyNullArgument occurrences="1">
+      <code>$personId</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="1">
+      <code>getArgument</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Application/Middleware/PersonRecaptchaMiddleware.php">
+    <MixedAssignment occurrences="2">
+      <code>$captchaCode</code>
+      <code>$person</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>?string</code>
+    </MixedInferredReturnType>
+    <MixedPropertyFetch occurrences="1">
+      <code>$person-&gt;captcha_code</code>
+    </MixedPropertyFetch>
+    <MixedReturnStatement occurrences="2">
+      <code>$captchaCode</code>
+      <code>$captchaCode</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Application/Middleware/RecaptchaMiddleware.php">
+    <MixedArgument occurrences="1">
+      <code>$request-&gt;getAttribute('client-ip')</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$this-&gt;settings-&gt;get('recaptcha')['bypass']</code>
+    </MixedArrayAccess>
+    <PossiblyNullArgument occurrences="1">
+      <code>$captchaCode</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Client/Mailer.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>$response-&gt;getBody()</code>
+    </ImplicitToStringCast>
+    <MixedArgument occurrences="2">
+      <code>$ex-&gt;getResponse() ? $ex-&gt;getResponse()-&gt;getBody() : 'N/A'</code>
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']['sendSecret']</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="2">
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']</code>
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']</code>
+    </MixedArrayAccess>
+    <MixedMethodCall occurrences="1">
+      <code>getBody</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="1">
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+    </MixedOperand>
+    <PossiblyUndefinedMethod occurrences="2">
+      <code>getResponse</code>
+      <code>getResponse</code>
+    </PossiblyUndefinedMethod>
+  </file>
+  <file src="src/Domain/Credentials.php">
+    <MissingConstructor occurrences="1">
+      <code>$email_address</code>
+    </MissingConstructor>
+  </file>
+  <file src="src/Domain/Normalizers/HasPasswordNormalizer.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$data</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>array</code>
+    </InvalidReturnType>
+    <MixedMethodCall occurrences="1">
+      <code>getPasswordHash</code>
+    </MixedMethodCall>
+    <NullableReturnStatement occurrences="1">
+      <code>$data</code>
+    </NullableReturnStatement>
+    <PossiblyInvalidArrayAccess occurrences="2">
+      <code>$data['password']</code>
+      <code>$data['raw_password']</code>
+    </PossiblyInvalidArrayAccess>
+    <PossiblyInvalidArrayAssignment occurrences="1">
+      <code>$data['has_password']</code>
+    </PossiblyInvalidArrayAssignment>
+    <PossiblyNullArrayAccess occurrences="2">
+      <code>$data['password']</code>
+      <code>$data['raw_password']</code>
+    </PossiblyNullArrayAccess>
+    <PossiblyNullReference occurrences="4">
+      <code>$data</code>
+      <code>$data</code>
+      <code>$data</code>
+      <code>$data</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Domain/Person.php">
+    <MixedArgument occurrences="1">
+      <code>static::MIN_PASSWORD_LENGTH</code>
+    </MixedArgument>
+    <PropertyNotSetInConstructor occurrences="2">
+      <code>Person</code>
+      <code>Person</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Repository/PersonRepository.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$class</code>
+      <code>$person-&gt;toMailerPayload()</code>
+    </ArgumentTypeCoercion>
+    <MixedInferredReturnType occurrences="1">
+      <code>?Person</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$qb-&gt;getQuery()-&gt;getOneOrNullResult()</code>
+    </MixedReturnStatement>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>$mailerClient</code>
+    </PropertyNotSetInConstructor>
+  </file>
+</files>
