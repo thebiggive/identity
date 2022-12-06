@@ -92,7 +92,7 @@ class RequestPasswordResetTest extends TestCase
             $this->assertSame('Bloggs', $params['params']['lastName']);
 
             return true;
-        }))->shouldBeCalledOnce()->willReturn(true);
+        }))->shouldBeCalledOnce();
 
         // act
         $app->handle($this->buildRequest([

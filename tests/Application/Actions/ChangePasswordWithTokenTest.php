@@ -138,7 +138,6 @@ class ChangePasswordWithTokenTest extends TestCase
         $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
 
-
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find($personId->toRfc4122())->willReturn($person);
 
