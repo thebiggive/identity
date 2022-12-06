@@ -19,7 +19,6 @@ final class Version20221202181218 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE PasswordResetToken DROP INDEX UNIQ_F087752334DCD176, ADD INDEX IDX_F087752334DCD176 (person)');
         $this->addSql('ALTER TABLE PasswordResetToken CHANGE person person BINARY(16) DEFAULT NULL COMMENT \'(DC2Type:uuid)\'');
         $this->addSql('ALTER TABLE PasswordResetToken ADD CONSTRAINT FK_F087752334DCD176 FOREIGN KEY (person) REFERENCES Person (id)');
