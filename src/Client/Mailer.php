@@ -17,6 +17,9 @@ class Mailer
     ) {
     }
 
+    /**
+     * @psalm-param array{templateKey: string, ...} $requestBody
+     */
     public function sendEmail(array $requestBody): bool
     {
         try {
