@@ -27,7 +27,6 @@ final class Version20221129170051 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP INDEX UNIQ_F08775235CA2E8E5 ON PasswordResetToken');
         $this->addSql('DROP INDEX `PRIMARY` ON PasswordResetToken');
         $this->addSql('ALTER TABLE PasswordResetToken DROP id, DROP used');
