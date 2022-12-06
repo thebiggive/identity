@@ -124,6 +124,22 @@
       <code>$request</code>
     </UnusedClosureParam>
   </file>
+  <file src="public/index.php">
+    <MixedArgument occurrences="4">
+      <code>$app-&gt;getContainer()-&gt;get(LoggerInterface::class)</code>
+      <code>$displayErrorDetails</code>
+      <code>$logError</code>
+      <code>$logErrorDetails</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="3">
+      <code>$displayErrorDetails</code>
+      <code>$logError</code>
+      <code>$logErrorDetails</code>
+    </MixedAssignment>
+    <PossiblyNullReference occurrences="1">
+      <code>get</code>
+    </PossiblyNullReference>
+  </file>
   <file src="src/Application/Actions/Action.php">
     <ImplicitToStringCast occurrences="1">
       <code>string</code>
