@@ -26,7 +26,6 @@ final class Version20221202181218 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE PasswordResetToken DROP INDEX IDX_F087752334DCD176, ADD UNIQUE INDEX UNIQ_F087752334DCD176 (person)');
         $this->addSql('ALTER TABLE PasswordResetToken DROP FOREIGN KEY FK_F087752334DCD176');
         $this->addSql('ALTER TABLE PasswordResetToken CHANGE person person BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\'');
