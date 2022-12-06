@@ -3,6 +3,7 @@
 namespace BigGive\Identity\Repository;
 
 use BigGive\Identity\Domain\PasswordResetToken;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Uid\Uuid;
 
@@ -23,7 +24,7 @@ class PasswordResetTokenRepository extends EntityRepository
             AND p.created_at > DATE_SUB(CURRENT_TIMESTAMP(), 1, 'HOUR') 
             "
         );
-        $query->setParameter('secret', $secret->toBinary());
+        $query->setParameter('secret', $secret->toBinary(), Types::BINARY);
 
         /** @var PasswordResetToken $token */
         $token = $query->getOneOrNullResult();
