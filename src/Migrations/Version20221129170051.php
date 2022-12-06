@@ -19,7 +19,6 @@ final class Version20221129170051 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP INDEX `primary` ON PasswordResetToken');
         $this->addSql('ALTER TABLE PasswordResetToken ADD id BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\', ADD used DATETIME DEFAULT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_F08775235CA2E8E5 ON PasswordResetToken (secret)');
