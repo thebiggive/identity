@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * @template-extends EntityRepository<Person>
+ */
 class PersonRepository extends EntityRepository
 {
     private Mailer $mailerClient;
