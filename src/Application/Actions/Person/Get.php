@@ -10,6 +10,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
@@ -64,12 +65,12 @@ class Get extends Action
      * @throws HttpBadRequestException
      * @throws HttpNotFoundException
      */
-    protected function action(): Response
+    protected function action(Request $request): Response
     {
         /** @var Person|null $person */
         $person = $this->personRepository->find($this->resolveArg('personId'));
         if (!$person) {
-            throw new HttpNotFoundException($this->request, 'Person not found');
+            throw new HttpNotFoundException($request, 'Person not found');
         }
 
         if ($person->stripe_customer_id) {

@@ -30,8 +30,6 @@ use Symfony\Component\Validator\ConstraintViolation;
  */
 abstract class Action
 {
-    protected Request $request;
-
     protected Response $response;
 
     protected array $args;
@@ -46,14 +44,13 @@ abstract class Action
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $this->request = $request;
         $this->response = $response;
         $this->args = $args;
 
         try {
-            return $this->action();
+            return $this->action($request);
         } catch (DomainRecordNotFoundException $e) {
-            throw new HttpNotFoundException($this->request, $e->getMessage());
+            throw new HttpNotFoundException($request, $e->getMessage());
         }
     }
 
@@ -61,16 +58,16 @@ abstract class Action
      * @throws DomainRecordNotFoundException
      * @throws HttpBadRequestException
      */
-    abstract protected function action(): Response;
+    abstract protected function action(Request $request): Response;
 
     /**
      * @return mixed
      * @throws HttpBadRequestException
      */
-    protected function resolveArg(string $name)
+    protected function resolveArg(Request $request, string $name)
     {
         if (!isset($this->args[$name])) {
-            throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
+            throw new HttpBadRequestException($request, "Could not resolve argument `{$name}`.");
         }
 
         return $this->args[$name];

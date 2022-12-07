@@ -12,6 +12,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Stripe\Exception\ApiErrorException;
@@ -74,12 +75,12 @@ class Create extends Action
      * @return Response
      * @throws HttpBadRequestException
      */
-    protected function action(): Response
+    protected function action(Request $request): Response
     {
         try {
             /** @var Person $person */
             $person = $this->serializer->deserialize(
-                $body = ((string) $this->request->getBody()),
+                $body = ((string) $request->getBody()),
                 Person::class,
                 'json'
             );

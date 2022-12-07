@@ -10,6 +10,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpNotFoundException;
 use Stripe\StripeClient;
@@ -85,11 +86,11 @@ class Update extends Action
      * @throws HttpNotFoundException
      * @throws \Exception on email callout errors
      */
-    protected function action(): Response
+    protected function action(Request $request): Response
     {
         $person = $this->personRepository->find($this->resolveArg('personId'));
         if (!$person) {
-            throw new HttpNotFoundException($this->request, 'Person not found');
+            throw new HttpNotFoundException($request, 'Person not found');
         }
 
         // `has_password` is only set when the Normalizer's run.
@@ -98,7 +99,7 @@ class Update extends Action
         try {
             /** @var Person $person */
             $this->serializer->deserialize(
-                $body = ((string) $this->request->getBody()),
+                $body = ((string) $request->getBody()),
                 Person::class,
                 'json',
                 [

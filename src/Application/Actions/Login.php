@@ -12,6 +12,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
@@ -71,12 +72,12 @@ class Login extends Action
      * @return Response
      * @throws HttpBadRequestException
      */
-    protected function action(): Response
+    protected function action(Request $request): Response
     {
         try {
             /** @var Credentials $credentials */
             $credentials = $this->serializer->deserialize(
-                $body = ((string) $this->request->getBody()),
+                $body = ((string) $request->getBody()),
                 Credentials::class,
                 'json',
             );

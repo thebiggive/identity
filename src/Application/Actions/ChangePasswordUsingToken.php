@@ -8,6 +8,7 @@ use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Uid\Uuid;
@@ -26,10 +27,10 @@ class ChangePasswordUsingToken extends Action
         parent::__construct($logger);
     }
 
-    protected function action(): Response
+    protected function action(Request $request): Response
     {
         /** @var array $requestData */
-        $requestData = json_decode($this->request->getBody(), true);
+        $requestData = json_decode($request->getBody(), true);
 
         $secret = $requestData['secret'] ?? throw new \Exception('Missing secret');
 
@@ -38,7 +39,7 @@ class ChangePasswordUsingToken extends Action
         $token = $this->tokenRepository->findForUse($secretUuid);
 
         if ($token === null) {
-            throw new HttpBadRequestException($this->request, 'Token not found or not valid');
+            throw new HttpBadRequestException($request, 'Token not found or not valid');
         }
 
         $person = $token->person;
@@ -47,7 +48,7 @@ class ChangePasswordUsingToken extends Action
 
         foreach ($violations as $violation) {
             if ($violation->getPropertyPath() === 'raw_password') {
-                throw new HttpBadRequestException($this->request, $violation->getMessage());
+                throw new HttpBadRequestException($request, $violation->getMessage());
             }
         }
 

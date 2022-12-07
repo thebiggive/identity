@@ -9,6 +9,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpNotFoundException;
 use Stripe\StripeClient;
@@ -54,12 +55,12 @@ class GetCreditFundingInstructions extends Action
         parent::__construct($logger);
     }
 
-    public function action(): ResponseInterface
+    public function action(Request $request): ResponseInterface
     {
         /** @var Person|null $person */
         $person = $this->personRepository->find($this->resolveArg('personId'));
         if (!$person) {
-            throw new HttpNotFoundException($this->request, 'Person not found');
+            throw new HttpNotFoundException($request, 'Person not found');
         }
 
         $instructions = $this->stripeClient->customers->createFundingInstructions(
@@ -70,7 +71,7 @@ class GetCreditFundingInstructions extends Action
                     // Only UK bank support for now.
                     'type' => 'gb_bank_transfer',
                 ],
-                'currency' => $this->request->getQueryParams()['currency'] ?? 'gbp',
+                'currency' => $request->getQueryParams()['currency'] ?? 'gbp',
             ],
         );
 

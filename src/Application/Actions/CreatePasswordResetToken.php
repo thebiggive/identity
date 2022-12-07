@@ -9,6 +9,7 @@ use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Validator\Constraints\Email;
@@ -28,18 +29,18 @@ class CreatePasswordResetToken extends Action
         parent::__construct($logger);
     }
 
-    protected function action(): Response
+    protected function action(Request $request): Response
     {
         // I'd prefer to just inject the baseUri instead of the entire settings, but this seems easier for now.
         $accountManagementBaseUrl = ($this->settings->get('accountManagement')['baseUri']);
         \assert(is_string($accountManagementBaseUrl));
 
         /** @var array $decoded */
-        $decoded = json_decode($this->request->getBody()->__toString(), true, 512, \JSON_THROW_ON_ERROR);
+        $decoded = json_decode($request->getBody()->__toString(), true, 512, \JSON_THROW_ON_ERROR);
         $email = (string) $decoded['email_address'];
         $violations = $this->validator->validate($email, constraints: new Email());
         if (count($violations) > 0) {
-            throw new HttpBadRequestException($this->request, 'Invalid email address');
+            throw new HttpBadRequestException($request, 'Invalid email address');
         }
 
         $person = $this->personRepository->findPasswordEnabledPersonByEmailAddress($email);
