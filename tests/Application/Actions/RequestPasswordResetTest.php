@@ -84,12 +84,15 @@ class RequestPasswordResetTest extends TestCase
         $container->set(Mailer::class, $mailerProphecy->reveal());
 
         $mailerProphecy->sendEmail(Argument::that(function (array $params) use ($emailAddress) {
-            /** @var array<string, string> $params */
+            /** @var array<string, string|array<string>> $params */
             $this->assertSame('password-reset-requested', $params['templateKey']);
             $this->assertSame($emailAddress, $params['recipientEmailAddress']);
-            $this->assertMatchesRegularExpression('/http.*/', $params['params']['resetLink']);
-            $this->assertSame('Joe', $params['params']['firstName']);
-            $this->assertSame('Bloggs', $params['params']['lastName']);
+
+            $bodyParams = $params['params'];
+            $this->assertIsArray($bodyParams);
+            $this->assertMatchesRegularExpression('/http.*/', $bodyParams['resetLink']);
+            $this->assertSame('Joe', $bodyParams['firstName']);
+            $this->assertSame('Bloggs', $bodyParams['lastName']);
 
             return true;
         }))->shouldBeCalledOnce();
