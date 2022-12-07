@@ -29,6 +29,7 @@ class RequestPasswordResetTest extends TestCase
         // arrange
         $person = new Person();
         $person->setId($personId);
+        $person->email_address = 'any string, doesnt matter for test';
 
         $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($emailAddress)
             ->willReturn($person);
