@@ -30,11 +30,11 @@ class ChangePasswordUsingToken extends Action
     protected function action(Request $request, array $args): Response
     {
         /** @var array $requestData */
-        $requestData = json_decode($request->getBody(), true);
+        $requestData = json_decode((string) $request->getBody(), true);
 
-        $secret = $requestData['secret'] ?? throw new \Exception('Missing secret');
+        $secret = (string) ($requestData['secret'] ?? throw new \Exception('Missing secret'));
 
-        $secretUuid = Uuid::fromBase58((string) $secret);
+        $secretUuid = Uuid::fromBase58($secret);
 
         $token = $this->tokenRepository->findForUse($secretUuid);
 
@@ -48,7 +48,7 @@ class ChangePasswordUsingToken extends Action
 
         foreach ($violations as $violation) {
             if ($violation->getPropertyPath() === 'raw_password') {
-                throw new HttpBadRequestException($request, $violation->getMessage());
+                throw new HttpBadRequestException($request, (string)$violation->getMessage());
             }
         }
 
