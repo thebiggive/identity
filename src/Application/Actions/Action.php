@@ -30,8 +30,6 @@ use Symfony\Component\Validator\ConstraintViolation;
  */
 abstract class Action
 {
-    protected Response $response;
-
     protected array $args;
 
     public function __construct(protected readonly LoggerInterface $logger)
@@ -44,7 +42,6 @@ abstract class Action
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $this->response = $response;
         $this->args = $args;
 
         try {
@@ -85,10 +82,11 @@ abstract class Action
 
     protected function respond(ActionPayload $payload): Response
     {
+        $response = new \Slim\Psr7\Response();
         $json = json_encode($payload, JSON_PRETTY_PRINT);
-        $this->response->getBody()->write($json);
+        $response->getBody()->write($json);
 
-        return $this->response
+        return $response
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus($payload->getStatusCode());
     }
