@@ -56,9 +56,15 @@ class CreatePasswordResetToken extends Action
 
         $resetLink = $accountManagementBaseUrl . '/reset-password' . "?token=" . urlencode($token->toBase58Secret());
 
+        $email = $person->email_address;
+
+        if ($email === null) {
+            throw new \Exception('Missing email address for person ' . ($person->getId() ?? 'null'));
+        }
+
         $this->mailer->sendEmail([
             'templateKey' => 'password-reset-requested',
-            'recipientEmailAddress' => $person->email_address,
+            'recipientEmailAddress' => $email,
             'params' => [
                 'firstName' => $person->getFirstName(),
                 'lastName' => $person->getLastName(),
