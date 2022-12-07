@@ -47,7 +47,8 @@ class PasswordResetToken
     {
         $this->person = $person;
         $this->secret = Uuid::v4();
-        $this->createdNow();
+        $this->created_at = new \DateTime();
+        $this->updated_at = new \DateTime();
     }
 
     public function toBase58Secret(): string

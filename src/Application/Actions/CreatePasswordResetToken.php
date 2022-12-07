@@ -32,7 +32,9 @@ class CreatePasswordResetToken extends Action
     protected function action(Request $request, array $args): Response
     {
         // I'd prefer to just inject the baseUri instead of the entire settings, but this seems easier for now.
-        $accountManagementBaseUrl = ($this->settings->get('accountManagement')['baseUri']);
+        /** @var array $settings */
+        $settings = $this->settings->get('accountManagement');
+        $accountManagementBaseUrl = ($settings['baseUri']);
         \assert(is_string($accountManagementBaseUrl));
 
         /** @var array $decoded */
