@@ -87,11 +87,4 @@ class PersonRepository extends EntityRepository
     {
         return $this->mailerClient->sendEmail($person->toMailerPayload());
     }
-
-    public function find($id, $lockMode = null, $lockVersion = null): ?Person
-    {
-        /** @var ?Person $person */
-        $person = parent::find($id, $lockMode, $lockVersion);
-        return $person;
-    }
 }
