@@ -87,7 +87,7 @@ return function (App $app) {
             ->withHeader('Access-Control-Allow-Origin', $corsAllowedOrigin)
             ->withHeader(
                 'Access-Control-Allow-Headers',
-                'Accept, Authorization, Content-Type, Origin, X-Requested-With, X-Tbg-Auth'
+                'Accept, Authorization, Content-Type, Origin, X-Requested-With, X-Tbg-Auth, x-captcha-code'
             )
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
