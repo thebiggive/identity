@@ -64,6 +64,13 @@ class PersonRepository extends EntityRepository
         return $person;
     }
 
+    public function persistForPasswordChange(Person $person): void
+    {
+        $person->hashPassword();
+        $this->getEntityManager()->persist($person);
+        $this->getEntityManager()->flush();
+    }
+
     /**
      * This gets its own method instead so we can use `DefaultRepositoryFactory` to load
      * the repo and not worry about constructor args.
@@ -76,5 +83,12 @@ class PersonRepository extends EntityRepository
     public function sendRegisteredEmail(Person $person): bool
     {
         return $this->mailerClient->sendEmail($person->toMailerPayload());
+    }
+
+    public function find($id, $lockMode = null, $lockVersion = null): ?Person
+    {
+        /** @var ?Person $person */
+        $person = parent::find($id, $lockMode, $lockVersion);
+        return $person;
     }
 }
