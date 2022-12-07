@@ -27,11 +27,13 @@ In advance of the first app run:
 * [get Docker](https://www.docker.com/get-started)
 * copy `.env.example` to `.env` and change any values you need to.
 
+Depending on your Docker version you may need to replace `docker-compose` with `docker compose` in all commands below.
+
 ### Start the app
 
 To start the app and its dependency (`db`) locally:
 
-    docker-compose up -d app
+    docker-compose up -d app # (see note above about docker-compose command)
 
 ### First run
 
