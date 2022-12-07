@@ -27,7 +27,7 @@ class ChangePasswordUsingToken extends Action
         parent::__construct($logger);
     }
 
-    protected function action(Request $request): Response
+    protected function action(Request $request, array $args): Response
     {
         /** @var array $requestData */
         $requestData = json_decode($request->getBody(), true);

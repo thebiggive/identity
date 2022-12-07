@@ -82,13 +82,14 @@ class Update extends Action
     }
 
     /**
+     * @param array $args
      * @return Response
      * @throws HttpNotFoundException
      * @throws \Exception on email callout errors
      */
-    protected function action(Request $request): Response
+    protected function action(Request $request, array $args): Response
     {
-        $person = $this->personRepository->find($this->resolveArg('personId'));
+        $person = $this->personRepository->find($args, $this->resolveArg('personId'));
         if (!$person) {
             throw new HttpNotFoundException($request, 'Person not found');
         }

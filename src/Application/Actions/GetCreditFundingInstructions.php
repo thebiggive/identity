@@ -55,10 +55,10 @@ class GetCreditFundingInstructions extends Action
         parent::__construct($logger);
     }
 
-    public function action(Request $request): ResponseInterface
+    public function action(Request $request, array $args): ResponseInterface
     {
         /** @var Person|null $person */
-        $person = $this->personRepository->find($this->resolveArg('personId'));
+        $person = $this->personRepository->find($args, $this->resolveArg('personId'));
         if (!$person) {
             throw new HttpNotFoundException($request, 'Person not found');
         }

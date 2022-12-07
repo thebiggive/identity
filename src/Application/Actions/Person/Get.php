@@ -61,14 +61,15 @@ class Get extends Action
     }
 
     /**
+     * @param array $args
      * @return Response
      * @throws HttpBadRequestException
      * @throws HttpNotFoundException
      */
-    protected function action(Request $request): Response
+    protected function action(Request $request, array $args): Response
     {
         /** @var Person|null $person */
-        $person = $this->personRepository->find($this->resolveArg('personId'));
+        $person = $this->personRepository->find($args, $this->resolveArg('personId'));
         if (!$person) {
             throw new HttpNotFoundException($request, 'Person not found');
         }
