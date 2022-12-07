@@ -7,6 +7,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @template-extends EntityRepository<PasswordResetToken>
+ */
 class PasswordResetTokenRepository extends EntityRepository
 {
     public function persist(PasswordResetToken $token): void
@@ -17,7 +20,7 @@ class PasswordResetTokenRepository extends EntityRepository
 
     public function findForUse(Uuid $secret): ?PasswordResetToken
     {
-        $query = $this->_em->createQuery(
+        $query = $this->getEntityManager()->createQuery(
             "SELECT p from \BigGive\Identity\Domain\PasswordResetToken p
             WHERE p.secret = :secret
             AND p.used IS NULL

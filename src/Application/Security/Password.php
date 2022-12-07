@@ -12,7 +12,10 @@ use BigGive\Identity\Domain\Person;
  */
 class Password
 {
-    /** Share this to make sure we don't surface the difference between no account + wrong password. */
+    /**
+     * Share this to make sure we don't surface the difference between no account + wrong password.
+     * @var string
+     */
     public const BAD_LOGIN_MESSAGE = 'Invalid credentials';
 
     public static function hash(string $rawPassword): string

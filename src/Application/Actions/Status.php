@@ -10,6 +10,7 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 
@@ -38,10 +39,11 @@ class Status extends Action
     }
 
     /**
+     * @param array $args
      * @return Response
      * @throws HttpBadRequestException
      */
-    protected function action(): Response
+    protected function action(Request $request, array $args): Response
     {
         /** @var string|null $errorMessage */
         $errorMessage = null;

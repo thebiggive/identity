@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.1.0@4defa177c89397c5e14737a80fe4896584130674">
+  <file src="app/dependencies.php">
+    <MixedArgument occurrences="17">
+      <code>$c-&gt;get(CacheItemPoolInterface::class)</code>
+      <code>$c-&gt;get(ORM\Configuration::class)</code>
+      <code>$c-&gt;get(ProblemDetailsResponseFactory::class)</code>
+      <code>$c-&gt;get(Psr16Cache::class)</code>
+      <code>$c-&gt;get(Redis::class)</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('doctrine')['connection']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('los_rate_limit')</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('recaptcha')['secret_key']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
+      <code>$cache</code>
+      <code>$doctrineSettings['dev_mode']</code>
+      <code>$doctrineSettings['dev_mode']</code>
+      <code>$doctrineSettings['metadata_dirs']</code>
+      <code>$doctrineSettings['metadata_dirs']</code>
+      <code>$loggerSettings['name']</code>
+      <code>$loggerSettings['path']</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="1">
+      <code>$normalizers</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="15">
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('doctrine')['connection']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('recaptcha')['secret_key']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('stripe')['apiKey']</code>
+      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('stripe')['apiVersion']</code>
+      <code>$doctrineSettings['cache_dir']</code>
+      <code>$doctrineSettings['dev_mode']</code>
+      <code>$doctrineSettings['dev_mode']</code>
+      <code>$doctrineSettings['metadata_dirs']</code>
+      <code>$doctrineSettings['metadata_dirs']</code>
+      <code>$loggerSettings['level']</code>
+      <code>$loggerSettings['name']</code>
+      <code>$loggerSettings['path']</code>
+      <code>$settings-&gt;get('apiClient')['global']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="7">
+      <code>$cache</code>
+      <code>$doctrineSettings</code>
+      <code>$loggerSettings</code>
+      <code>$redis</code>
+      <code>$settings</code>
+      <code>$settings</code>
+      <code>$settings</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>Mailer</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="12">
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>warning</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="1">
+      <code>$doctrineSettings['cache_dir']</code>
+    </MixedOperand>
+    <MixedReturnStatement occurrences="1"/>
+    <UndefinedClass occurrences="4">
+      <code>Client</code>
+      <code>Mailer</code>
+      <code>Mailer</code>
+      <code>Mailer</code>
+    </UndefinedClass>
+    <UnusedClosureParam occurrences="2">
+      <code>$c</code>
+      <code>$c</code>
+    </UnusedClosureParam>
+  </file>
+  <file src="app/repositories.php">
+    <MixedAssignment occurrences="1">
+      <code>$repo</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>PersonRepository</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="2">
+      <code>getRepository</code>
+      <code>setMailerClient</code>
+    </MixedMethodCall>
+    <MixedReturnStatement occurrences="1">
+      <code>$repo</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="app/routes.php">
+    <MissingClosureParamType occurrences="4">
+      <code>$args</code>
+      <code>$handler</code>
+      <code>$request</code>
+      <code>$response</code>
+    </MissingClosureParamType>
+    <MissingClosureReturnType occurrences="2">
+      <code>function ($request, $response, $args) {</code>
+      <code>function (Request $request, $handler) {</code>
+    </MissingClosureReturnType>
+    <MixedAssignment occurrences="1">
+      <code>$response</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="7">
+      <code>handle</code>
+      <code>withAddedHeader</code>
+      <code>withHeader</code>
+      <code>withHeader</code>
+      <code>withHeader</code>
+      <code>withHeader</code>
+      <code>withHeader</code>
+    </MixedMethodCall>
+    <UnusedClosureParam occurrences="2">
+      <code>$args</code>
+      <code>$request</code>
+    </UnusedClosureParam>
+  </file>
+  <file src="public/index.php">
+    <MixedArgument occurrences="4">
+      <code>$app-&gt;getContainer()-&gt;get(LoggerInterface::class)</code>
+      <code>$displayErrorDetails</code>
+      <code>$logError</code>
+      <code>$logErrorDetails</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="3">
+      <code>$displayErrorDetails</code>
+      <code>$logError</code>
+      <code>$logErrorDetails</code>
+    </MixedAssignment>
+    <PossiblyNullReference occurrences="1">
+      <code>get</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Application/Actions/Action.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>string</code>
+    </ImplicitToStringCast>
+    <PossiblyNullArgument occurrences="1">
+      <code>$httpCode</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>$args</code>
+      <code>$request</code>
+      <code>$response</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Actions/ActionError.php">
+    <PossiblyNullPropertyAssignmentValue occurrences="2">
+      <code>$description</code>
+      <code>$description</code>
+    </PossiblyNullPropertyAssignmentValue>
+  </file>
+  <file src="src/Application/Actions/GetCreditFundingInstructions.php">
+    <PossiblyNullArgument occurrences="1">
+      <code>$person-&gt;stripe_customer_id</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>GetCreditFundingInstructions</code>
+      <code>GetCreditFundingInstructions</code>
+      <code>GetCreditFundingInstructions</code>
+    </PropertyNotSetInConstructor>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>Person|null</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="src/Application/Actions/Login.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$violation</code>
+    </ArgumentTypeCoercion>
+    <PossiblyNullArgument occurrences="1">
+      <code>$credentials-&gt;raw_password</code>
+    </PossiblyNullArgument>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$body</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Login</code>
+      <code>Login</code>
+      <code>Login</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Actions/Person/Create.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$violation</code>
+    </ArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="1">
+      <code>$this-&gt;settings-&gt;get('recaptcha')['bypass']</code>
+    </MixedArrayAccess>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$body</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Create</code>
+      <code>Create</code>
+      <code>Create</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Actions/Person/Get.php">
+    <MixedAssignment occurrences="1">
+      <code>$amount</code>
+    </MixedAssignment>
+    <MixedPropertyTypeCoercion occurrences="1">
+      <code>$person-&gt;cash_balance</code>
+    </MixedPropertyTypeCoercion>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Get</code>
+      <code>Get</code>
+      <code>Get</code>
+    </PropertyNotSetInConstructor>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>Person|null</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="src/Application/Actions/Person/Update.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$violation</code>
+    </ArgumentTypeCoercion>
+    <PossiblyNullArgument occurrences="3">
+      <code>$person-&gt;first_name</code>
+      <code>$person-&gt;last_name</code>
+      <code>$person-&gt;stripe_customer_id</code>
+    </PossiblyNullArgument>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$body</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Update</code>
+      <code>Update</code>
+      <code>Update</code>
+    </PropertyNotSetInConstructor>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>Person</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="src/Application/Actions/Status.php">
+    <InternalMethod occurrences="1">
+      <code>connect</code>
+    </InternalMethod>
+    <PossiblyNullArgument occurrences="2">
+      <code>$emConfig-&gt;getProxyDir()</code>
+      <code>$emConfig-&gt;getProxyNamespace()</code>
+    </PossiblyNullArgument>
+    <PropertyNotSetInConstructor occurrences="3">
+      <code>Status</code>
+      <code>Status</code>
+      <code>Status</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Auth/Token.php">
+    <FalsableReturnStatement occurrences="1">
+      <code>getenv('JWT_ID_SECRET')</code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType occurrences="1">
+      <code>string</code>
+    </InvalidFalsableReturnType>
+    <MixedAssignment occurrences="1">
+      <code>$durationInDays</code>
+    </MixedAssignment>
+    <MixedOperand occurrences="2">
+      <code>$durationInDays</code>
+      <code>$durationInDays * 86400</code>
+    </MixedOperand>
+    <MixedPropertyFetch occurrences="2">
+      <code>$decodedJwtBody-&gt;sub-&gt;complete</code>
+      <code>$decodedJwtBody-&gt;sub-&gt;person_id</code>
+    </MixedPropertyFetch>
+  </file>
+  <file src="src/Application/Handlers/HttpErrorHandler.php">
+    <PropertyNotSetInConstructor occurrences="7">
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+      <code>HttpErrorHandler</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Application/Middleware/PersonAuthMiddleware.php">
+    <PossiblyNullArgument occurrences="1">
+      <code>$personId</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="1">
+      <code>getArgument</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Application/Middleware/PersonRecaptchaMiddleware.php">
+    <MixedAssignment occurrences="2">
+      <code>$captchaCode</code>
+      <code>$person</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>?string</code>
+    </MixedInferredReturnType>
+    <MixedPropertyFetch occurrences="1">
+      <code>$person-&gt;captcha_code</code>
+    </MixedPropertyFetch>
+    <MixedReturnStatement occurrences="2">
+      <code>$captchaCode</code>
+      <code>$captchaCode</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Application/Middleware/RecaptchaMiddleware.php">
+    <MixedArgument occurrences="1">
+      <code>$request-&gt;getAttribute('client-ip')</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$this-&gt;settings-&gt;get('recaptcha')['bypass']</code>
+    </MixedArrayAccess>
+    <PossiblyNullArgument occurrences="1">
+      <code>$captchaCode</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Client/Mailer.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>$response-&gt;getBody()</code>
+    </ImplicitToStringCast>
+    <MixedArgument occurrences="2">
+      <code>$ex-&gt;getResponse() ? $ex-&gt;getResponse()-&gt;getBody() : 'N/A'</code>
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']['sendSecret']</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="2">
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']</code>
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']</code>
+    </MixedArrayAccess>
+    <MixedMethodCall occurrences="1">
+      <code>getBody</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="1">
+      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+    </MixedOperand>
+    <PossiblyUndefinedMethod occurrences="2">
+      <code>getResponse</code>
+      <code>getResponse</code>
+    </PossiblyUndefinedMethod>
+  </file>
+  <file src="src/Domain/Credentials.php">
+    <MissingConstructor occurrences="1">
+      <code>$email_address</code>
+    </MissingConstructor>
+  </file>
+  <file src="src/Domain/Normalizers/HasPasswordNormalizer.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$data</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>array</code>
+    </InvalidReturnType>
+    <MixedMethodCall occurrences="1">
+      <code>getPasswordHash</code>
+    </MixedMethodCall>
+    <NullableReturnStatement occurrences="1">
+      <code>$data</code>
+    </NullableReturnStatement>
+    <PossiblyInvalidArrayAccess occurrences="2">
+      <code>$data['password']</code>
+      <code>$data['raw_password']</code>
+    </PossiblyInvalidArrayAccess>
+    <PossiblyInvalidArrayAssignment occurrences="1">
+      <code>$data['has_password']</code>
+    </PossiblyInvalidArrayAssignment>
+    <PossiblyNullArrayAccess occurrences="2">
+      <code>$data['password']</code>
+      <code>$data['raw_password']</code>
+    </PossiblyNullArrayAccess>
+    <PossiblyNullReference occurrences="4">
+      <code>$data</code>
+      <code>$data</code>
+      <code>$data</code>
+      <code>$data</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="src/Domain/Person.php">
+    <MixedArgument occurrences="1">
+      <code>static::MIN_PASSWORD_LENGTH</code>
+    </MixedArgument>
+    <PropertyNotSetInConstructor occurrences="2">
+      <code>Person</code>
+      <code>Person</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Repository/PersonRepository.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$class</code>
+      <code>$person-&gt;toMailerPayload()</code>
+    </ArgumentTypeCoercion>
+    <MixedInferredReturnType occurrences="1">
+      <code>?Person</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$qb-&gt;getQuery()-&gt;getOneOrNullResult()</code>
+    </MixedReturnStatement>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>$mailerClient</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="tests/Application/Actions/ActionTest.php">
+    <MissingReturnType occurrences="2">
+      <code>testActionSetsHttpCodeInRespond</code>
+      <code>testActionSetsHttpCodeRespondData</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="2">
+      <code>$logger</code>
+      <code>$logger</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="2">
+      <code>$logger</code>
+      <code>$logger</code>
+    </MixedAssignment>
+    <PossiblyNullReference occurrences="2">
+      <code>get</code>
+      <code>get</code>
+    </PossiblyNullReference>
+    <PropertyNotSetInConstructor occurrences="6"/>
+  </file>
+  <file src="tests/Application/Actions/GetCreditFundingInstructionsTest.php">
+    <MixedArrayAccess occurrences="2">
+      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]</code>
+      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="1">
+      <code>$responseData</code>
+    </MixedAssignment>
+    <MixedPropertyFetch occurrences="7">
+      <code>$responseData-&gt;bank_transfer</code>
+      <code>$responseData-&gt;bank_transfer-&gt;country</code>
+      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses</code>
+      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]-&gt;sort_code</code>
+      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]-&gt;sort_code-&gt;account_holder_name</code>
+      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]-&gt;sort_code-&gt;account_number</code>
+      <code>$responseData-&gt;object</code>
+    </MixedPropertyFetch>
+    <PossiblyNullReference occurrences="2">
+      <code>set</code>
+      <code>set</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="2">
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Application/Actions/LoginTest.php">
+    <MixedAssignment occurrences="1">
+      <code>$payload</code>
+    </MixedAssignment>
+    <MixedPropertyFetch occurrences="2">
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;jwt</code>
+    </MixedPropertyFetch>
+    <PossiblyNullArgument occurrences="1">
+      <code>$person-&gt;raw_password</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="4">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="4">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Application/Actions/Person/CreateTest.php">
+    <MixedArgument occurrences="2">
+      <code>$payload</code>
+      <code>$payload</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$payload</code>
+    </MixedAssignment>
+    <MixedPropertyFetch occurrences="5">
+      <code>$payload-&gt;created_at</code>
+      <code>$payload-&gt;first_name</code>
+      <code>$payload-&gt;has_password</code>
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;updated_at</code>
+    </MixedPropertyFetch>
+    <PossiblyNullReference occurrences="4">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="4">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Application/Actions/Person/GetTest.php">
+    <MixedArgument occurrences="10">
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="4">
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+    </MixedAssignment>
+    <MixedPropertyFetch occurrences="24">
+      <code>$payload-&gt;cash_balance</code>
+      <code>$payload-&gt;cash_balance</code>
+      <code>$payload-&gt;cash_balance</code>
+      <code>$payload-&gt;cash_balance</code>
+      <code>$payload-&gt;created_at</code>
+      <code>$payload-&gt;created_at</code>
+      <code>$payload-&gt;created_at</code>
+      <code>$payload-&gt;created_at</code>
+      <code>$payload-&gt;first_name</code>
+      <code>$payload-&gt;first_name</code>
+      <code>$payload-&gt;first_name</code>
+      <code>$payload-&gt;first_name</code>
+      <code>$payload-&gt;has_password</code>
+      <code>$payload-&gt;has_password</code>
+      <code>$payload-&gt;has_password</code>
+      <code>$payload-&gt;has_password</code>
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;updated_at</code>
+      <code>$payload-&gt;updated_at</code>
+      <code>$payload-&gt;updated_at</code>
+      <code>$payload-&gt;updated_at</code>
+    </MixedPropertyFetch>
+    <PossiblyNullReference occurrences="10">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="10">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Application/Actions/Person/UpdateTest.php">
+    <MixedArgument occurrences="4">
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+      <code>$payload</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="2">
+      <code>$payload</code>
+      <code>$payload</code>
+    </MixedAssignment>
+    <MixedPropertyFetch occurrences="11">
+      <code>$payload-&gt;created_at</code>
+      <code>$payload-&gt;created_at</code>
+      <code>$payload-&gt;first_name</code>
+      <code>$payload-&gt;first_name</code>
+      <code>$payload-&gt;has_password</code>
+      <code>$payload-&gt;has_password</code>
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;id</code>
+      <code>$payload-&gt;stripe_customer_id</code>
+      <code>$payload-&gt;updated_at</code>
+      <code>$payload-&gt;updated_at</code>
+    </MixedPropertyFetch>
+    <PossiblyNullArgument occurrences="1">
+      <code>$person-&gt;raw_password</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="13">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="13">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>Argument\Token\CallbackToken</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="tests/Application/Actions/StatusTest.php">
+    <DeprecatedMethod occurrences="1">
+      <code>ConsoleRunner::createHelperSet($container-&gt;get(EntityManagerInterface::class))</code>
+    </DeprecatedMethod>
+    <MixedArgument occurrences="1">
+      <code>$container-&gt;get(EntityManagerInterface::class)</code>
+    </MixedArgument>
+    <PossiblyNullArgument occurrences="2">
+      <code>$config-&gt;getProxyDir()</code>
+      <code>$config-&gt;getProxyNamespace()</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="5">
+      <code>get</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="4">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Application/Middleware/CredentialsRecaptchaMiddlewareTest.php">
+    <MixedArgument occurrences="12">
+      <code>$container-&gt;get(LoggerInterface::class)</code>
+      <code>$container-&gt;get(LoggerInterface::class)</code>
+      <code>$container-&gt;get(ReCaptcha::class)</code>
+      <code>$container-&gt;get(ReCaptcha::class)</code>
+      <code>$container-&gt;get(SerializerInterface::class)</code>
+      <code>$container-&gt;get(SerializerInterface::class)</code>
+      <code>$container-&gt;get(SettingsInterface::class)</code>
+      <code>$container-&gt;get(SettingsInterface::class)</code>
+      <code>$credentialsSerialised</code>
+      <code>$credentialsSerialised</code>
+      <code>$credentialsSerialised</code>
+      <code>$credentialsSerialised</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$credentials['captcha_code']</code>
+    </MixedArrayAccess>
+    <MixedArrayAssignment occurrences="2">
+      <code>$credentials['captcha_code']</code>
+      <code>$credentials['captcha_code']</code>
+    </MixedArrayAssignment>
+    <MixedAssignment occurrences="13">
+      <code>$credentials</code>
+      <code>$credentials</code>
+      <code>$credentials</code>
+      <code>$credentials</code>
+      <code>$credentialsSerialised</code>
+      <code>$credentialsSerialised</code>
+      <code>$credentialsSerialised</code>
+      <code>$credentialsSerialised</code>
+      <code>$serializer</code>
+      <code>$serializer</code>
+      <code>$serializer</code>
+      <code>$serializer</code>
+      <code>$standardSettings</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="5">
+      <code>get</code>
+      <code>serialize</code>
+      <code>serialize</code>
+      <code>serialize</code>
+      <code>serialize</code>
+    </MixedMethodCall>
+    <PossiblyNullReference occurrences="5">
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Application/Middleware/PersonRecaptchaMiddlewareTest.php">
+    <MixedArgument occurrences="7">
+      <code>$container-&gt;get(LoggerInterface::class)</code>
+      <code>$container-&gt;get(ReCaptcha::class)</code>
+      <code>$container-&gt;get(SerializerInterface::class)</code>
+      <code>$container-&gt;get(SettingsInterface::class)</code>
+      <code>$personSerialised</code>
+      <code>$personSerialised</code>
+      <code>$personSerialised</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$person['captcha_code']</code>
+    </MixedArrayAccess>
+    <MixedArrayAssignment occurrences="2">
+      <code>$person['captcha_code']</code>
+      <code>$person['captcha_code']</code>
+    </MixedArrayAssignment>
+    <MixedAssignment occurrences="9">
+      <code>$person</code>
+      <code>$person</code>
+      <code>$person</code>
+      <code>$personSerialised</code>
+      <code>$personSerialised</code>
+      <code>$personSerialised</code>
+      <code>$serializer</code>
+      <code>$serializer</code>
+      <code>$serializer</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="3">
+      <code>serialize</code>
+      <code>serialize</code>
+      <code>serialize</code>
+    </MixedMethodCall>
+    <PossiblyNullReference occurrences="4">
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="tests/Application/Security/PasswordTest.php">
+    <InternalMethod occurrences="1">
+      <code>addToAssertionCount</code>
+    </InternalMethod>
+    <NullArgument occurrences="1">
+      <code>null</code>
+    </NullArgument>
+    <RedundantCondition occurrences="1">
+      <code>assertIsString</code>
+    </RedundantCondition>
+  </file>
+  <file src="tests/Client/MailerTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$requestBody</code>
+    </ArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="6">
+      <code>$settings-&gt;get('apiClient')['mailer']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="12">
+      <code>$mailerClient</code>
+      <code>$mailerClient</code>
+      <code>$mailerClient</code>
+      <code>$mailerClient</code>
+      <code>$sendSuccessful</code>
+      <code>$sendSuccessful</code>
+      <code>$sendSuccessful</code>
+      <code>$sendSuccessful</code>
+      <code>$settings</code>
+      <code>$settings</code>
+      <code>$settings</code>
+      <code>$settings</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="10">
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+      <code>sendEmail</code>
+      <code>sendEmail</code>
+      <code>sendEmail</code>
+      <code>sendEmail</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="6">
+      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+    </MixedOperand>
+    <PossiblyNullReference occurrences="3">
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="3">
+      <code>set</code>
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Domain/PersonTest.php">
+    <MixedArgument occurrences="1">
+      <code>$json</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="3">
+      <code>$jsonData['email_address']</code>
+      <code>$jsonData['first_name']</code>
+      <code>$jsonData['last_name']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="2">
+      <code>$json</code>
+      <code>$jsonData</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>array</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="1">
+      <code>serialize</code>
+    </MixedMethodCall>
+    <PossiblyNullReference occurrences="1">
+      <code>get</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="tests/Repository/PersonRepositoryTest.php">
+    <MixedAssignment occurrences="2">
+      <code>$repo</code>
+      <code>$repo</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="4">
+      <code>sendRegisteredEmail</code>
+      <code>sendRegisteredEmail</code>
+      <code>setMailerClient</code>
+      <code>setMailerClient</code>
+    </MixedMethodCall>
+    <PossiblyNullReference occurrences="4">
+      <code>get</code>
+      <code>get</code>
+      <code>set</code>
+      <code>set</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="2">
+      <code>set</code>
+      <code>set</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/TestCase.php">
+    <MixedArgument occurrences="1">
+      <code>$value</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="1">
+      <code>$name</code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment occurrences="1">
+      <code>$value</code>
+    </MixedAssignment>
+  </file>
+  <file src="tests/TestPeopleTrait.php">
+    <MissingConstructor occurrences="7">
+      <code>$em</code>
+      <code>$em</code>
+      <code>$em</code>
+      <code>$em</code>
+      <code>$em</code>
+      <code>$em</code>
+      <code>$em</code>
+    </MissingConstructor>
+    <MixedAssignment occurrences="1">
+      <code>$this-&gt;em</code>
+    </MixedAssignment>
+    <PossiblyNullReference occurrences="1">
+      <code>get</code>
+    </PossiblyNullReference>
+  </file>
+  <file src="tests/TestPromises/SucceedThenThrowWithDuplicateEmailPromise.php">
+    <PossiblyNullArgument occurrences="1">
+      <code>$this-&gt;personToReturn-&gt;email_address</code>
+    </PossiblyNullArgument>
+  </file>
+</files>

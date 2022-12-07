@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * @template-extends EntityRepository<Person>
+ */
 class PersonRepository extends EntityRepository
 {
     private Mailer $mailerClient;
@@ -83,12 +86,5 @@ class PersonRepository extends EntityRepository
     public function sendRegisteredEmail(Person $person): bool
     {
         return $this->mailerClient->sendEmail($person->toMailerPayload());
-    }
-
-    public function find($id, $lockMode = null, $lockVersion = null): ?Person
-    {
-        /** @var ?Person $person */
-        $person = parent::find($id, $lockMode, $lockVersion);
-        return $person;
     }
 }
