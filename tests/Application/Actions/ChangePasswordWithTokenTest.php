@@ -26,7 +26,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $person = new Person();
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
-        $passwordResetToken = new PasswordResetToken($person);
+        $passwordResetToken = PasswordResetToken::random($person);
         $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
         $passwordResetTokenProphecy->persist($passwordResetToken)->shouldBeCalled();
@@ -61,7 +61,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $personId = Uuid::v4();
         $person = new Person();
 
-        $passwordResetToken = new PasswordResetToken($person);
+        $passwordResetToken = PasswordResetToken::random($person);
         $passwordResetToken->created_at = new \DateTime("62 minutes ago");
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
@@ -94,7 +94,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $person = new Person();
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
-        $passwordResetToken = new PasswordResetToken($person);
+        $passwordResetToken = PasswordResetToken::random($person);
         $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
         $passwordResetTokenProphecy->persist($passwordResetToken)->shouldBeCalled();
@@ -134,7 +134,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $person = new Person();
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
-        $passwordResetToken = new PasswordResetToken($person);
+        $passwordResetToken = PasswordResetToken::random($person);
         $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
 
