@@ -91,8 +91,9 @@ class StatusTest extends TestCase
     }
 
     private function getConnectedMockEntityManager(
-        string $proxyPath = __DIR__ . '/../../../var/doctrine/proxies',
+        ?string $proxyPath = null,
     ): EntityManagerInterface {
+        $proxyPath ??= realpath(__DIR__ . '/../../../var/doctrine/proxies');
         $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
             ['/var/www/html/src/Domain'],
             false, // Simulate live mode for these tests.
