@@ -52,7 +52,8 @@ class CreatePasswordResetToken extends Action
             return new JsonResponse([]);
         }
 
-        $token = new PasswordResetToken($person);
+
+        $token = PasswordResetToken::random($person);
 
         $resetLink = $accountManagementBaseUrl . '/reset-password' . "?token=" . urlencode($token->toBase58Secret());
 
