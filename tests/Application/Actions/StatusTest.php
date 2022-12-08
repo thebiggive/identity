@@ -91,9 +91,8 @@ class StatusTest extends TestCase
     }
 
     private function getConnectedMockEntityManager(
-        ?string $proxyPath = null,
+        string $proxyPath = '/var/www/html/var/doctrine/proxies',
     ): EntityManagerInterface {
-        $proxyPath ??= realpath(__DIR__ . '/../../../var/doctrine/proxies');
         $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
             ['/var/www/html/src/Domain'],
             false, // Simulate live mode for these tests.
@@ -106,7 +105,7 @@ class StatusTest extends TestCase
         // No auto-generation – like live mode – for these tests.
         $config->setAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl(
-            new AnnotationDriver(new AnnotationReader(), [__DIR__ . '/../../Domain']),
+            new AnnotationDriver(new AnnotationReader(), ['/var/www/html/src/Domain']),
         );
 
         $connectionProphecy = $this->prophesize(Connection::class);
