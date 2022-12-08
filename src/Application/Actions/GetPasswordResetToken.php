@@ -21,7 +21,7 @@ class GetPasswordResetToken extends Action
 
     protected function action(Request $request, array $args): Response
     {
-        $secret = Uuid::fromBase58((string) ($args['base58secret'] ?? throw new HttpNotFoundException($request)));
+        $secret = Uuid::fromBase58((string) ($args['base58Secret'] ?? throw new HttpNotFoundException($request)));
         $token = $this->tokenRepository->findForUse($secret);
 
         if ($token === null) {
