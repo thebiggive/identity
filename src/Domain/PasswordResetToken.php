@@ -43,17 +43,17 @@ class PasswordResetToken
      */
     private ?\DateTimeImmutable $used = null;
 
-    private function __construct(Person $person, Uuid $uuid)
+    private function __construct(Person $person, Uuid $secret)
     {
         $this->person = $person;
-        $this->secret = $uuid;
+        $this->secret = $secret;
         $this->created_at = new \DateTime();
         $this->updated_at = new \DateTime();
     }
 
-    public static function fromBase58(Person $person, string $base58Token): self
+    public static function fromBase58(Person $person, string $base58Secret): self
     {
-        return new self($person, Uuid::fromBase58($base58Token));
+        return new self($person, Uuid::fromBase58($base58Secret));
     }
 
     public static function random(Person $person): self

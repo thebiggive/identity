@@ -10,7 +10,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Uid\Uuid;
-
 class GetPasswordResetToken extends Action
 {
     public function __construct(
@@ -22,8 +21,8 @@ class GetPasswordResetToken extends Action
 
     protected function action(Request $request, array $args): Response
     {
-        $uuid = Uuid::fromBase58((string) ($args['base58'] ?? throw new HttpNotFoundException($request)));
-        $token = $this->tokenRepository->findForUse($uuid);
+        $secret = Uuid::fromBase58((string) ($args['base58secret'] ?? throw new HttpNotFoundException($request)));
+        $token = $this->tokenRepository->findForUse($secret);
 
         if ($token === null) {
             throw new HttpNotFoundException($request);

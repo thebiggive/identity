@@ -51,7 +51,7 @@ return function (App $app) {
             ->add(PlainRecaptchaMiddleware::class)
         ;
 
-        $versionGroup->get('/password-reset-token/{base58:[A-Za-z0-9-]{22}}', GetPasswordResetToken::class);
+        $versionGroup->get('/password-reset-token/{base58secret:[A-Za-z0-9-]{22}}', GetPasswordResetToken::class);
 
         $versionGroup->post('/change-forgotten-password', ChangePasswordUsingToken::class)
         ;

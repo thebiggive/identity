@@ -22,9 +22,9 @@ class GetPasswordTokenTest extends TestCase
     public function testCanChangePassword(): void
     {
         // arrange
-        $base58Token = 'XT6A2y3ZedFerQnRnLFLsS';
-        $secret = Uuid::fromBase58($base58Token);
-        $passwordResetToken = PasswordResetToken::fromBase58(new Person(), $base58Token);
+        $base58Secret = 'XT6A2y3ZedFerQnRnLFLsS';
+        $secret = Uuid::fromBase58($base58Secret);
+        $passwordResetToken = PasswordResetToken::fromBase58(new Person(), $base58Secret);
 
         $passwordResetTokenRepoProphecy = $this->prophesize(PasswordResetTokenRepository::class);
         $passwordResetTokenRepoProphecy->findForUse($secret)->willReturn($passwordResetToken);
@@ -35,7 +35,7 @@ class GetPasswordTokenTest extends TestCase
         $container->set(PasswordResetTokenRepository::class, $passwordResetTokenRepoProphecy->reveal());
 
         // act
-        $response = $app->handle($this->createRequest('GET', "/v1/password-reset-token/$base58Token"));
+        $response = $app->handle($this->createRequest('GET', "/v1/password-reset-token/$base58Secret"));
 
         // assert
         $this->assertSame(200, $response->getStatusCode());
