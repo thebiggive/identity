@@ -28,5 +28,6 @@
     <env name="REDIS_HOST" value="dummy-redis-hostname" force="true"/>
     <env name="STRIPE_API_VERSION" value="2022-08-01" />
     <env name="STRIPE_SECRET_KEY" value="sk_test_unitTestFakeKey" force="true"/>
+    <env name="ACCOUNT_MANAGEMENT_BASE_URI" value="https://unit-test-fake-account-sub.thebiggivetest.org.uk" force="true"/>
   </php>
 </phpunit>
