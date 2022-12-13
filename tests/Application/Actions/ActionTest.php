@@ -8,6 +8,7 @@ use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionPayload;
 use DateTimeImmutable;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use BigGive\Identity\Tests\TestCase;
 
@@ -26,7 +27,7 @@ class ActionTest extends TestCase
                 parent::__construct($loggerInterface);
             }
 
-            public function action(): Response
+            public function action(Request $request, array $args): Response
             {
                 return $this->respond(
                     new ActionPayload(
@@ -59,7 +60,7 @@ class ActionTest extends TestCase
                 parent::__construct($loggerInterface);
             }
 
-            public function action(): Response
+            public function action(Request $request, array $args): Response
             {
                 return $this->respondWithData(
                     [

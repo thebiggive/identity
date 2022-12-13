@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * @template-extends EntityRepository<Person>
+ */
 class PersonRepository extends EntityRepository
 {
     private Mailer $mailerClient;
@@ -62,6 +65,13 @@ class PersonRepository extends EntityRepository
         $this->getEntityManager()->flush();
 
         return $person;
+    }
+
+    public function persistForPasswordChange(Person $person): void
+    {
+        $person->hashPassword();
+        $this->getEntityManager()->persist($person);
+        $this->getEntityManager()->flush();
     }
 
     /**

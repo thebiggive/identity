@@ -30,12 +30,6 @@ use Symfony\Component\Validator\ConstraintViolation;
  */
 abstract class Action
 {
-    protected Request $request;
-
-    protected Response $response;
-
-    protected array $args;
-
     public function __construct(protected readonly LoggerInterface $logger)
     {
     }
@@ -46,34 +40,31 @@ abstract class Action
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $this->request = $request;
-        $this->response = $response;
-        $this->args = $args;
-
         try {
-            return $this->action();
+            return $this->action($request, $args);
         } catch (DomainRecordNotFoundException $e) {
-            throw new HttpNotFoundException($this->request, $e->getMessage());
+            throw new HttpNotFoundException($request, $e->getMessage());
         }
     }
 
     /**
+     * @param array $args
      * @throws DomainRecordNotFoundException
      * @throws HttpBadRequestException
      */
-    abstract protected function action(): Response;
+    abstract protected function action(Request $request, array $args): Response;
 
     /**
      * @return mixed
      * @throws HttpBadRequestException
      */
-    protected function resolveArg(string $name)
+    protected function resolveArg(array $args, Request $request, string $name)
     {
-        if (!isset($this->args[$name])) {
-            throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
+        if (!isset($args[$name])) {
+            throw new HttpBadRequestException($request, "Could not resolve argument `{$name}`.");
         }
 
-        return $this->args[$name];
+        return $args[$name];
     }
 
     /**
@@ -88,10 +79,11 @@ abstract class Action
 
     protected function respond(ActionPayload $payload): Response
     {
+        $response = new \Slim\Psr7\Response();
         $json = json_encode($payload, JSON_PRETTY_PRINT);
-        $this->response->getBody()->write($json);
+        $response->getBody()->write($json);
 
-        return $this->response
+        return $response
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus($payload->getStatusCode());
     }

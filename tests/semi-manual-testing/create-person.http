@@ -1,0 +1,9 @@
+POST http://localhost:30050/v1/people
+Content-Type: application/json
+
+{
+  "email_address":  "donor@weliketodonatebutweforgotpasswords.com",
+  "api_key": "blank"
+}
+
+###

@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Actions\ChangePasswordUsingToken;
+use BigGive\Identity\Application\Actions\CreatePasswordResetToken;
 use BigGive\Identity\Application\Actions\GetCreditFundingInstructions;
+use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Status;
@@ -10,6 +13,7 @@ use BigGive\Identity\Application\Middleware\CredentialsRecaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\PlainRecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -39,6 +43,18 @@ return function (App $app) {
 
         $versionGroup->post('/auth', Login::class)
             ->add(CredentialsRecaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+
+        $versionGroup->post(
+            '/password-reset-token',
+            CreatePasswordResetToken::class
+        )
+            ->add(PlainRecaptchaMiddleware::class)
+        ;
+
+        $versionGroup->get('/password-reset-token/{base58Secret:[A-Za-z0-9-]{22}}', GetPasswordResetToken::class);
+
+        $versionGroup->post('/change-forgotten-password', ChangePasswordUsingToken::class)
+        ;
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
@@ -78,7 +94,7 @@ return function (App $app) {
             ->withHeader('Access-Control-Allow-Origin', $corsAllowedOrigin)
             ->withHeader(
                 'Access-Control-Allow-Headers',
-                'Accept, Authorization, Content-Type, Origin, X-Requested-With, X-Tbg-Auth'
+                'Accept, Authorization, Content-Type, Origin, X-Requested-With, X-Tbg-Auth, x-captcha-code'
             )
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
