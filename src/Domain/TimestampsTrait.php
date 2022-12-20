@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -15,22 +14,22 @@ trait TimestampsTrait
 {
     /**
      * @ORM\Column(type="datetime")
-     * @var DateTime
+     * @var \DateTimeInterface
      */
-    public DateTime $created_at;
+    public \DateTimeInterface $created_at;
 
     /**
      * @ORM\Column(type="datetime")
-     * @var DateTime
+     * @var \DateTimeInterface
      */
-    public DateTime $updated_at;
+    public \DateTimeInterface $updated_at;
 
     /**
      * @ORM\PrePersist Set created + updated timestamps
      */
     public function createdNow(): void
     {
-        $now = new \DateTime('now');
+        $now = new \DateTimeImmutable('now');
         $this->created_at = $now;
         $this->updated_at = $now;
     }
