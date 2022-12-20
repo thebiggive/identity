@@ -7,6 +7,7 @@ Bootstrapped with [Slim Skeleton](https://github.com/slimphp/Slim-Skeleton), thi
 along with several other PHP libraries used across the Big Give.
 
 * [Run the app](#Run-the-app)
+* [Run static analysis checks](#Run-static-analysis-checks)
 * [Run unit tests](#Run-unit-tests)
 * [API](#API)
 * [Service dependencies](#Service-dependencies)
@@ -49,6 +50,17 @@ If dependencies change you may occasionally need to re-run the `composer install
 Check the `Status` endpoint works:
 
 * [localhost:30050/ping](http://localhost:30050/ping)
+
+## Run static analysis checks
+
+PHP Code in this repo is checked with [Psalm](https://psalm.dev/). This can detect many possible bugs, and
+allow us to write expressive code using features that PHP doesn't natively provide, such as generics.
+
+Existing errors are grandfathered in to a baseline and do not cause failures. To check for new issues, run:
+
+    docker-compose exec app composer run sa:check
+
+Psalm config can be found in [psalm.xml](./psalm.xml).
 
 ## Run unit tests
 
