@@ -84,7 +84,7 @@ return function (ContainerBuilder $containerBuilder) {
                     'apiVersion' => getenv('STRIPE_API_VERSION'),
                 ],
                 'accountManagement' => [
-                    'baseUri' => getenv('ACCOUNT_MANAGEMENT_BASE_URI') ?: 'https://donate.thebiggive.org.uk',
+                    'baseUri' => getenv('ACCOUNT_MANAGEMENT_BASE_URI'),
                 ],
             ]);
         }
