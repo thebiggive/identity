@@ -27,7 +27,7 @@ trait TimestampsTrait
     /**
      * @ORM\PrePersist Set created + updated timestamps
      */
-    public function createdNow(): void
+    final public function createdNow(): void
     {
         $now = new \DateTimeImmutable('now');
         $this->created_at = $now;
