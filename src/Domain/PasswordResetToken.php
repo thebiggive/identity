@@ -48,9 +48,7 @@ class PasswordResetToken
         $this->person = $person;
         $this->secret = $secret;
 
-        $now = new \DateTimeImmutable();
-        $this->created_at = $now;
-        $this->updated_at = $now;
+        $this->createdNow();
     }
 
     public static function fromBase58(Person $person, string $base58Secret): self
