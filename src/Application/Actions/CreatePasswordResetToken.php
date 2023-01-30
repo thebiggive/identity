@@ -8,6 +8,7 @@ use BigGive\Identity\Domain\PasswordResetToken;
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -15,7 +16,25 @@ use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CreatePasswordResetToken extends Action
+/**
+ *  @OA\Post(
+ *     path="/v1/password-reset-token",
+ *      @OA\RequestBody(
+ *         description="",
+ *         required=true,
+ *         @OA\JsonContent(
+ *              @OA\Property(property="email_address", type="string", example="fred@example.com"),
+ *        )
+ *      ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Token created and emailed to user, if they exist, which the server does not confirm or deny via http",
+ *         @OA\JsonContent(),
+ *        )
+ *     )
+ *   )
+ * )
+ */ class CreatePasswordResetToken extends Action
 {
 
     public function __construct(
