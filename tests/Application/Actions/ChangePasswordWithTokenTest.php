@@ -45,8 +45,6 @@ class ChangePasswordWithTokenTest extends TestCase
             return true;
         }))->shouldBeCalledOnce();
 
-        throw new \Exception($secret->toBase58());
-
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
             'new_password' => 'n3w-p4ssw0rd',
