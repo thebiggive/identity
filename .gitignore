@@ -7,7 +7,7 @@
 .phpunit.result.cache
 
 # Ignored so that PHP annotations remain the source of truth. Run `composer run docs` to generate.
-openapi.yaml
+docs/openapi.yaml
 
 .env
 /coverage.xml
