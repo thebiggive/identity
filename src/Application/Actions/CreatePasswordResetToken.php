@@ -30,6 +30,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *         response=200,
  *         description="Token created and emailed to user, if they exist, which the server does not confirm or deny via http",
  *         @OA\JsonContent(),
+ *        ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Email address is invalid, e.g. doesn't create @ sign. The absecne of this error doesn't mean the eamil is registered with us or exists, just that the format looks OK.. ",
+ *         @OA\JsonContent(),
  *        )
  *     )
  *   )
