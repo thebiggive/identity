@@ -13,7 +13,7 @@ jobs:
     # generation-dependent tests to work.
     working_directory: /var/www/html
     docker:
-      - image: thebiggive/php@ab1ca53746a62196a5fb7386aa4dd1625b825d1da22ab19cbf155ae9e389ff60279
+      - image: thebiggive/php@sha256:ab1ca53746a62196a5fb7386aa4dd1625b825d1da22ab19cbf155ae9e389ff60
         auth:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN
