@@ -33,6 +33,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *         description="Password changed",
  *         @OA\JsonContent(),
  *     ),
+*      @OA\Response(
+*         response=400,
+*         description="Returned if the new password is bad (e.g. too short), or it the secret token is invalid or expired",
+*         @OA\JsonContent(),
+*     ),
  * ),
  * @link https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk
  */
