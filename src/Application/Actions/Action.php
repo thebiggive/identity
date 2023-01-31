@@ -14,7 +14,7 @@ use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Validator\ConstraintViolation;
 
 /**
- * @OA\Info(title="Big Give Identity service", version="0.0.6"),
+ * @OA\Info(title="Big Give Identity service", version="0.0.7"),
  * @OA\Server(
  *     description="Staging",
  *     url="https://identity-staging.thebiggivetest.org.uk",
