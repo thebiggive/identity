@@ -47,8 +47,8 @@ class PasswordResetToken
     {
         $this->person = $person;
         $this->secret = $secret;
-        $this->created_at = new \DateTime();
-        $this->updated_at = new \DateTime();
+
+        $this->createdNow();
     }
 
     public static function fromBase58(Person $person, string $base58Secret): self

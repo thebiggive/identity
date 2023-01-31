@@ -10,8 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class Token
 {
-    public const VALID_DAYS_USER_CREATION = 1;
-    public const VALID_DAYS_PASSWORD_AUTH = 8;
+    public const VALIDITY_PERIOD_SECONDS = 8 * 60 * 60;
 
     /**
      * @link https://stackoverflow.com/questions/39239051/rs256-vs-hs256-whats-the-difference has info on hash
@@ -30,8 +29,6 @@ class Token
      */
     public static function create(string $personId, bool $complete, ?string $pspCustomerId): string
     {
-        $durationInDays = $complete ? static::VALID_DAYS_PASSWORD_AUTH : static::VALID_DAYS_USER_CREATION;
-
         $personClaims = [
             'person_id' => $personId,
             'complete' => $complete,
@@ -48,7 +45,7 @@ class Token
         $claims = [
             'iss' => getenv('BASE_URI'),
             'iat' => time(),
-            'exp' => time() + ($durationInDays * 86400),
+            'exp' => time() + self::VALIDITY_PERIOD_SECONDS,
             'sub' => $personClaims,
         ];
 

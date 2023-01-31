@@ -49,6 +49,7 @@ workflows:
       - test:
           context:
             - docker-hub-creds
+            - jira
             - slack
           post-steps:
             - jira/notify:
@@ -78,6 +79,7 @@ workflows:
       - aws-ecs/deploy-service-update:
           context:
             - ecs-deploys
+            - jira
             - slack
           requires:
             - aws-ecr/build-and-push-image
@@ -127,6 +129,7 @@ workflows:
       - aws-ecs/deploy-service-update:
           context:
             - ecs-deploys
+            - jira
             - slack
           requires:
             - aws-ecr/build-and-push-image
@@ -176,6 +179,7 @@ workflows:
       - aws-ecs/deploy-service-update:
           context:
             - ecs-deploys
+            - jira
             - slack
           requires:
             - aws-ecr/build-and-push-image
@@ -205,3 +209,5 @@ workflows:
                       }
                     ]
                   }
+
+# VS Code Extension Version: 1.5.1

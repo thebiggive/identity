@@ -90,6 +90,7 @@
         "doctrine:migrate:generate": "doctrine-migrations generate",
         "doctrine:validate": ["@doctrine:cache:clear", "doctrine orm:validate-schema"],
         "sa:check": "vendor/bin/psalm",
+        "sa:check:inc-baseline-ignored": "vendor/bin/psalm --show-info=true --output-format=by-issue-level",
         "lint:check": "phpcs --standard=phpcs.xml -s .",
         "lint:fix": "phpcbf --standard=phpcs.xml -s .",
         "start": "php -S localhost:8080 -t public",

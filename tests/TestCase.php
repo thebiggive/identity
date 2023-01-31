@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use ReCaptcha\ReCaptcha;
 use Redis;
 use Slim\App;
@@ -47,6 +49,8 @@ class TestCase extends PHPUnit_TestCase
 
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
+
+        $container->set(LoggerInterface::class, new NullLogger());
 
         $recaptchaProphecy = $this->prophesize(ReCaptcha::class);
         $recaptchaProphecy->verify('good response', '1.2.3.4')
