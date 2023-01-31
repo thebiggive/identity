@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *        ),
  *     @OA\Response(
  *         response=400,
- *         description="Email address is invalid, e.g. doesn't create @ sign. The absecne of this error doesn't mean the eamil is registered with us or exists, just that the format looks OK.. ",
+ *         description="Email address is invalid, e.g. doesn't create @ sign. The absence of this error doesn't mean the eamil is registered with us or exists, just that the format looks OK.. ",
  *         @OA\JsonContent(),
  *        )
  *     )
