@@ -92,7 +92,7 @@ class Update extends Action
      */
     protected function action(Request $request, array $args): Response
     {
-        $person = $this->personRepository->find($this->resolveArg($args, $request, 'personId'));
+        $person = $this->personRepository->find((string) $this->resolveArg($args, $request, 'personId'));
         if (!$person) {
             throw new HttpNotFoundException($request, 'Person not found');
         }

@@ -14,14 +14,15 @@ use Psr\Container\ContainerInterface;
 return static function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         PersonRepository::class => static function (ContainerInterface $c): PersonRepository {
-            /** @var PersonRepository $repo */
-            $repo = $c->get(EntityManagerInterface::class)->getRepository(Person::class);
+            $entityManager = $c->get(EntityManagerInterface::class);
+            $entityRepository = $entityManager->getRepository(Person::class);
 
+            $personRepository = new PersonRepository($entityManager, $entityRepository);
             /** @var Mailer $mailerClient */
             $mailerClient = $c->get(Mailer::class);
-            $repo->setMailerClient($mailerClient);
+            $personRepository->setMailerClient($mailerClient);
 
-            return $repo;
+            return $personRepository;
         },
         PasswordResetTokenRepository::class => static function (ContainerInterface $c): PasswordResetTokenRepository {
             /** @var EntityManagerInterface $entityManager */

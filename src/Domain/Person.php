@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ORM\Entity(repositoryClass="BigGive\Identity\Repository\PersonRepository")
+ * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="Person", indexes={
  *     @ORM\Index(name="email_and_password", columns={"email_address", "password"}),

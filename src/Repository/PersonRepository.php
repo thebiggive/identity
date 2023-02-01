@@ -12,23 +12,36 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ObjectRepository;
 
-/**
- * @template-extends EntityRepository<Person>
- */
-class PersonRepository extends EntityRepository
+class PersonRepository
 {
     public const EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
     private Mailer $mailerClient;
 
-    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
+    /** @var EntityRepository<Person> */
+    private EntityRepository $entityRepository;
+
+    private EntityManagerInterface $em;
+
+
+    /**
+     * @param EntityRepository<Person> $entityRepository
+     */
+    public function __construct(EntityManagerInterface $em, EntityRepository $entityRepository)
     {
-        parent::__construct($em, $class);
+        $this->em = $em;
+        $this->entityRepository = $entityRepository;
+    }
+
+    public function find(string $id): ?Person
+    {
+        return $this->entityRepository->find($id);
     }
 
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
-        $qb = new QueryBuilder($this->getEntityManager());
+        $qb = new QueryBuilder($this->em);
         $qb->select('p')
             ->from(Person::class, 'p')
             ->where('p.email_address = :emailAddress')
@@ -50,13 +63,12 @@ class PersonRepository extends EntityRepository
     {
         $person->hashPassword();
 
-        $em = $this->getEntityManager();
-        $em->persist($person);
+        $this->em->persist($person);
 
         try {
-            $em->flush();
+            $this->em->flush();
         } catch (UniqueConstraintViolationException $exception) {
-            $em->detach($person);
+            $this->em->detach($person);
             if (str_contains($exception->getMessage(), self::EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME)) {
                 \assert(($person->email_address !== null));
                 throw new DuplicateEmailAddressWithPasswordException(sprintf(
@@ -72,8 +84,8 @@ class PersonRepository extends EntityRepository
     public function persistForPasswordChange(Person $person): void
     {
         $person->hashPassword();
-        $this->getEntityManager()->persist($person);
-        $this->getEntityManager()->flush();
+        $this->em->persist($person);
+        $this->em->flush();
     }
 
     /**
@@ -89,4 +101,24 @@ class PersonRepository extends EntityRepository
     {
         return $this->mailerClient->sendEmail($person->toMailerPayload());
     }
+//
+//    public function findAll()
+//    {
+//        return $this->entityRepository->findAll();
+//    }
+//
+//    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null)
+//    {
+//        return $this->entityRepository->findBy($criteria, $orderBy, $limit, $offset);
+//    }
+//
+//    public function findOneBy(array $criteria)
+//    {
+//        return $this->entityRepository->findOneBy($criteria);
+//    }
+//
+//    public function getClassName()
+//    {
+//        return Person::class;
+//    }
 }
