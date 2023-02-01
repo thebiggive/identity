@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
+use BigGive\Identity\Application\Actions\Person\Update;
 use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -28,8 +29,6 @@ class UpdateTest extends TestCase
     {
         // Start without password.
         $person = $this->getTestPerson(false, false);
-        // Come back from EM with password.
-        $personWithPostPersistData = $this->getInitialisedPerson(true);
 
         $app = $this->getAppInstance();
 
@@ -48,7 +47,9 @@ class UpdateTest extends TestCase
 
         $personRepoProphecy->persist($personToken)
             ->shouldBeCalledOnce()
-            ->willReturn($personWithPostPersistData);
+            ->will(/**
+             * @param array<Person> $args
+             */ fn(array $args) => UpdateTest::initialisePerson($args[0], true));
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -133,7 +134,7 @@ class UpdateTest extends TestCase
             ->willReturn($person2);
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldBeCalledTimes(2)
-            ->will(new SucceedThenThrowWithDuplicateEmailPromise($personWithPostPersistData));
+            ->will(new SucceedThenThrowWithDuplicateEmailPromise(true));
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -202,7 +203,6 @@ class UpdateTest extends TestCase
 
         // As above.
         $person = $this->getTestPerson(false, false);
-        $personWithPostPersistData = $this->getInitialisedPerson(true);
 
         $app = $this->getAppInstance();
 
@@ -212,7 +212,9 @@ class UpdateTest extends TestCase
             ->willReturn($person);
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldBeCalledOnce()
-            ->willReturn($personWithPostPersistData);
+            ->will(/**
+             * @param array<Person> $args
+             */ fn(array $args) => UpdateTest::initialisePerson($args[0], true));
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(false);
@@ -256,8 +258,7 @@ class UpdateTest extends TestCase
             ->shouldBeCalledOnce()
             ->willReturn($personWithPostPersistData);
         $personRepoProphecy->persist(Argument::type(Person::class))
-            ->shouldBeCalledOnce()
-            ->willReturn($personWithPostPersistData);
+            ->shouldBeCalledOnce();
 
         // We don't use the returned properties so they're omitted for now, but in reality
         // `name` etc. will be set.

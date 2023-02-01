@@ -6,16 +6,19 @@ namespace BigGive\Identity\Repository;
 
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
+use function PHPUnit\Framework\stringContains;
 
 /**
  * @template-extends EntityRepository<Person>
  */
 class PersonRepository extends EntityRepository
 {
+    public const EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
     private Mailer $mailerClient;
 
     public function __construct(EntityManagerInterface $em, ClassMetadata $class)
@@ -42,30 +45,26 @@ class PersonRepository extends EntityRepository
      *
      * It also sets the password hash and EM-flushes the entity as side effects.
      *
-     * @return Person   The Person, with any persist side effect properties set (or simulated
-     *                  set when testing).
      */
-    public function persist(Person $person): Person
+    public function persist(Person $person): void
     {
-        $passwordIsToBeSet = !empty($person->raw_password) && !empty($person->email_address);
+        $person->hashPassword();
 
-        if ($passwordIsToBeSet) {
-            $existingPerson = $this->findPasswordEnabledPersonByEmailAddress($person->email_address);
-            if ($existingPerson !== null) {
-                // we want to report this error differently on the front end
+        $this->getEntityManager()->persist($person);
+
+        try {
+            $this->getEntityManager()->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            if (str_contains($exception->getMessage(), self::EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME)) {
+                \assert(($person->email_address !== null));
                 throw new \LogicException(sprintf(
                     'Person already exists with password and email address %s',
                     $person->email_address
                 ));
             }
+
+            throw $exception;
         }
-
-        $person->hashPassword();
-
-        $this->getEntityManager()->persist($person);
-        $this->getEntityManager()->flush();
-
-        return $person;
     }
 
     public function persistForPasswordChange(Person $person): void

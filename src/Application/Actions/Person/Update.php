@@ -143,7 +143,7 @@ class Update extends Action
         }
 
         try {
-            $person = $this->personRepository->persist($person);
+            $this->personRepository->persist($person);
         } catch (\LogicException $exception) {
             $this->logger->warning(sprintf(
                 '%s failed to persist Person: %s',
