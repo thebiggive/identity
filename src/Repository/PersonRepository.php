@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
-use function PHPUnit\Framework\stringContains;
 
 /**
  * @template-extends EntityRepository<Person>
