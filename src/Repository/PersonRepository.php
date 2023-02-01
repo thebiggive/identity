@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Repository;
 
 use BigGive\Identity\Client\Mailer;
+use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,10 +58,10 @@ class PersonRepository extends EntityRepository
         } catch (UniqueConstraintViolationException $exception) {
             if (str_contains($exception->getMessage(), self::EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME)) {
                 \assert(($person->email_address !== null));
-                throw new \LogicException(sprintf(
+                throw new DuplicateEmailAddressWithPasswordException(sprintf(
                     'Person already exists with password and email address %s',
                     $person->email_address
-                ));
+                ), 0, $exception);
             }
 
             throw $exception;

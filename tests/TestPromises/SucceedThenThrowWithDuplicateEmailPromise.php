@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\TestPromises;
 
 use BigGive\Identity\Application\Actions\Person\Update;
+use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Tests\Application\Actions\Person\UpdateTest;
 use Prophecy\Promise\PromiseInterface;
@@ -32,7 +33,7 @@ class SucceedThenThrowWithDuplicateEmailPromise implements PromiseInterface
             return;
         }
 
-        throw new \LogicException(sprintf(
+        throw new DuplicateEmailAddressWithPasswordException(sprintf(
             'Person already exists with password and email address %s',
             $person->email_address ?? '',
         ));

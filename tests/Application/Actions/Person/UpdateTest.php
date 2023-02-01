@@ -190,7 +190,7 @@ class UpdateTest extends TestCase
             'error' => [
                 'description' =>
                     'Update not valid: Person already exists with password and email address loraine@hyperdub.net',
-                'type' => 'BAD_REQUEST',
+                'type' => 'DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD',
             ],
         ], JSON_THROW_ON_ERROR);
         $this->assertJsonStringEqualsJsonString($expectedJSON, (string) $responseFromSecondUpdate->getBody());

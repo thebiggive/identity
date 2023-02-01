@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
+use BigGive\Identity\Application\Actions\ActionError;
+use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
@@ -57,6 +59,7 @@ use TypeError;
  *          format="object",
  *          example={
  *              "error": {
+ *                  "type": "DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD",
  *                  "description": "The error details",
  *              }
  *          },
@@ -144,14 +147,17 @@ class Update extends Action
 
         try {
             $this->personRepository->persist($person);
-        } catch (\LogicException $exception) {
+        } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
             $this->logger->warning(sprintf(
                 '%s failed to persist Person: %s',
                 __CLASS__,
-                $exception->getMessage(),
+                $duplicateException->getMessage(),
             ));
 
-            return $this->validationError("Update not valid: {$exception->getMessage()}");
+            return $this->validationError(
+                logMessage: "Update not valid: {$duplicateException->getMessage()}",
+                errorType: ActionError::DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD
+            );
         }
 
         $customerDetails = [
