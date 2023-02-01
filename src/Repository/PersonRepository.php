@@ -52,6 +52,7 @@ class PersonRepository extends EntityRepository
         if ($passwordIsToBeSet) {
             $existingPerson = $this->findPasswordEnabledPersonByEmailAddress($person->email_address);
             if ($existingPerson !== null) {
+                // we want to report this error differently on the front end
                 throw new \LogicException(sprintf(
                     'Person already exists with password and email address %s',
                     $person->email_address
