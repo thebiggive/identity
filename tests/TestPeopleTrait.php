@@ -2,10 +2,8 @@
 
 namespace BigGive\Identity\Tests;
 
-use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use BigGive\Identity\Domain\Person;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Uid\Uuid;
 
 trait TestPeopleTrait
