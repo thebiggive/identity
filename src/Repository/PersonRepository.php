@@ -50,11 +50,13 @@ class PersonRepository extends EntityRepository
     {
         $person->hashPassword();
 
-        $this->getEntityManager()->persist($person);
+        $em = $this->getEntityManager();
+        $em->persist($person);
 
         try {
-            $this->getEntityManager()->flush();
+            $em->flush();
         } catch (UniqueConstraintViolationException $exception) {
+            $em->detach($person);
             if (str_contains($exception->getMessage(), self::EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME)) {
                 \assert(($person->email_address !== null));
                 throw new DuplicateEmailAddressWithPasswordException(sprintf(
