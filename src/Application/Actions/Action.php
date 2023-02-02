@@ -101,14 +101,16 @@ abstract class Action
         ?string $publicMessage = null,
         bool $reduceSeverity = false,
         ?int $httpCode = 400,
+        ?string $errorType = null,
     ): Response {
         if ($reduceSeverity) {
             $this->logger->info($logMessage);
         } else {
             $this->logger->warning($logMessage);
         }
+        $errorType ??= ($httpCode === 401 ? ActionError::VALIDATION_ERROR : ActionError::BAD_REQUEST);
         $error = new ActionError(
-            $httpCode === 401 ? ActionError::VALIDATION_ERROR : ActionError::BAD_REQUEST,
+            $errorType,
             $publicMessage ?? $logMessage,
         );
 

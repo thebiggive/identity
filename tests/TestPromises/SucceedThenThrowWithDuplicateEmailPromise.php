@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\TestPromises;
 
+use BigGive\Identity\Application\Actions\Person\Update;
+use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
+use BigGive\Identity\Tests\Application\Actions\Person\UpdateTest;
 use Prophecy\Promise\PromiseInterface;
 use Prophecy\Prophecy\MethodProphecy;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -12,24 +15,27 @@ use Prophecy\Prophecy\ObjectProphecy;
 class SucceedThenThrowWithDuplicateEmailPromise implements PromiseInterface
 {
     private int $callsCount = 0;
-    private Person $personToReturn;
 
-    public function __construct(Person $personToReturn)
+    public function __construct(private bool $withPassword)
     {
-        $this->personToReturn = $personToReturn;
     }
 
     public function execute(array $args, ObjectProphecy $object, MethodProphecy $method)
     {
+        $person = $args[0];
+        assert($person instanceof Person);
+
         if ($this->callsCount === 0) {
             $this->callsCount++;
 
-            return $this->personToReturn;
+            UpdateTest::initialisePerson($person, $this->withPassword);
+
+            return;
         }
 
-        throw new \LogicException(sprintf(
+        throw new DuplicateEmailAddressWithPasswordException(sprintf(
             'Person already exists with password and email address %s',
-            $this->personToReturn->email_address,
+            $person->email_address ?? '',
         ));
     }
 }

@@ -22,14 +22,14 @@ class CreateTest extends TestCase
 
     public function testSuccess(): void
     {
-        $personWithPostPersistData = $this->getInitialisedPerson(false);
-
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldBeCalledTimes(2) // Currently once for stable UUID, once w/ Stripe Customer ID.
-            ->willReturn($personWithPostPersistData);
+            ->will(/**
+             * @param array<Person> $args
+             */ fn (array $args) => CreateTest::initialisePerson($args[0], false));
 
         $customerMockResult = (object) [
             'id' => static::$testPersonStripeCustomerId,
@@ -48,6 +48,7 @@ class CreateTest extends TestCase
 
         $request = $this->buildRequest([
             'captcha_code' => 'good response',
+            'first_name' => 'Loraine',
         ]);
 
         $response = $app->handle($request);
@@ -56,6 +57,7 @@ class CreateTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJson($payloadJSON);
 
+        /** @var object $payload */
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         // Mocked PersonRepository sets a UUID in code.
