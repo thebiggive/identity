@@ -343,7 +343,7 @@ class UpdateTest extends TestCase
 
         $expectedJSON = json_encode([
             'error' => [
-                'description' => 'Validation error: last_name must not be blank; email_address must not be blank',
+                'description' => 'last_name must not be blank; email_address must not be blank',
                 'type' => 'BAD_REQUEST',
             ],
         ], JSON_THROW_ON_ERROR);
@@ -381,7 +381,7 @@ class UpdateTest extends TestCase
 
         $expectedJSON = json_encode([
             'error' => [
-                'description' => 'Validation error: Password must be 10 or more characters',
+                'description' => 'Your password could not be set. Please ensure you chose one with at least 10 characters.',
                 'type' => 'BAD_REQUEST',
             ],
         ], JSON_THROW_ON_ERROR);

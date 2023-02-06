@@ -32,6 +32,7 @@
         "stripe/stripe-php": "^9.1.0",
         "symfony/cache": "^6.1",
         "symfony/doctrine-bridge": "^6.1",
+        "symfony/http-client": "^6.2",
         "symfony/property-access": "^6.1",
         "symfony/serializer": "^6.1",
         "symfony/uid": "^6.1",

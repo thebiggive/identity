@@ -129,7 +129,7 @@ class Update extends Action
         $violations = $this->validator->validate($person, null, ['complete']);
 
         if (count($violations) > 0) {
-            $message = 'Validation error: ';
+            $message = '';
 
             $violationDetails = [];
             foreach ($violations as $violation) {
