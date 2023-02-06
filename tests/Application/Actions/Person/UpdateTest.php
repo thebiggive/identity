@@ -189,7 +189,7 @@ class UpdateTest extends TestCase
         $expectedJSON = json_encode([
             'error' => [
                 'description' =>
-                    'Update not valid: Person already exists with password and email address loraine@hyperdub.net',
+                    'Your password could not be set. There is already a password set for your email address.',
                 'type' => 'DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD',
             ],
         ], JSON_THROW_ON_ERROR);
