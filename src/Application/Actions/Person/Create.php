@@ -122,7 +122,7 @@ class Create extends Action
             );
         }
 
-        $person = $this->personRepository->persist($person);
+        $this->personRepository->persist($person);
 
         try {
             $customer = $this->stripeClient->customers->create([

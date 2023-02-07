@@ -73,7 +73,7 @@
         }
     },
     "scripts": {
-        "docs": "openapi --output openapi.yaml src",
+        "docs": "openapi --output docs/openapi.yaml src",
         "doctrine:cache:clear": [
             "doctrine orm:clear-cache:metadata",
             "doctrine orm:clear-cache:query",

@@ -14,7 +14,7 @@ use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Validator\ConstraintViolation;
 
 /**
- * @OA\Info(title="Big Give Identity service", version="0.0.6"),
+ * @OA\Info(title="Big Give Identity service", version="0.0.7"),
  * @OA\Server(
  *     description="Staging",
  *     url="https://identity-staging.thebiggivetest.org.uk",
@@ -101,14 +101,16 @@ abstract class Action
         ?string $publicMessage = null,
         bool $reduceSeverity = false,
         ?int $httpCode = 400,
+        ?string $errorType = null,
     ): Response {
         if ($reduceSeverity) {
             $this->logger->info($logMessage);
         } else {
             $this->logger->warning($logMessage);
         }
+        $errorType ??= ($httpCode === 401 ? ActionError::VALIDATION_ERROR : ActionError::BAD_REQUEST);
         $error = new ActionError(
-            $httpCode === 401 ? ActionError::VALIDATION_ERROR : ActionError::BAD_REQUEST,
+            $errorType,
             $publicMessage ?? $logMessage,
         );
 

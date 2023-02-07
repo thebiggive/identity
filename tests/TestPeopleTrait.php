@@ -19,7 +19,7 @@ trait TestPeopleTrait
     }
 
     /**
-     * @param bool $withId  Sets a string UUID; must be false if passing JSON output on to middleware
+     * @param bool $withId Sets a string UUID; must be false if passing JSON output on to middleware
      *                      that assumes a real UUID object.
      * @return Person
      */
@@ -44,7 +44,17 @@ trait TestPeopleTrait
 
     private function getInitialisedPerson(bool $withPassword): Person
     {
-        $person = clone $this->getTestPerson(false, $withPassword);
+            $person = clone $this->getTestPerson(false, $withPassword);
+            self::initialisePerson($person, $withPassword);
+            return $person;
+    }
+
+    public static function initialisePerson(Person $person, bool $withPassword): void
+    {
+        if ($withPassword) {
+            $person->raw_password = 'superSecure123';
+        }
+
         $person->setId(Uuid::fromString(static::$testPersonUuid));
         $person->setStripeCustomerId(static::$testPersonStripeCustomerId);
 
@@ -56,8 +66,6 @@ trait TestPeopleTrait
         $person->updatedNow();
 
         $person->hashPassword();
-
-        return $person;
     }
 
     private function getStripeCustomerCommonArgs(): array

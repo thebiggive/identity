@@ -36,9 +36,14 @@ jobs:
 
       - run: composer run sa:check
 
+      - run: cd docs && apt update && apt install -y npm && npm i swagger-ui-dist
+
       - run: composer run docs # Ensure OpenAPI annotations remain valid
 
       - run: composer run test
+
+      - store_artifacts:
+          path: docs
 
       - codecov/upload:
           file: 'coverage.xml'

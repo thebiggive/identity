@@ -79,10 +79,8 @@ return function (App $app) {
             'https://donate-regression.thebiggivetest.org.uk', // ECS + S3 regression via CloudFront
             'https://donate-ecs-production.thebiggive.org.uk', // ECS production direct
             'https://donate-production.thebiggive.org.uk', // ECS + S3 production via CloudFront
-            'https://donate.thebiggive.org.uk', // ECS + S3 production via CloudFront, short alias
-            'https://thebiggive.global', // ECS + S3 production via CloudFront, temporary global alias
-            'https://thebiggive.com', // ECS + S3 production via CloudFront, global alias
-            'https://thebiggive.org', // ECS + S3 production via CloudFront, likely future global alias
+            'https://donate.thebiggive.org.uk', // ECS + S3 production via CloudFront, short alias to permit thru early '23.
+            'https://donate.biggive.org', // ECS + S3 production via CloudFront, Feb-2023-onwards primary domain
         ];
         if (!empty($givenOrigin) && in_array($givenOrigin, $corsAllowedOrigins, true)) {
             $corsAllowedOrigin = $givenOrigin;
