@@ -51,6 +51,12 @@ class Person
     ];
 
     /**
+     * See discussions on Jira ID-36 before enabling
+     * @var bool
+     */
+    public const PASSWORD_NOT_COMPROMISED_CHECK_ENABLED = false;
+
+    /**
      * @OA\Property(
      *     type="object",
      *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
@@ -285,7 +291,10 @@ class Person
         $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
         $notCompromisedValidator->initialize($context);
 
-        $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword());
+        /** @psalm-suppress TypeDoesNotContainType */
+        if (self::PASSWORD_NOT_COMPROMISED_CHECK_ENABLED) {
+            $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword());
+        }
     }
 
     public function addCompletionJWT(string $completionJWT): void
