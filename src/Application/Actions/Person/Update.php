@@ -129,7 +129,7 @@ class Update extends Action
         $violations = $this->validator->validate($person, null, ['complete']);
 
         if (count($violations) > 0) {
-            $message = 'Validation error: ';
+            $message = '';
 
             $violationDetails = [];
             foreach ($violations as $violation) {
@@ -156,7 +156,8 @@ class Update extends Action
 
             return $this->validationError(
                 logMessage: "Update not valid: {$duplicateException->getMessage()}",
-                errorType: ActionError::DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD
+                publicMessage: "Your password could not be set. There is already a password set for your email address.",
+                errorType: ActionError::DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD,
             );
         }
 

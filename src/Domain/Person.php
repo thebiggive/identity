@@ -7,8 +7,10 @@ namespace BigGive\Identity\Domain;
 use BigGive\Identity\Application\Security\Password;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -47,6 +49,12 @@ class Person
      */
     public const NON_SERIALISED_ATTRIBUTES = [
     ];
+
+    /**
+     * See discussions on Jira ID-36 before enabling
+     * @var bool
+     */
+    public const PASSWORD_NOT_COMPROMISED_CHECK_ENABLED = false;
 
     /**
      * @OA\Property(
@@ -257,20 +265,35 @@ class Person
     /**
      * @Assert\Callback(groups={"complete"})
      * @see Person::$raw_password
+     *
+     * Checks for whether password was compromised using the API of https://haveibeenpwned.com/Passwords
      */
     public function validatePasswordIfNotBlank(ExecutionContextInterface $context): void
     {
-        $passwordUpdatedAndTooShort = (
-            !empty($this->raw_password) &&
-            mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH
-        );
-        if ($passwordUpdatedAndTooShort) {
+        $passwordUpdated = $this->raw_password !== null && $this->raw_password !== '';
+
+        if (! $passwordUpdated) {
+            return;
+        }
+        if (mb_strlen($this->raw_password) < static::MIN_PASSWORD_LENGTH) {
             $context->buildViolation(sprintf(
-                'Password must be %d or more characters',
+                'Your password could not be set. Please ensure you chose one with at least %d characters.',
                 static::MIN_PASSWORD_LENGTH
             ))
                 ->atPath('raw_password')
                 ->addViolation();
+
+            return;
+        }
+
+        // passing the optional http client param just so its clear we will connect to HTTP here.
+        $httpClient = HttpClient::create();
+        $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
+        $notCompromisedValidator->initialize($context);
+
+        /** @psalm-suppress TypeDoesNotContainType */
+        if (self::PASSWORD_NOT_COMPROMISED_CHECK_ENABLED) {
+            $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword());
         }
     }
 
