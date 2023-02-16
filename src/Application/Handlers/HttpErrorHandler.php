@@ -6,9 +6,7 @@ namespace BigGive\Identity\Application\Handlers;
 
 use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Application\Actions\ActionPayload;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpForbiddenException;
@@ -17,20 +15,10 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpNotImplementedException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
-use Slim\Interfaces\CallableResolverInterface;
 use Throwable;
 
 class HttpErrorHandler extends SlimErrorHandler
 {
-    public function __construct(
-        CallableResolverInterface $callableResolver,
-        ResponseFactoryInterface $responseFactory,
-        ?LoggerInterface $logger = null,
-    )
-    {
-        parent::__construct($callableResolver, $responseFactory, $logger);
-    }
-
     /**
      * @inheritdoc
      */
