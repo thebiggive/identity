@@ -54,7 +54,6 @@ class Person
      * See discussions on Jira ID-36 before enabling
      * @var bool
      */
-    public const PASSWORD_NOT_COMPROMISED_CHECK_ENABLED = false;
 
     /**
      * @OA\Property(
@@ -291,10 +290,7 @@ class Person
         $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
         $notCompromisedValidator->initialize($context);
 
-        /** @psalm-suppress TypeDoesNotContainType */
-        if (self::PASSWORD_NOT_COMPROMISED_CHECK_ENABLED) {
-            $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword());
-        }
+        $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword());
     }
 
     public function addCompletionJWT(string $completionJWT): void
