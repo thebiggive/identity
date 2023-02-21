@@ -6,6 +6,8 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     errorBaseline="psalm-baseline.xml"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="true"
 >
     <projectFiles>
         <directory name="app"/>
@@ -16,4 +18,16 @@
             <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="src/Migrations" />
+            </errorLevel>
+        </UnusedClass>
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="src/Application/Actions" />
+            </errorLevel>
+        </PossiblyUnusedMethod>
+    </issueHandlers>
 <plugins><pluginClass class="Psalm\PhpUnitPlugin\Plugin"/><pluginClass class="Weirdan\DoctrinePsalmPlugin\Plugin"/></plugins></psalm>
