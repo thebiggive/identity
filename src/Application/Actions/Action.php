@@ -38,7 +38,7 @@ abstract class Action
      * @throws HttpNotFoundException
      * @throws HttpBadRequestException
      */
-    public function __invoke(Request $request, Response $response, array $args): Response
+    public function __invoke(Request $request, Response $_response, array $args): Response
     {
         try {
             return $this->action($request, $args);
