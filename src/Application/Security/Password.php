@@ -16,7 +16,7 @@ class Password
      * Share this to make sure we don't surface the difference between no account + wrong password.
      * @var string
      */
-    public const BAD_LOGIN_MESSAGE = 'Invalid credentials';
+    public const BAD_LOGIN_MESSAGE = 'Your email or password is incorrect';
 
     public static function hash(string $rawPassword): string
     {
