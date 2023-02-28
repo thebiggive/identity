@@ -290,7 +290,7 @@ class Person
         $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
         $notCompromisedValidator->initialize($context);
 
-        $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword());
+        $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword(skipOnError: true));
     }
 
     public function addCompletionJWT(string $completionJWT): void
