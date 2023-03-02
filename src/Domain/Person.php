@@ -49,6 +49,9 @@ class Person
      */
     public const NON_SERIALISED_ATTRIBUTES = [
     ];
+    public const COMPROMISED_PASSWORD_MESSAGE =
+        'We use a password-checking service which has found this password in a data breach. ' .
+        'Please choose a different one. For more information please read our Privacy Policy.';
 
     /**
      * See discussions on Jira ID-36 before enabling
@@ -290,7 +293,10 @@ class Person
         $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
         $notCompromisedValidator->initialize($context);
 
-        $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword(skipOnError: true));
+        $notCompromisedValidator->validate(
+            $this->raw_password,
+            new NotCompromisedPassword(skipOnError: true, message: self::COMPROMISED_PASSWORD_MESSAGE)
+        );
     }
 
     public function addCompletionJWT(string $completionJWT): void
