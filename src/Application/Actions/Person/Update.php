@@ -21,6 +21,7 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
@@ -84,6 +85,26 @@ class Update extends Action
         parent::__construct($logger);
     }
 
+    public function violationsToPlainText(ConstraintViolationListInterface $violations): string
+    {
+        $violationDetails = [];
+        foreach ($violations as $violation) {
+            $violationDetails[] = $this->summariseConstraintViolation($violation);
+        }
+
+        return implode('; ', $violationDetails);
+    }
+
+    public function violationsToHtml(ConstraintViolationListInterface $violations): string
+    {
+        $violationDetails = [];
+        foreach ($violations as $violation) {
+            $violationDetails[] = $this->summariseConstraintViolationAsHtmlSnippet($violation);
+        }
+
+        return implode('; ', $violationDetails);
+    }
+
     /**
      * @param array $args
      * @return Response
@@ -129,19 +150,14 @@ class Update extends Action
         $violations = $this->validator->validate($person, null, ['complete']);
 
         if (count($violations) > 0) {
-            $message = '';
-
-            $violationDetails = [];
-            foreach ($violations as $violation) {
-                $violationDetails[] = $this->summariseConstraintViolation($violation);
-            }
-
-            $message .= implode('; ', $violationDetails);
+            $message = $this->violationsToPlainText($violations);
+            $htmlMessage = $this->violationsToHtml($violations);
 
             return $this->validationError(
                 $message,
                 null,
                 true,
+                htmlMessage: $htmlMessage,
             );
         }
 
