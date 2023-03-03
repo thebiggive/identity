@@ -142,7 +142,7 @@ abstract class Action
             <<<HTML
                 We use a password-checking service which has found this password in a data breach. Please choose a
                 different one. For more information please read our
-                <a style="color: inherit;" href="https://biggive.org/privacy/">Privacy Policy<a/>.
+                <a style="color: inherit;" href="https://biggive.org/privacy/" target="_blank">Privacy Policy<a/>.
             HTML,
 
             default => htmlspecialchars((string) $violation->getMessage())
