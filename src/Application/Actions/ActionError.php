@@ -20,7 +20,7 @@ class ActionError implements JsonSerializable
 
     public const DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD = 'DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD';
 
-    public function __construct(private string $type, private string $description, private ?array $trace = null)
+    public function __construct(private string $type, private string $description, private ?array $trace = null, private ?string $htmlDescription = null)
     {
     }
 
@@ -31,8 +31,12 @@ class ActionError implements JsonSerializable
             'description' => $this->description,
         ];
 
-        if (is_array($this->trace)) {
+        if ($this->trace !== null) {
             $payload['trace'] = $this->trace;
+        }
+
+        if ($this->htmlDescription !== null) {
+            $payload['htmlDescription'] = $this->htmlDescription;
         }
 
         return $payload;

@@ -11,7 +11,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
  * @OA\Info(title="Big Give Identity service", version="0.0.7"),
@@ -102,6 +105,7 @@ abstract class Action
         bool $reduceSeverity = false,
         ?int $httpCode = 400,
         ?string $errorType = null,
+        ?string $htmlMessage = null,
     ): Response {
         if ($reduceSeverity) {
             $this->logger->info($logMessage);
@@ -112,17 +116,36 @@ abstract class Action
         $error = new ActionError(
             $errorType,
             $publicMessage ?? $logMessage,
+            htmlDescription: $htmlMessage,
         );
 
         return $this->respond(new ActionPayload($httpCode, null, $error));
     }
 
-    protected function summariseConstraintViolation(ConstraintViolation $violation): string
+    protected function summariseConstraintViolation(ConstraintViolationInterface $violation): string
     {
         if ($violation->getMessage() === 'This value should not be blank.') {
             return "{$violation->getPropertyPath()} must not be blank";
         }
 
         return $violation->getMessage();
+    }
+
+    protected function summariseConstraintViolationAsHtmlSnippet(ConstraintViolationInterface $violation): string
+    {
+        return match ($violation->getCode()) {
+            NotBlank::IS_BLANK_ERROR => htmlspecialchars("{$violation->getPropertyPath()} must not be blank"),
+
+            NotCompromisedPassword::COMPROMISED_PASSWORD_ERROR =>
+            /* would prefer not to have color style here, but I'm having trouble
+               setting the colour in donate-fronted for some reason. */
+            <<<HTML
+                We use a password-checking service which has found this password in a data breach. Please choose a
+                different one. For more information please read our
+                <a style="color: inherit;" href="https://biggive.org/privacy/">Privacy Policy<a/>.
+            HTML,
+
+            default => htmlspecialchars((string) $violation->getMessage())
+        };
     }
 }
