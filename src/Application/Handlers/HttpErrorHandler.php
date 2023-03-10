@@ -28,7 +28,8 @@ class HttpErrorHandler extends SlimErrorHandler
         $statusCode = 500;
         $error = new ActionError(
             ActionError::SERVER_ERROR,
-            'An internal error has occurred while processing your request.'
+            'An internal error has occurred while processing your request.',
+            $this->displayErrorDetails ? $exception->getTrace() : null
         );
 
         $this->logger->info('HttpErrorHandler exception: ' . $this->exception->getMessage());

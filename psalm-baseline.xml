@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.1.0@4defa177c89397c5e14737a80fe4896584130674">
+<files psalm-version="5.7.4@c46eccda769925073b8f65d66c4a3a7dc5d440b1">
   <file src="app/dependencies.php">
-    <MixedArgument occurrences="17">
-      <code>$c-&gt;get(CacheItemPoolInterface::class)</code>
-      <code>$c-&gt;get(ORM\Configuration::class)</code>
-      <code>$c-&gt;get(ProblemDetailsResponseFactory::class)</code>
-      <code>$c-&gt;get(Psr16Cache::class)</code>
-      <code>$c-&gt;get(Redis::class)</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('doctrine')['connection']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('los_rate_limit')</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('recaptcha')['secret_key']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
+    <MixedArgument>
+      <code><![CDATA[$c->get(CacheItemPoolInterface::class)]]></code>
+      <code><![CDATA[$c->get(ORM\Configuration::class)]]></code>
+      <code><![CDATA[$c->get(ProblemDetailsResponseFactory::class)]]></code>
+      <code><![CDATA[$c->get(Psr16Cache::class)]]></code>
+      <code><![CDATA[$c->get(Redis::class)]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('doctrine')['connection']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('los_rate_limit')]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code>$cache</code>
-      <code>$doctrineSettings['dev_mode']</code>
-      <code>$doctrineSettings['dev_mode']</code>
-      <code>$doctrineSettings['metadata_dirs']</code>
-      <code>$doctrineSettings['metadata_dirs']</code>
-      <code>$loggerSettings['name']</code>
-      <code>$loggerSettings['path']</code>
+      <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
+      <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
+      <code><![CDATA[$doctrineSettings['metadata_dirs']]]></code>
+      <code><![CDATA[$doctrineSettings['metadata_dirs']]]></code>
+      <code><![CDATA[$loggerSettings['name']]]></code>
+      <code><![CDATA[$loggerSettings['path']]]></code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="1">
+    <MixedArgumentTypeCoercion>
       <code>$normalizers</code>
     </MixedArgumentTypeCoercion>
-    <MixedArrayAccess occurrences="15">
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('doctrine')['connection']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('recaptcha')['secret_key']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('redis')['host']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('stripe')['apiKey']</code>
-      <code>$c-&gt;get(SettingsInterface::class)-&gt;get('stripe')['apiVersion']</code>
-      <code>$doctrineSettings['cache_dir']</code>
-      <code>$doctrineSettings['dev_mode']</code>
-      <code>$doctrineSettings['dev_mode']</code>
-      <code>$doctrineSettings['metadata_dirs']</code>
-      <code>$doctrineSettings['metadata_dirs']</code>
-      <code>$loggerSettings['level']</code>
-      <code>$loggerSettings['name']</code>
-      <code>$loggerSettings['path']</code>
-      <code>$settings-&gt;get('apiClient')['global']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('doctrine')['connection']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiKey']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiVersion']]]></code>
+      <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
+      <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
+      <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
+      <code><![CDATA[$doctrineSettings['metadata_dirs']]]></code>
+      <code><![CDATA[$doctrineSettings['metadata_dirs']]]></code>
+      <code><![CDATA[$loggerSettings['level']]]></code>
+      <code><![CDATA[$loggerSettings['name']]]></code>
+      <code><![CDATA[$loggerSettings['path']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['global']]]></code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="7">
+    <MixedAssignment>
       <code>$cache</code>
       <code>$doctrineSettings</code>
       <code>$loggerSettings</code>
@@ -49,10 +49,10 @@
       <code>$settings</code>
       <code>$settings</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
+    <MixedInferredReturnType>
       <code>Mailer</code>
     </MixedInferredReturnType>
-    <MixedMethodCall occurrences="12">
+    <MixedMethodCall>
       <code>get</code>
       <code>get</code>
       <code>get</code>
@@ -66,51 +66,48 @@
       <code>get</code>
       <code>warning</code>
     </MixedMethodCall>
-    <MixedOperand occurrences="1">
-      <code>$doctrineSettings['cache_dir']</code>
+    <MixedOperand>
+      <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
     </MixedOperand>
-    <MixedReturnStatement occurrences="1"/>
-    <UndefinedClass occurrences="4">
+    <MixedReturnStatement>
+      <code><![CDATA[new Mailer(
+                $settings,
+                new Client([
+                    'timeout' => $settings->get('apiClient')['global']['timeout'],
+                ]),
+            )]]></code>
+    </MixedReturnStatement>
+    <UndefinedClass>
       <code>Client</code>
       <code>Mailer</code>
       <code>Mailer</code>
       <code>Mailer</code>
     </UndefinedClass>
-    <UnusedClosureParam occurrences="2">
+    <UnusedClosureParam>
       <code>$c</code>
       <code>$c</code>
     </UnusedClosureParam>
   </file>
   <file src="app/repositories.php">
-    <MixedAssignment occurrences="1">
-      <code>$repo</code>
-    </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
-      <code>PersonRepository</code>
-    </MixedInferredReturnType>
-    <MixedMethodCall occurrences="2">
+    <MixedMethodCall>
       <code>getRepository</code>
-      <code>setMailerClient</code>
     </MixedMethodCall>
-    <MixedReturnStatement occurrences="1">
-      <code>$repo</code>
-    </MixedReturnStatement>
   </file>
   <file src="app/routes.php">
-    <MissingClosureParamType occurrences="4">
+    <MissingClosureParamType>
       <code>$args</code>
       <code>$handler</code>
       <code>$request</code>
       <code>$response</code>
     </MissingClosureParamType>
-    <MissingClosureReturnType occurrences="2">
+    <MissingClosureReturnType>
       <code>function ($request, $response, $args) {</code>
       <code>function (Request $request, $handler) {</code>
     </MissingClosureReturnType>
-    <MixedAssignment occurrences="1">
+    <MixedAssignment>
       <code>$response</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="7">
+    <MixedMethodCall>
       <code>handle</code>
       <code>withAddedHeader</code>
       <code>withHeader</code>
@@ -119,163 +116,116 @@
       <code>withHeader</code>
       <code>withHeader</code>
     </MixedMethodCall>
-    <UnusedClosureParam occurrences="2">
+    <UnusedClosureParam>
       <code>$args</code>
       <code>$request</code>
     </UnusedClosureParam>
   </file>
   <file src="public/index.php">
-    <MixedArgument occurrences="4">
-      <code>$app-&gt;getContainer()-&gt;get(LoggerInterface::class)</code>
+    <MixedArgument>
+      <code><![CDATA[$app->getContainer()->get(LoggerInterface::class)]]></code>
       <code>$displayErrorDetails</code>
       <code>$logError</code>
       <code>$logErrorDetails</code>
     </MixedArgument>
-    <MixedAssignment occurrences="3">
+    <MixedAssignment>
       <code>$displayErrorDetails</code>
       <code>$logError</code>
       <code>$logErrorDetails</code>
     </MixedAssignment>
-    <PossiblyNullReference occurrences="1">
+    <PossiblyNullReference>
       <code>get</code>
     </PossiblyNullReference>
   </file>
   <file src="src/Application/Actions/Action.php">
-    <ImplicitToStringCast occurrences="1">
+    <ImplicitToStringCast>
       <code>string</code>
     </ImplicitToStringCast>
-    <PossiblyNullArgument occurrences="1">
+    <PossiblyNullArgument>
       <code>$httpCode</code>
     </PossiblyNullArgument>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>$args</code>
-      <code>$request</code>
-      <code>$response</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="src/Application/Actions/ActionError.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="2">
-      <code>$description</code>
+    <PossiblyNullPropertyAssignmentValue>
       <code>$description</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
+  <file src="src/Application/Actions/ChangePasswordUsingToken.php">
+    <UnusedProperty>
+      <code>$mailer</code>
+    </UnusedProperty>
+  </file>
   <file src="src/Application/Actions/GetCreditFundingInstructions.php">
-    <PossiblyNullArgument occurrences="1">
-      <code>$person-&gt;stripe_customer_id</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$person->stripe_customer_id]]></code>
     </PossiblyNullArgument>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>GetCreditFundingInstructions</code>
-      <code>GetCreditFundingInstructions</code>
-      <code>GetCreditFundingInstructions</code>
-    </PropertyNotSetInConstructor>
-    <UnnecessaryVarAnnotation occurrences="1">
+    <UnnecessaryVarAnnotation>
       <code>Person|null</code>
     </UnnecessaryVarAnnotation>
   </file>
   <file src="src/Application/Actions/Login.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$violation</code>
-    </ArgumentTypeCoercion>
-    <PossiblyNullArgument occurrences="1">
-      <code>$credentials-&gt;raw_password</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$credentials->raw_password]]></code>
     </PossiblyNullArgument>
-    <PossiblyUndefinedVariable occurrences="1">
+    <PossiblyUndefinedVariable>
       <code>$body</code>
     </PossiblyUndefinedVariable>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>Login</code>
-      <code>Login</code>
-      <code>Login</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="src/Application/Actions/Person/Create.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$violation</code>
-    </ArgumentTypeCoercion>
-    <MixedArrayAccess occurrences="1">
-      <code>$this-&gt;settings-&gt;get('recaptcha')['bypass']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$this->settings->get('recaptcha')['bypass']]]></code>
     </MixedArrayAccess>
-    <PossiblyUndefinedVariable occurrences="1">
+    <PossiblyUndefinedVariable>
       <code>$body</code>
     </PossiblyUndefinedVariable>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>Create</code>
-      <code>Create</code>
-      <code>Create</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="src/Application/Actions/Person/Get.php">
-    <MixedAssignment occurrences="1">
+    <MixedAssignment>
       <code>$amount</code>
     </MixedAssignment>
-    <MixedPropertyTypeCoercion occurrences="1">
-      <code>$person-&gt;cash_balance</code>
+    <MixedPropertyTypeCoercion>
+      <code><![CDATA[$person->cash_balance]]></code>
     </MixedPropertyTypeCoercion>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>Get</code>
-      <code>Get</code>
-      <code>Get</code>
-    </PropertyNotSetInConstructor>
-    <UnnecessaryVarAnnotation occurrences="1">
+    <UnnecessaryVarAnnotation>
       <code>Person|null</code>
     </UnnecessaryVarAnnotation>
   </file>
   <file src="src/Application/Actions/Person/Update.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$violation</code>
-    </ArgumentTypeCoercion>
-    <PossiblyNullArgument occurrences="3">
-      <code>$person-&gt;first_name</code>
-      <code>$person-&gt;last_name</code>
-      <code>$person-&gt;stripe_customer_id</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$person->first_name]]></code>
+      <code><![CDATA[$person->last_name]]></code>
+      <code><![CDATA[$person->stripe_customer_id]]></code>
     </PossiblyNullArgument>
-    <PossiblyUndefinedVariable occurrences="1">
+    <PossiblyUndefinedVariable>
       <code>$body</code>
     </PossiblyUndefinedVariable>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>Update</code>
-      <code>Update</code>
-      <code>Update</code>
-    </PropertyNotSetInConstructor>
-    <UnnecessaryVarAnnotation occurrences="1">
+    <UnnecessaryVarAnnotation>
       <code>Person</code>
     </UnnecessaryVarAnnotation>
   </file>
   <file src="src/Application/Actions/Status.php">
-    <InternalMethod occurrences="1">
+    <InternalMethod>
       <code>connect</code>
     </InternalMethod>
-    <PossiblyNullArgument occurrences="2">
-      <code>$emConfig-&gt;getProxyDir()</code>
-      <code>$emConfig-&gt;getProxyNamespace()</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$emConfig->getProxyDir()]]></code>
+      <code><![CDATA[$emConfig->getProxyNamespace()]]></code>
     </PossiblyNullArgument>
-    <PropertyNotSetInConstructor occurrences="3">
-      <code>Status</code>
-      <code>Status</code>
-      <code>Status</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="src/Application/Auth/Token.php">
-    <FalsableReturnStatement occurrences="1">
-      <code>getenv('JWT_ID_SECRET')</code>
+    <FalsableReturnStatement>
+      <code><![CDATA[getenv('JWT_ID_SECRET')]]></code>
     </FalsableReturnStatement>
-    <InvalidFalsableReturnType occurrences="1">
+    <InvalidFalsableReturnType>
       <code>string</code>
     </InvalidFalsableReturnType>
-    <MixedAssignment occurrences="1">
-      <code>$durationInDays</code>
-    </MixedAssignment>
-    <MixedOperand occurrences="2">
-      <code>$durationInDays</code>
-      <code>$durationInDays * 86400</code>
-    </MixedOperand>
-    <MixedPropertyFetch occurrences="2">
-      <code>$decodedJwtBody-&gt;sub-&gt;complete</code>
-      <code>$decodedJwtBody-&gt;sub-&gt;person_id</code>
+    <MixedPropertyFetch>
+      <code><![CDATA[$decodedJwtBody->sub->complete]]></code>
+      <code><![CDATA[$decodedJwtBody->sub->person_id]]></code>
     </MixedPropertyFetch>
   </file>
   <file src="src/Application/Handlers/HttpErrorHandler.php">
-    <PropertyNotSetInConstructor occurrences="7">
+    <PropertyNotSetInConstructor>
       <code>HttpErrorHandler</code>
       <code>HttpErrorHandler</code>
       <code>HttpErrorHandler</code>
@@ -286,186 +236,211 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="src/Application/Middleware/PersonAuthMiddleware.php">
-    <PossiblyNullArgument occurrences="1">
+    <PossiblyNullArgument>
       <code>$personId</code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="1">
+    <PossiblyNullReference>
       <code>getArgument</code>
     </PossiblyNullReference>
+    <PossiblyUnusedMethod>
+      <code>__construct</code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="src/Application/Middleware/PersonRecaptchaMiddleware.php">
-    <MixedAssignment occurrences="2">
+    <MixedAssignment>
       <code>$captchaCode</code>
       <code>$person</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
+    <MixedInferredReturnType>
       <code>?string</code>
     </MixedInferredReturnType>
-    <MixedPropertyFetch occurrences="1">
-      <code>$person-&gt;captcha_code</code>
+    <MixedPropertyFetch>
+      <code><![CDATA[$person->captcha_code]]></code>
     </MixedPropertyFetch>
-    <MixedReturnStatement occurrences="2">
+    <MixedReturnStatement>
       <code>$captchaCode</code>
       <code>$captchaCode</code>
     </MixedReturnStatement>
   </file>
   <file src="src/Application/Middleware/RecaptchaMiddleware.php">
-    <MixedArgument occurrences="1">
-      <code>$request-&gt;getAttribute('client-ip')</code>
+    <MixedArgument>
+      <code><![CDATA[$request->getAttribute('client-ip')]]></code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="1">
-      <code>$this-&gt;settings-&gt;get('recaptcha')['bypass']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$this->settings->get('recaptcha')['bypass']]]></code>
     </MixedArrayAccess>
-    <PossiblyNullArgument occurrences="1">
+    <PossiblyNullArgument>
       <code>$captchaCode</code>
     </PossiblyNullArgument>
   </file>
   <file src="src/Client/Mailer.php">
-    <ImplicitToStringCast occurrences="1">
-      <code>$response-&gt;getBody()</code>
+    <ImplicitToStringCast>
+      <code><![CDATA[$response->getBody()]]></code>
     </ImplicitToStringCast>
-    <MixedArgument occurrences="2">
-      <code>$ex-&gt;getResponse() ? $ex-&gt;getResponse()-&gt;getBody() : 'N/A'</code>
-      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']['sendSecret']</code>
+    <MixedArgument>
+      <code><![CDATA[$ex->getResponse() ? $ex->getResponse()->getBody() : 'N/A']]></code>
+      <code><![CDATA[$this->settings->get('apiClient')['mailer']['sendSecret']]]></code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="2">
-      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']</code>
-      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$this->settings->get('apiClient')['mailer']]]></code>
+      <code><![CDATA[$this->settings->get('apiClient')['mailer']]]></code>
     </MixedArrayAccess>
-    <MixedMethodCall occurrences="1">
+    <MixedMethodCall>
       <code>getBody</code>
     </MixedMethodCall>
-    <MixedOperand occurrences="1">
-      <code>$this-&gt;settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+    <MixedOperand>
+      <code><![CDATA[$this->settings->get('apiClient')['mailer']['baseUri']]]></code>
     </MixedOperand>
-    <PossiblyUndefinedMethod occurrences="2">
+    <PossiblyUndefinedMethod>
       <code>getResponse</code>
       <code>getResponse</code>
     </PossiblyUndefinedMethod>
+    <PossiblyUnusedMethod>
+      <code>__construct</code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="src/Domain/Credentials.php">
-    <MissingConstructor occurrences="1">
+    <MissingConstructor>
       <code>$email_address</code>
     </MissingConstructor>
   </file>
   <file src="src/Domain/Normalizers/HasPasswordNormalizer.php">
-    <InvalidReturnStatement occurrences="1">
+    <InvalidReturnStatement>
       <code>$data</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="1">
+    <InvalidReturnType>
       <code>array</code>
     </InvalidReturnType>
-    <MixedMethodCall occurrences="1">
+    <MixedMethodCall>
       <code>getPasswordHash</code>
     </MixedMethodCall>
-    <NullableReturnStatement occurrences="1">
+    <NullableReturnStatement>
       <code>$data</code>
     </NullableReturnStatement>
-    <PossiblyInvalidArrayAccess occurrences="2">
-      <code>$data['password']</code>
-      <code>$data['raw_password']</code>
+    <PossiblyInvalidArrayAccess>
+      <code><![CDATA[$data['password']]]></code>
+      <code><![CDATA[$data['raw_password']]]></code>
     </PossiblyInvalidArrayAccess>
-    <PossiblyInvalidArrayAssignment occurrences="1">
-      <code>$data['has_password']</code>
+    <PossiblyInvalidArrayAssignment>
+      <code><![CDATA[$data['has_password']]]></code>
     </PossiblyInvalidArrayAssignment>
-    <PossiblyNullArrayAccess occurrences="2">
-      <code>$data['password']</code>
-      <code>$data['raw_password']</code>
+    <PossiblyNullArrayAccess>
+      <code><![CDATA[$data['password']]]></code>
+      <code><![CDATA[$data['raw_password']]]></code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullReference occurrences="4">
+    <PossiblyNullReference>
       <code>$data</code>
       <code>$data</code>
       <code>$data</code>
       <code>$data</code>
     </PossiblyNullReference>
+    <PossiblyUnusedMethod>
+      <code>__construct</code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Domain/PasswordResetToken.php">
+    <UnusedProperty>
+      <code>$id</code>
+    </UnusedProperty>
   </file>
   <file src="src/Domain/Person.php">
-    <MixedArgument occurrences="1">
+    <MixedArgument>
       <code>static::MIN_PASSWORD_LENGTH</code>
     </MixedArgument>
-    <PropertyNotSetInConstructor occurrences="2">
+    <PossiblyUnusedMethod>
+      <code>validateCaptchaExistsIfNew</code>
+      <code>validatePasswordIfNotBlank</code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedProperty>
+      <code>$cash_balance</code>
+      <code>$completion_jwt</code>
+      <code>$has_password</code>
+    </PossiblyUnusedProperty>
+    <PropertyNotSetInConstructor>
       <code>Person</code>
       <code>Person</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="src/Repository/PersonRepository.php">
-    <ArgumentTypeCoercion occurrences="2">
+    <ArgumentTypeCoercion>
       <code>$class</code>
-      <code>$person-&gt;toMailerPayload()</code>
+      <code><![CDATA[$person->toMailerPayload()]]></code>
     </ArgumentTypeCoercion>
-    <MixedInferredReturnType occurrences="1">
+    <MixedInferredReturnType>
       <code>?Person</code>
     </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
-      <code>$qb-&gt;getQuery()-&gt;getOneOrNullResult()</code>
+    <MixedReturnStatement>
+      <code><![CDATA[$qb->getQuery()->getOneOrNullResult()]]></code>
     </MixedReturnStatement>
-    <PropertyNotSetInConstructor occurrences="1">
+    <PossiblyUnusedMethod>
+      <code>__construct</code>
+    </PossiblyUnusedMethod>
+    <PropertyNotSetInConstructor>
       <code>$mailerClient</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Application/Actions/ActionTest.php">
-    <MissingReturnType occurrences="2">
+    <MissingReturnType>
       <code>testActionSetsHttpCodeInRespond</code>
       <code>testActionSetsHttpCodeRespondData</code>
     </MissingReturnType>
-    <MixedArgument occurrences="2">
+    <MixedArgument>
       <code>$logger</code>
       <code>$logger</code>
     </MixedArgument>
-    <MixedAssignment occurrences="2">
+    <MixedAssignment>
       <code>$logger</code>
       <code>$logger</code>
     </MixedAssignment>
-    <PossiblyNullReference occurrences="2">
+    <PossiblyNullReference>
       <code>get</code>
       <code>get</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="6"/>
   </file>
   <file src="tests/Application/Actions/GetCreditFundingInstructionsTest.php">
-    <MixedArrayAccess occurrences="2">
-      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]</code>
-      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]]]></code>
+      <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]]]></code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="1">
+    <MixedAssignment>
       <code>$responseData</code>
     </MixedAssignment>
-    <MixedPropertyFetch occurrences="7">
-      <code>$responseData-&gt;bank_transfer</code>
-      <code>$responseData-&gt;bank_transfer-&gt;country</code>
-      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses</code>
-      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]-&gt;sort_code</code>
-      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]-&gt;sort_code-&gt;account_holder_name</code>
-      <code>$responseData-&gt;bank_transfer-&gt;financial_addresses[0]-&gt;sort_code-&gt;account_number</code>
-      <code>$responseData-&gt;object</code>
+    <MixedPropertyFetch>
+      <code><![CDATA[$responseData->bank_transfer]]></code>
+      <code><![CDATA[$responseData->bank_transfer->country]]></code>
+      <code><![CDATA[$responseData->bank_transfer->financial_addresses]]></code>
+      <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]->sort_code]]></code>
+      <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]->sort_code->account_holder_name]]></code>
+      <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]->sort_code->account_number]]></code>
+      <code><![CDATA[$responseData->object]]></code>
     </MixedPropertyFetch>
-    <PossiblyNullReference occurrences="2">
+    <PossiblyNullReference>
       <code>set</code>
       <code>set</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="2">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/LoginTest.php">
-    <MixedAssignment occurrences="1">
+    <MixedAssignment>
       <code>$payload</code>
     </MixedAssignment>
-    <MixedPropertyFetch occurrences="2">
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;jwt</code>
+    <MixedPropertyFetch>
+      <code><![CDATA[$payload->id]]></code>
+      <code><![CDATA[$payload->jwt]]></code>
     </MixedPropertyFetch>
-    <PossiblyNullArgument occurrences="1">
-      <code>$person-&gt;raw_password</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$person->raw_password]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="4">
+    <PossiblyNullReference>
       <code>set</code>
       <code>set</code>
       <code>set</code>
       <code>set</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="4">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
       <code>set</code>
@@ -473,27 +448,13 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/Person/CreateTest.php">
-    <MixedArgument occurrences="2">
-      <code>$payload</code>
-      <code>$payload</code>
-    </MixedArgument>
-    <MixedAssignment occurrences="1">
-      <code>$payload</code>
-    </MixedAssignment>
-    <MixedPropertyFetch occurrences="5">
-      <code>$payload-&gt;created_at</code>
-      <code>$payload-&gt;first_name</code>
-      <code>$payload-&gt;has_password</code>
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;updated_at</code>
-    </MixedPropertyFetch>
-    <PossiblyNullReference occurrences="4">
+    <PossiblyNullReference>
       <code>set</code>
       <code>set</code>
       <code>set</code>
       <code>set</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="4">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
       <code>set</code>
@@ -501,7 +462,7 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/Person/GetTest.php">
-    <MixedArgument occurrences="10">
+    <MixedArgument>
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
@@ -511,40 +472,46 @@
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
+      <code><![CDATA[json_decode(
+            file_get_contents(dirname(__DIR__, 3) . '/MockStripeResponses/' . $mockName . '.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        )]]></code>
     </MixedArgument>
-    <MixedAssignment occurrences="4">
+    <MixedAssignment>
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
     </MixedAssignment>
-    <MixedPropertyFetch occurrences="24">
-      <code>$payload-&gt;cash_balance</code>
-      <code>$payload-&gt;cash_balance</code>
-      <code>$payload-&gt;cash_balance</code>
-      <code>$payload-&gt;cash_balance</code>
-      <code>$payload-&gt;created_at</code>
-      <code>$payload-&gt;created_at</code>
-      <code>$payload-&gt;created_at</code>
-      <code>$payload-&gt;created_at</code>
-      <code>$payload-&gt;first_name</code>
-      <code>$payload-&gt;first_name</code>
-      <code>$payload-&gt;first_name</code>
-      <code>$payload-&gt;first_name</code>
-      <code>$payload-&gt;has_password</code>
-      <code>$payload-&gt;has_password</code>
-      <code>$payload-&gt;has_password</code>
-      <code>$payload-&gt;has_password</code>
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;updated_at</code>
-      <code>$payload-&gt;updated_at</code>
-      <code>$payload-&gt;updated_at</code>
-      <code>$payload-&gt;updated_at</code>
+    <MixedPropertyFetch>
+      <code><![CDATA[$payload->cash_balance]]></code>
+      <code><![CDATA[$payload->cash_balance]]></code>
+      <code><![CDATA[$payload->cash_balance]]></code>
+      <code><![CDATA[$payload->cash_balance]]></code>
+      <code><![CDATA[$payload->created_at]]></code>
+      <code><![CDATA[$payload->created_at]]></code>
+      <code><![CDATA[$payload->created_at]]></code>
+      <code><![CDATA[$payload->created_at]]></code>
+      <code><![CDATA[$payload->first_name]]></code>
+      <code><![CDATA[$payload->first_name]]></code>
+      <code><![CDATA[$payload->first_name]]></code>
+      <code><![CDATA[$payload->first_name]]></code>
+      <code><![CDATA[$payload->has_password]]></code>
+      <code><![CDATA[$payload->has_password]]></code>
+      <code><![CDATA[$payload->has_password]]></code>
+      <code><![CDATA[$payload->has_password]]></code>
+      <code><![CDATA[$payload->id]]></code>
+      <code><![CDATA[$payload->id]]></code>
+      <code><![CDATA[$payload->id]]></code>
+      <code><![CDATA[$payload->id]]></code>
+      <code><![CDATA[$payload->updated_at]]></code>
+      <code><![CDATA[$payload->updated_at]]></code>
+      <code><![CDATA[$payload->updated_at]]></code>
+      <code><![CDATA[$payload->updated_at]]></code>
     </MixedPropertyFetch>
-    <PossiblyNullReference occurrences="10">
+    <PossiblyNullReference>
       <code>set</code>
       <code>set</code>
       <code>set</code>
@@ -556,7 +523,7 @@
       <code>set</code>
       <code>set</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="10">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
       <code>set</code>
@@ -570,33 +537,33 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/Person/UpdateTest.php">
-    <MixedArgument occurrences="4">
+    <MixedArgument>
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
     </MixedArgument>
-    <MixedAssignment occurrences="2">
+    <MixedAssignment>
       <code>$payload</code>
       <code>$payload</code>
     </MixedAssignment>
-    <MixedPropertyFetch occurrences="11">
-      <code>$payload-&gt;created_at</code>
-      <code>$payload-&gt;created_at</code>
-      <code>$payload-&gt;first_name</code>
-      <code>$payload-&gt;first_name</code>
-      <code>$payload-&gt;has_password</code>
-      <code>$payload-&gt;has_password</code>
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;id</code>
-      <code>$payload-&gt;stripe_customer_id</code>
-      <code>$payload-&gt;updated_at</code>
-      <code>$payload-&gt;updated_at</code>
+    <MixedPropertyFetch>
+      <code><![CDATA[$payload->created_at]]></code>
+      <code><![CDATA[$payload->created_at]]></code>
+      <code><![CDATA[$payload->first_name]]></code>
+      <code><![CDATA[$payload->first_name]]></code>
+      <code><![CDATA[$payload->has_password]]></code>
+      <code><![CDATA[$payload->has_password]]></code>
+      <code><![CDATA[$payload->id]]></code>
+      <code><![CDATA[$payload->id]]></code>
+      <code><![CDATA[$payload->stripe_customer_id]]></code>
+      <code><![CDATA[$payload->updated_at]]></code>
+      <code><![CDATA[$payload->updated_at]]></code>
     </MixedPropertyFetch>
-    <PossiblyNullArgument occurrences="1">
-      <code>$person-&gt;raw_password</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$person->raw_password]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="13">
+    <PossiblyNullReference>
       <code>set</code>
       <code>set</code>
       <code>set</code>
@@ -611,7 +578,7 @@
       <code>set</code>
       <code>set</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="13">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
       <code>set</code>
@@ -626,29 +593,29 @@
       <code>set</code>
       <code>set</code>
     </UndefinedInterfaceMethod>
-    <UnnecessaryVarAnnotation occurrences="1">
+    <UnnecessaryVarAnnotation>
       <code>Argument\Token\CallbackToken</code>
     </UnnecessaryVarAnnotation>
   </file>
   <file src="tests/Application/Actions/StatusTest.php">
-    <DeprecatedMethod occurrences="1">
-      <code>ConsoleRunner::createHelperSet($container-&gt;get(EntityManagerInterface::class))</code>
+    <DeprecatedMethod>
+      <code><![CDATA[ConsoleRunner::createHelperSet($container->get(EntityManagerInterface::class))]]></code>
     </DeprecatedMethod>
-    <MixedArgument occurrences="1">
-      <code>$container-&gt;get(EntityManagerInterface::class)</code>
+    <MixedArgument>
+      <code><![CDATA[$container->get(EntityManagerInterface::class)]]></code>
     </MixedArgument>
-    <PossiblyNullArgument occurrences="2">
-      <code>$config-&gt;getProxyDir()</code>
-      <code>$config-&gt;getProxyNamespace()</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$config->getProxyDir()]]></code>
+      <code><![CDATA[$config->getProxyNamespace()]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="5">
+    <PossiblyNullReference>
       <code>get</code>
       <code>set</code>
       <code>set</code>
       <code>set</code>
       <code>set</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="4">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
       <code>set</code>
@@ -656,28 +623,28 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Middleware/CredentialsRecaptchaMiddlewareTest.php">
-    <MixedArgument occurrences="12">
-      <code>$container-&gt;get(LoggerInterface::class)</code>
-      <code>$container-&gt;get(LoggerInterface::class)</code>
-      <code>$container-&gt;get(ReCaptcha::class)</code>
-      <code>$container-&gt;get(ReCaptcha::class)</code>
-      <code>$container-&gt;get(SerializerInterface::class)</code>
-      <code>$container-&gt;get(SerializerInterface::class)</code>
-      <code>$container-&gt;get(SettingsInterface::class)</code>
-      <code>$container-&gt;get(SettingsInterface::class)</code>
+    <MixedArgument>
+      <code><![CDATA[$container->get(LoggerInterface::class)]]></code>
+      <code><![CDATA[$container->get(LoggerInterface::class)]]></code>
+      <code><![CDATA[$container->get(ReCaptcha::class)]]></code>
+      <code><![CDATA[$container->get(ReCaptcha::class)]]></code>
+      <code><![CDATA[$container->get(SerializerInterface::class)]]></code>
+      <code><![CDATA[$container->get(SerializerInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
       <code>$credentialsSerialised</code>
       <code>$credentialsSerialised</code>
       <code>$credentialsSerialised</code>
       <code>$credentialsSerialised</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="1">
-      <code>$credentials['captcha_code']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$credentials['captcha_code']]]></code>
     </MixedArrayAccess>
-    <MixedArrayAssignment occurrences="2">
-      <code>$credentials['captcha_code']</code>
-      <code>$credentials['captcha_code']</code>
+    <MixedArrayAssignment>
+      <code><![CDATA[$credentials['captcha_code']]]></code>
+      <code><![CDATA[$credentials['captcha_code']]]></code>
     </MixedArrayAssignment>
-    <MixedAssignment occurrences="13">
+    <MixedAssignment>
       <code>$credentials</code>
       <code>$credentials</code>
       <code>$credentials</code>
@@ -692,42 +659,42 @@
       <code>$serializer</code>
       <code>$standardSettings</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="5">
+    <MixedMethodCall>
       <code>get</code>
       <code>serialize</code>
       <code>serialize</code>
       <code>serialize</code>
       <code>serialize</code>
     </MixedMethodCall>
-    <PossiblyNullReference occurrences="5">
+    <PossiblyNullReference>
       <code>get</code>
       <code>get</code>
       <code>get</code>
       <code>get</code>
       <code>get</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="1">
+    <UndefinedInterfaceMethod>
       <code>set</code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Middleware/PersonRecaptchaMiddlewareTest.php">
-    <MixedArgument occurrences="7">
-      <code>$container-&gt;get(LoggerInterface::class)</code>
-      <code>$container-&gt;get(ReCaptcha::class)</code>
-      <code>$container-&gt;get(SerializerInterface::class)</code>
-      <code>$container-&gt;get(SettingsInterface::class)</code>
+    <MixedArgument>
+      <code><![CDATA[$container->get(LoggerInterface::class)]]></code>
+      <code><![CDATA[$container->get(ReCaptcha::class)]]></code>
+      <code><![CDATA[$container->get(SerializerInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
       <code>$personSerialised</code>
       <code>$personSerialised</code>
       <code>$personSerialised</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="1">
-      <code>$person['captcha_code']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$person['captcha_code']]]></code>
     </MixedArrayAccess>
-    <MixedArrayAssignment occurrences="2">
-      <code>$person['captcha_code']</code>
-      <code>$person['captcha_code']</code>
+    <MixedArrayAssignment>
+      <code><![CDATA[$person['captcha_code']]]></code>
+      <code><![CDATA[$person['captcha_code']]]></code>
     </MixedArrayAssignment>
-    <MixedAssignment occurrences="9">
+    <MixedAssignment>
       <code>$person</code>
       <code>$person</code>
       <code>$person</code>
@@ -738,12 +705,12 @@
       <code>$serializer</code>
       <code>$serializer</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="3">
+    <MixedMethodCall>
       <code>serialize</code>
       <code>serialize</code>
       <code>serialize</code>
     </MixedMethodCall>
-    <PossiblyNullReference occurrences="4">
+    <PossiblyNullReference>
       <code>get</code>
       <code>get</code>
       <code>get</code>
@@ -751,29 +718,29 @@
     </PossiblyNullReference>
   </file>
   <file src="tests/Application/Security/PasswordTest.php">
-    <InternalMethod occurrences="1">
+    <InternalMethod>
       <code>addToAssertionCount</code>
     </InternalMethod>
-    <NullArgument occurrences="1">
+    <NullArgument>
       <code>null</code>
     </NullArgument>
-    <RedundantCondition occurrences="1">
+    <RedundantCondition>
       <code>assertIsString</code>
     </RedundantCondition>
   </file>
   <file src="tests/Client/MailerTest.php">
-    <ArgumentTypeCoercion occurrences="1">
+    <ArgumentTypeCoercion>
       <code>$requestBody</code>
     </ArgumentTypeCoercion>
-    <MixedArrayAccess occurrences="6">
-      <code>$settings-&gt;get('apiClient')['mailer']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="12">
+    <MixedAssignment>
       <code>$mailerClient</code>
       <code>$mailerClient</code>
       <code>$mailerClient</code>
@@ -787,7 +754,7 @@
       <code>$settings</code>
       <code>$settings</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="10">
+    <MixedMethodCall>
       <code>get</code>
       <code>get</code>
       <code>get</code>
@@ -799,83 +766,99 @@
       <code>sendEmail</code>
       <code>sendEmail</code>
     </MixedMethodCall>
-    <MixedOperand occurrences="6">
-      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
-      <code>$settings-&gt;get('apiClient')['mailer']['baseUri']</code>
+    <MixedOperand>
+      <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
+      <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
     </MixedOperand>
-    <PossiblyNullReference occurrences="3">
+    <PossiblyNullReference>
       <code>get</code>
       <code>get</code>
       <code>get</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="3">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
       <code>set</code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Domain/PersonTest.php">
-    <MixedArgument occurrences="1">
+    <MixedArgument>
       <code>$json</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="3">
-      <code>$jsonData['email_address']</code>
-      <code>$jsonData['first_name']</code>
-      <code>$jsonData['last_name']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$jsonData['email_address']]]></code>
+      <code><![CDATA[$jsonData['first_name']]]></code>
+      <code><![CDATA[$jsonData['last_name']]]></code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="2">
+    <MixedAssignment>
       <code>$json</code>
       <code>$jsonData</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
+    <MixedInferredReturnType>
       <code>array</code>
     </MixedInferredReturnType>
-    <MixedMethodCall occurrences="1">
+    <MixedMethodCall>
       <code>serialize</code>
     </MixedMethodCall>
-    <PossiblyNullReference occurrences="1">
+    <PossiblyNullReference>
       <code>get</code>
     </PossiblyNullReference>
+    <PossiblyUnusedParam>
+      <code>$firstName</code>
+      <code>$firstName</code>
+      <code>$id</code>
+      <code>$id</code>
+      <code>$lastName</code>
+      <code>$lastName</code>
+      <code>$username</code>
+      <code>$username</code>
+    </PossiblyUnusedParam>
+    <UnusedDocblockParam>
+      <code>$firstName</code>
+      <code>$id</code>
+      <code>$lastName</code>
+      <code>$username</code>
+    </UnusedDocblockParam>
   </file>
   <file src="tests/Repository/PersonRepositoryTest.php">
-    <MixedAssignment occurrences="2">
+    <MixedAssignment>
       <code>$repo</code>
       <code>$repo</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="4">
+    <MixedMethodCall>
       <code>sendRegisteredEmail</code>
       <code>sendRegisteredEmail</code>
       <code>setMailerClient</code>
       <code>setMailerClient</code>
     </MixedMethodCall>
-    <PossiblyNullReference occurrences="4">
+    <PossiblyNullReference>
       <code>get</code>
       <code>get</code>
       <code>set</code>
       <code>set</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod occurrences="2">
+    <UndefinedInterfaceMethod>
       <code>set</code>
       <code>set</code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/TestCase.php">
-    <MixedArgument occurrences="1">
+    <MixedArgument>
       <code>$value</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="1">
+    <MixedArgumentTypeCoercion>
       <code>$name</code>
     </MixedArgumentTypeCoercion>
-    <MixedAssignment occurrences="1">
+    <MixedAssignment>
       <code>$value</code>
     </MixedAssignment>
   </file>
   <file src="tests/TestPeopleTrait.php">
-    <MissingConstructor occurrences="7">
+    <MissingConstructor>
       <code>$em</code>
       <code>$em</code>
       <code>$em</code>
@@ -884,16 +867,11 @@
       <code>$em</code>
       <code>$em</code>
     </MissingConstructor>
-    <MixedAssignment occurrences="1">
-      <code>$this-&gt;em</code>
+    <MixedAssignment>
+      <code><![CDATA[$this->em]]></code>
     </MixedAssignment>
-    <PossiblyNullReference occurrences="1">
+    <PossiblyNullReference>
       <code>get</code>
     </PossiblyNullReference>
-  </file>
-  <file src="tests/TestPromises/SucceedThenThrowWithDuplicateEmailPromise.php">
-    <PossiblyNullArgument occurrences="1">
-      <code>$this-&gt;personToReturn-&gt;email_address</code>
-    </PossiblyNullArgument>
   </file>
 </files>

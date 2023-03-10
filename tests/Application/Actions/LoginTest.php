@@ -85,7 +85,7 @@ class LoginTest extends TestCase
 
         $expectedJSON = json_encode([
             'error' => [
-                'description' => 'Invalid credentials',
+                'description' => 'Your email or password is incorrect',
                 'type' => 'VALIDATION_ERROR',
             ],
         ], JSON_THROW_ON_ERROR);
@@ -124,7 +124,7 @@ class LoginTest extends TestCase
 
         $expectedJSON = json_encode([
             'error' => [
-                'description' => 'Invalid credentials',
+                'description' => 'Your email or password is incorrect',
                 'type' => 'VALIDATION_ERROR',
             ],
         ], JSON_THROW_ON_ERROR);

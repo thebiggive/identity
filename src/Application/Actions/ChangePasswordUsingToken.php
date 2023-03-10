@@ -72,10 +72,19 @@ class ChangePasswordUsingToken extends Action
         $person->raw_password = (string) $requestData['new_password'];
         $violations = $this->validator->validate($person, null, ['complete']);
 
+        $relevantViolationMessages = [];
+
         foreach ($violations as $violation) {
-            if ($violation->getPropertyPath() === 'raw_password') {
-                throw new HttpBadRequestException($request, (string)$violation->getMessage());
+            if (
+                $violation->getPropertyPath() === 'raw_password' ||
+                str_contains((string) $violation->getMessage(), 'password')
+            ) {
+                $relevantViolationMessages[] = $violation->getMessage();
             }
+        }
+
+        if ($relevantViolationMessages !== []) {
+            throw new HttpBadRequestException($request, implode("; ", $relevantViolationMessages));
         }
 
         $token->consume(new \DateTimeImmutable());
