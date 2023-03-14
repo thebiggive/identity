@@ -60,6 +60,8 @@ jobs:
 
       - run: composer run doctrine:migrate
 
+      - run: composer run integration-test
+
       - store_artifacts:
           path: docs
 
