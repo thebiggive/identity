@@ -13,6 +13,7 @@
         <directory name="app"/>
         <directory name="src"/>
         <directory name="tests"/>
+        <directory name="integrationTests"/>
         <directory name="public"/>
         <ignoreFiles>
             <directory name="vendor"/>
