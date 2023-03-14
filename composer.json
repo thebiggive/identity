@@ -70,7 +70,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "BigGive\\Identity\\Tests\\": "tests/"
+            "BigGive\\Identity\\Tests\\": "tests/",
+            "BigGive\\Identity\\IntegrationTests\\": "integrationTests/"
         }
     },
     "scripts": {
@@ -95,6 +96,7 @@
         "lint:check": "phpcs --standard=phpcs.xml -s .",
         "lint:fix": "phpcbf --standard=phpcs.xml -s .",
         "start": "php -S localhost:8080 -t public",
-        "test": "XDEBUG_MODE=coverage phpunit"
+        "test": "XDEBUG_MODE=coverage phpunit",
+        "integration-test": "XDEBUG_MODE=coverage phpunit --config=phpunit-integration.xml --order-by=random"
     }
 }

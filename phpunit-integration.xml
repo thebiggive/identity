@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" backupStaticAttributes="false" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutChangesToGlobalState="true" beStrictAboutOutputDuringTests="true" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="integrationTests/bootstrap.php">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">./src/Migrations</directory>
+    </exclude>
+    <report>
+      <clover outputFile="coverage.xml" />
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="Integration Test Suite">
+      <directory>./integrationTests/</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="APP_ENV" value="test" force="true" />
+    <env name="BASE_URI" value="https://unit-test-fake-id-sub.thebiggivetest.org.uk" force="true"/>
+    <env name="JWT_ID_SECRET" value="unitTestJWTSecret" force="true"/>
+    <env name="MAILER_BASE_URI" value="https://mailer-fake-site.thebiggivetest.org.uk" force="true"/>
+    <env name="MAILER_SEND_SECRET" value="Abcdefghijklmnopqrstuvwxyz" force="true"/>
+    <env name="MAX_CREATES_PER_IP_PER_5M" value="1" force="true" />
+    <env name="RECAPTCHA_BYPASS" value="0" force="true"/>
+    <env name="STRIPE_API_VERSION" value="2022-08-01" />
+    <env name="STRIPE_SECRET_KEY" value="sk_test_unitTestFakeKey" force="true"/>
+    <env name="ACCOUNT_MANAGEMENT_BASE_URI" value="https://unit-test-fake-account-sub.thebiggivetest.org.uk" force="true"/>
+  </php>
+</phpunit>
