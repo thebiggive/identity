@@ -17,7 +17,23 @@ jobs:
         auth:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN
-
+        environment:
+          MYSQL_HOST: 127.0.0.1
+          REDIS_HOST: 127.0.0.1
+          MYSQL_SCHEMA: identity
+          MYSQL_USER: root
+          MYSQL_PASSWORD: tbgCircle123
+      - image: cimg/mysql:8.0
+        auth:
+          username: $DOCKER_HUB_USERNAME
+          password: $DOCKER_HUB_ACCESS_TOKEN
+        environment:
+          MYSQL_DATABASE: identity
+          MYSQL_ROOT_PASSWORD: tbgCircle123
+      - image: redis:6.2
+        auth:
+          username: $DOCKER_HUB_USERNAME
+          password: $DOCKER_HUB_ACCESS_TOKEN
     steps:
       - checkout
 
@@ -41,6 +57,8 @@ jobs:
       - run: composer run docs # Ensure OpenAPI annotations remain valid
 
       - run: composer run test
+
+      - run: composer run doctrine:migrate
 
       - store_artifacts:
           path: docs
