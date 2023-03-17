@@ -75,6 +75,7 @@ return function (App $app) {
             'https://localhost:4200', // Local via native `ng serve --ssl`
             'https://donate-ecs-staging.thebiggivetest.org.uk', // ECS staging direct
             'https://donate-staging.thebiggivetest.org.uk', // ECS + S3 staging via CloudFront
+            'https://donate-staging.thebiggive.global', // ECS + S3 production via CloudFront, temporary testing global alias
             'https://donate-ecs-regression.thebiggivetest.org.uk', // ECS regression direct
             'https://donate-regression.thebiggivetest.org.uk', // ECS + S3 regression via CloudFront
             'https://donate-ecs-production.thebiggive.org.uk', // ECS production direct
