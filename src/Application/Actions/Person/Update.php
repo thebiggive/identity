@@ -161,6 +161,8 @@ class Update extends Action
             );
         }
 
+        $personHasPasswordNow = $person->getPasswordHash() !== null;
+
         try {
             $this->personRepository->persist($person);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
@@ -200,7 +202,10 @@ class Update extends Action
 
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
-        if (!$personHadPassword && $person->getPasswordHash() !== null) {
+        if (!$personHadPassword && $personHasPasswordNow) {
+            $customerDetails['metadata']['hasPasswordSince'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+            $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
+
             // If the person didn't have a password before, but now does, send them a welcome email.
             if (!$this->personRepository->sendRegisteredEmail($person)) {
                 throw new \Exception('Failed to send registration success email');
