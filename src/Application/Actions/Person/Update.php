@@ -164,8 +164,6 @@ class Update extends Action
         // We should persist Stripe's Customer ID on initial Person create.
         \assert(is_string($person->stripe_customer_id));
 
-        $personHasPasswordNow = $person->getPasswordHash() !== null;
-
         try {
             $this->personRepository->persist($person);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
@@ -182,6 +180,7 @@ class Update extends Action
             );
         }
 
+        $personHasPasswordNow = $person->getPasswordHash() !== null;
         $customerDetails = [
             'email' => $person->email_address,
             'name' => sprintf('%s %s', $person->first_name, $person->last_name),
