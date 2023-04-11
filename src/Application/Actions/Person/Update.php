@@ -161,6 +161,9 @@ class Update extends Action
             );
         }
 
+        // We should persist Stripe's Customer ID on initial Person create.
+        \assert(is_string($person->stripe_customer_id));
+
         $personHasPasswordNow = $person->getPasswordHash() !== null;
 
         try {
