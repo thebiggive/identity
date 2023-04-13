@@ -205,6 +205,11 @@ class Update extends Action
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
         if (!$personHadPassword && $personHasPasswordNow) {
+            // 'hasPasswordSince' in metadata exists, as of April 2023, primarily to:
+            // * allow for more targeted automatic detachment of payment methods, which happens regularly through
+            //   a task in MatchBot; and
+            // * to let the team see at a glance in the Stripe dashboard which donors (if created since April '23
+            // have set a password.
             $customerDetails['metadata']['hasPasswordSince'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
             $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
