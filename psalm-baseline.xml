@@ -194,7 +194,6 @@
     <PossiblyNullArgument>
       <code><![CDATA[$person->first_name]]></code>
       <code><![CDATA[$person->last_name]]></code>
-      <code><![CDATA[$person->stripe_customer_id]]></code>
     </PossiblyNullArgument>
     <PossiblyUndefinedVariable>
       <code>$body</code>
