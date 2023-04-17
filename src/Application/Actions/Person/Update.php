@@ -161,6 +161,9 @@ class Update extends Action
             );
         }
 
+        // We should persist Stripe's Customer ID on initial Person create.
+        \assert(is_string($person->stripe_customer_id));
+
         try {
             $this->personRepository->persist($person);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
@@ -177,6 +180,7 @@ class Update extends Action
             );
         }
 
+        $personHasPasswordNow = $person->getPasswordHash() !== null;
         $customerDetails = [
             'email' => $person->email_address,
             'name' => sprintf('%s %s', $person->first_name, $person->last_name),
@@ -200,7 +204,15 @@ class Update extends Action
 
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
-        if (!$personHadPassword && $person->getPasswordHash() !== null) {
+        if (!$personHadPassword && $personHasPasswordNow) {
+            // 'hasPasswordSince' in metadata exists, as of April 2023, primarily to:
+            // * allow for more targeted automatic detachment of payment methods, which happens regularly through
+            //   a task in MatchBot; and
+            // * to let the team see at a glance in the Stripe dashboard which donors (if created since April '23
+            // have set a password.
+            $customerDetails['metadata']['hasPasswordSince'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+            $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
+
             // If the person didn't have a password before, but now does, send them a welcome email.
             if (!$this->personRepository->sendRegisteredEmail($person)) {
                 throw new \Exception('Failed to send registration success email');

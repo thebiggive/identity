@@ -1,11 +1,11 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@7.0.0
-  aws-ecs: circleci/aws-ecs@2.2.1
+  aws-ecr: circleci/aws-ecr@8.1.3
+  aws-ecs: circleci/aws-ecs@3.2.0
   codecov: codecov/codecov@1.1.3
   jira: circleci/jira@1.3.1
-  slack: circleci/slack@4.3.3
+  slack: circleci/slack@4.12.1
 
 jobs:
   test: # Also lints first
@@ -99,7 +99,7 @@ workflows:
           requires:
             - test
           repo: '${AWS_ECR_REPO_NAME}'
-          region: AWS_REGION
+          region: '${AWS_REGION}'
           tag: 'staging,staging-${CIRCLE_SHA1}'
       - aws-ecs/deploy-service-update:
           context:
@@ -109,8 +109,8 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
           aws-region: AWS_REGION
-          family: 'tbg-staging-${AWS_REGION}-identity'
-          cluster-name: 'tbg-staging-${AWS_REGION}'
+          family: 'tbg-staging-${AWS_REGION}-identity' # also sets `service`
+          cluster: 'tbg-staging-${AWS_REGION}'
           container-image-name-updates: 'container=identity,tag=staging-${CIRCLE_SHA1}'
           post-steps:
             - slack/notify:
@@ -149,7 +149,7 @@ workflows:
           requires:
             - test
           repo: '${AWS_ECR_REPO_NAME}'
-          region: AWS_REGION
+          region: '${AWS_REGION}'
           tag: 'regression,regression-${CIRCLE_SHA1}'
       - aws-ecs/deploy-service-update:
           context:
@@ -159,8 +159,8 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
           aws-region: AWS_REGION
-          family: 'tbg-regression-${AWS_REGION}-identity'
-          cluster-name: 'tbg-regression-${AWS_REGION}'
+          family: 'tbg-regression-${AWS_REGION}-identity' # also sets `service`
+          cluster: 'tbg-regression-${AWS_REGION}'
           container-image-name-updates: 'container=identity,tag=regression-${CIRCLE_SHA1}'
           post-steps:
             - slack/notify:
@@ -199,7 +199,7 @@ workflows:
           requires:
             - test
           repo: '${AWS_ECR_REPO_NAME}'
-          region: AWS_REGION
+          region: '${AWS_REGION}'
           tag: 'production,production-${CIRCLE_SHA1}'
       - aws-ecs/deploy-service-update:
           context:
@@ -209,8 +209,8 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
           aws-region: AWS_REGION
-          family: 'tbg-production-${AWS_REGION}-identity'
-          cluster-name: 'tbg-production-${AWS_REGION}'
+          family: 'tbg-production-${AWS_REGION}-identity' # also sets `service`
+          cluster: 'tbg-production-${AWS_REGION}'
           container-image-name-updates: 'container=identity,tag=production-${CIRCLE_SHA1}'
           post-steps:
             - slack/notify:

@@ -63,7 +63,7 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->willReturn($customerMockResult)
-            ->shouldBeCalledOnce();
+            ->shouldBeCalled();
         $stripeClientProphecy = $this->prophesize(StripeClient::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
@@ -148,7 +148,7 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->willReturn($customerMockResult)
-            ->shouldBeCalledOnce();
+            ->shouldBeCalled();
         // Expected failure is before we push to Stripe so no call with this ID expected.
         $stripeCustomersProphecy->update($newStripeCustomerId, Argument::type('array'))
             ->shouldNotBeCalled();
@@ -228,7 +228,7 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->willReturn($customerMockResult)
-            ->shouldBeCalledOnce();
+            ->shouldBeCalled();
         $stripeClientProphecy = $this->prophesize(StripeClient::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
