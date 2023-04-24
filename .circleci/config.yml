@@ -67,6 +67,8 @@ jobs:
 
       - codecov/upload:
           file: 'coverage.xml'
+      - codecov/upload:
+          file: 'coverage-integration.xml'
 
 workflows:
   build:
