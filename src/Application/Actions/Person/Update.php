@@ -211,6 +211,7 @@ class Update extends Action
             // * to let the team see at a glance in the Stripe dashboard which donors (if created since April '23
             // have set a password.
             $customerDetails['metadata']['hasPasswordSince'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+            $customerDetails['metadata']['emailAddress'] = $person->email_address;
             $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
             // If the person didn't have a password before, but now does, send them a welcome email.
