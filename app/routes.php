@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Actions\ChangePasswordUsingToken;
 use BigGive\Identity\Application\Actions\CreatePasswordResetToken;
-use BigGive\Identity\Application\Actions\GetCreditFundingInstructions;
+use BigGive\Identity\Application\Actions\GetDonatinonFundsTransferInstructions;
 use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
@@ -37,7 +37,7 @@ return function (App $app) {
 
         $versionGroup->group('/people/{personId:[a-z0-9-]{36}}', function (Group $personGetGroup) {
             $personGetGroup->get('', Person\Get::class);
-            $personGetGroup->get('/funding_instructions', GetCreditFundingInstructions::class);
+            $personGetGroup->get('/funding_instructions', GetDonatinonFundsTransferInstructions::class);
         })
             ->add(PersonGetAuthMiddleware::class);
 
