@@ -45,7 +45,7 @@ use Stripe\StripeClient;
  * ),
  * @link https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk
  */
-class GetDonatinonFundsTransferInstructions extends Action
+class GetDonationFundsTransferInstructions extends Action
 {
     public function __construct(
         LoggerInterface $logger,

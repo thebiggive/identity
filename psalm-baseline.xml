@@ -155,7 +155,7 @@
       <code>$mailer</code>
     </UnusedProperty>
   </file>
-  <file src="src/Application/Actions/GetDonatinonFundsTransferInstructions.php">
+  <file src="src/Application/Actions/GetDonationFundsTransferInstructions.php">
     <PossiblyNullArgument>
       <code><![CDATA[$person->stripe_customer_id]]></code>
     </PossiblyNullArgument>
@@ -396,7 +396,7 @@
       <code>get</code>
     </PossiblyNullReference>
   </file>
-  <file src="tests/Application/Actions/GetDonatinonFundsTransferInstructionsTest.php">
+  <file src="tests/Application/Actions/GetDonationFundsTransferInstructionsTest.php">
     <MixedArrayAccess>
       <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]]]></code>
       <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]]]></code>
