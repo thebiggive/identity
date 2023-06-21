@@ -27,7 +27,7 @@ use Stripe\StripeClient;
  *             pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
  *         ),
  *     ),
- *     summary="Get a Person's funding instructions for credit top-up by bank transfer",
+ *     summary="Get a Person's funding instructions for donation funds top-up by bank transfer",
  *     operationId="funding_instructions_get",
  *     security={
  *         {"personJWT": {}}
@@ -45,7 +45,7 @@ use Stripe\StripeClient;
  * ),
  * @link https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk
  */
-class GetCreditFundingInstructions extends Action
+class GetDonationFundsTransferInstructions extends Action
 {
     public function __construct(
         LoggerInterface $logger,
