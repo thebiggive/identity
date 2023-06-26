@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "646dcdd8c97d4000b1561a556bdfd783",
+    "content-hash": "4b4523294b0bc8f68d9971be4f90204a",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -9199,22 +9199,22 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "5.7.4",
+            "version": "5.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "c46eccda769925073b8f65d66c4a3a7dc5d440b1"
+                "reference": "a0a9c27630bcf8301ee78cb06741d2907d8c9fef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/c46eccda769925073b8f65d66c4a3a7dc5d440b1",
-                "reference": "c46eccda769925073b8f65d66c4a3a7dc5d440b1",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/a0a9c27630bcf8301ee78cb06741d2907d8c9fef",
+                "reference": "a0a9c27630bcf8301ee78cb06741d2907d8c9fef",
                 "shasum": ""
             },
             "require": {
                 "amphp/amp": "^2.4.2",
                 "amphp/byte-stream": "^1.5",
-                "composer/package-versions-deprecated": "^1.10.0",
+                "composer-runtime-api": "^2",
                 "composer/semver": "^1.4 || ^2.0 || ^3.0",
                 "composer/xdebug-handler": "^2.0 || ^3.0",
                 "dnoegel/php-xdg-base-dir": "^0.1.1",
@@ -9229,7 +9229,7 @@
                 "felixfbecker/language-server-protocol": "^1.5.2",
                 "fidry/cpu-core-counter": "^0.4.1 || ^0.5.1",
                 "netresearch/jsonmapper": "^1.0 || ^2.0 || ^3.0 || ^4.0",
-                "nikic/php-parser": "^4.13",
+                "nikic/php-parser": "^4.14",
                 "php": "^7.4 || ~8.0.0 || ~8.1.0 || ~8.2.0",
                 "sebastian/diff": "^4.0 || ^5.0",
                 "spatie/array-to-xml": "^2.17.0 || ^3.0",
@@ -9240,6 +9240,7 @@
                 "psalm/psalm": "self.version"
             },
             "require-dev": {
+                "amphp/phpunit-util": "^2.0",
                 "bamarni/composer-bin-plugin": "^1.4",
                 "brianium/paratest": "^6.9",
                 "ext-curl": "*",
@@ -9298,9 +9299,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vimeo/psalm/issues",
-                "source": "https://github.com/vimeo/psalm/tree/5.7.4"
+                "source": "https://github.com/vimeo/psalm/tree/5.13.0"
             },
-            "time": "2023-02-21T06:57:53+00:00"
+            "time": "2023-06-24T17:05:12+00:00"
         },
         {
             "name": "weirdan/doctrine-psalm-plugin",
