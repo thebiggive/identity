@@ -11,7 +11,7 @@ use BigGive\Identity\Tests\TestPeopleTrait;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
 
-class GetCreditFundingInstructionsTest extends TestCase
+class GetDonationFundsTransferInstructionsTest extends TestCase
 {
     use TestPeopleTrait;
 
