@@ -68,6 +68,8 @@ class Person
      */
     public array $cash_balance = [];
 
+    public array $cach_balanance_transactions = [];
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)

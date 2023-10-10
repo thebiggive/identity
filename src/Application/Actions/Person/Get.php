@@ -79,6 +79,11 @@ class Get extends Action
                 'expand' => ['cash_balance'],
             ]);
 
+//            $transactions = $this->stripeClient->customers->allBalanceTransactions(parentId: $person->stripe_customer_id, params: ['limit' => 500]);
+
+            $transactions = $this->stripeClient->customers->allCashBalanceTransactions(parentId: $person->stripe_customer_id, params: ['limit' => 500]);
+
+
             // The hash must be non-null and reconciliation automatic for us to consider balances potentially
             // spendable. Note this does _not_ imply that any balances are non-zero right now, just that we
             // should check balances.
@@ -92,6 +97,7 @@ class Get extends Action
                 foreach ($stripeCustomer->cash_balance->available->toArray() as $currenyCode => $amount) {
                     if ($amount > 0) {
                         $person->cash_balance[$currenyCode] = $amount;
+                        $person->cach_balanance_transactions = $transactions->all()->toArray();
                     }
                 }
             }
