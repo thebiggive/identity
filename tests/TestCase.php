@@ -68,7 +68,7 @@ class TestCase extends PHPUnit_TestCase
         // don't want tests depending upon *real* Redis.)
         $redisProphecy = $this->prophesize(Redis::class);
         $redisProphecy->isConnected()->willReturn(true);
-        $redisProphecy->mget(Argument::type('array'))->willReturn(null);
+        $redisProphecy->mget(Argument::type('array'))->willReturn([]);
         // symfony/cache Redis adapter apparently does something around prepping value-setting
         // through a fancy pipeline() and calls this.
         $redisProphecy->multi(Argument::any())->willReturn(true);
