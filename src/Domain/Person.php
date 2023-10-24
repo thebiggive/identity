@@ -49,10 +49,6 @@ class Person
      */
     public const NON_SERIALISED_ATTRIBUTES = [
     ];
-    /**
-     * See discussions on Jira ID-36 before enabling
-     * @var bool
-     */
 
     /**
      * @OA\Property(
@@ -67,6 +63,22 @@ class Person
      * @var int[] Balances in smallest unit (cents/pence) keyed on lowercase currency code.
      */
     public array $cash_balance = [];
+
+    /**
+     * @OA\Property(
+     *     type="object",
+     *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
+     *     available amounts in smallest denomination, e.g. 123 pence.",
+     *     example={
+     *         "eur": 0,
+     *         "gbp": 123,
+     *     }
+     * )
+     * @var null|int[]  Pending Payment Intents for Big Give (i.e. donor fund top up tips)
+     *                  in smallest unit (cents/pence), keyed on lowercase currency code.
+     *                  Or may be null if no tip balances requested on Get.
+     */
+    public ?array $pending_tip_balance = [];
 
     /**
      * @ORM\Id
