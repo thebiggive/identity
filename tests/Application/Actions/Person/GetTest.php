@@ -192,6 +192,7 @@ class GetTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJson($payloadJSON);
 
+        /** @var object{cash_balance: mixed, pending_tip_balance: mixed} */
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsObject($payload->cash_balance);
@@ -334,12 +335,14 @@ class GetTest extends TestCase
 
     private function getStripeObject(string $mockName): StripeObject
     {
-        return StripeObject::constructFrom(json_decode(
+        /** @psalm-var array<array-key, mixed> */
+        $stripeSingleMockData = json_decode(
             $this->getMock($mockName),
             true,
             512,
             JSON_THROW_ON_ERROR,
-        ));
+        );
+        return StripeObject::constructFrom($stripeSingleMockData);
     }
 
     private function getMock(string $mockName): string
