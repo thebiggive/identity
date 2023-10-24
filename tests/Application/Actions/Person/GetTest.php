@@ -10,6 +10,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\StripeFormattingTrait;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
+use DI\Container;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
@@ -164,6 +165,8 @@ class GetTest extends TestCase
         $person = $this->getInitialisedPerson(true);
 
         $app = $this->getAppInstance();
+        /** @var Container $container */
+        $container = $app->getContainer();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
@@ -172,8 +175,8 @@ class GetTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $container->set(
             StripeClient::class,
             $this->getStripeClientWithMock(
                 mockName: 'customer_no_credit',
