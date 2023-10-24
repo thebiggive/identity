@@ -68,18 +68,17 @@ class TestCase extends PHPUnit_TestCase
         // don't want tests depending upon *real* Redis.)
         $redisProphecy = $this->prophesize(Redis::class);
         $redisProphecy->isConnected()->willReturn(true);
-        $redisProphecy->mget(['identity-test:10d49f663215e991d10df22692f03e89'])->willReturn(null);
-        $redisProphecy->mget(['identity-test:BigGive__Identity__Domain__Person__CLASSMETADATA__'])->willReturn(null);
+        $redisProphecy->mget(Argument::type('array'))->willReturn(null);
         // symfony/cache Redis adapter apparently does something around prepping value-setting
         // through a fancy pipeline() and calls this.
-        $redisProphecy->multi(Argument::any())->willReturn();
+        $redisProphecy->multi(Argument::any())->willReturn(true);
         // Accept cache bits trying to set *anything* on the mocked Redis. We don't list exact calls
         // because this will include every bit of frequently-changing class metadata that Doctrine
         // caches, amongst other things.
         $redisProphecy
             ->setex(Argument::type('string'), 3600, Argument::type('string'))
             ->willReturn(true);
-        $redisProphecy->exec()->willReturn(); // Commits the multi() operation.
+        $redisProphecy->exec()->willReturn([]); // Commits the multi() operation.
         $container->set(Redis::class, $redisProphecy->reveal());
 
         // Instantiate the app
