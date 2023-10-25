@@ -187,7 +187,7 @@ class GetTest extends TestCase
         );
 
         $response = $app->handle($this->buildRequest(
-            static::$testPersonUuid,
+            self::$testPersonUuid,
             withTipBalance: true,
         ));
         $payloadJSON = (string) $response->getBody();
