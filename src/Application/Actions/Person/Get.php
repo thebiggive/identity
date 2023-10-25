@@ -51,6 +51,13 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class Get extends Action
 {
+    /**
+     * The campaign/project name for tips committed when preparing a bank transfer /
+     * donation funds topup. These are stored as donations to Big Give since they are
+     * standalone rather than an adjustment to another main donation.
+     */
+    public const FUND_TIPS_CAMPAIGN_NAME = 'Big Give General Donations';
+
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
@@ -74,6 +81,8 @@ class Get extends Action
             throw new HttpNotFoundException($request, 'Person not found');
         }
 
+        $includeTipBalances = ($request->getQueryParams()['withTipBalances'] ?? 'false') === 'true';
+
         if ($person->stripe_customer_id) {
             $stripeCustomer = $this->stripeClient->customers->retrieve($person->stripe_customer_id, [
                 'expand' => ['cash_balance'],
@@ -93,6 +102,33 @@ class Get extends Action
                     if ($amount > 0) {
                         $person->cash_balance[$currenyCode] = $amount;
                     }
+                }
+            }
+
+            if ($includeTipBalances) {
+                // If the pending tips balance was requested (e.g. by the transfer funds form),
+                // check for the sum of all relevant payment intents.
+                $tipPaymentIntentsPending = $this->stripeClient->paymentIntents->all([
+                    'customer' => $person->stripe_customer_id,
+                ]);
+
+                foreach ($tipPaymentIntentsPending->autoPagingIterator() as $paymentIntent) {
+                    $paymentIntentIsPendingDononFundsTip = (
+                        $paymentIntent->status === 'requires_action' &&
+                        $paymentIntent->payment_method_types === ['customer_balance'] &&
+                        $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
+                    );
+
+                    if (!$paymentIntentIsPendingDononFundsTip) {
+                        continue;
+                    }
+
+                    $currencyCode = $paymentIntent->currency;
+                    if (!isset($person->pending_tip_balance[$currencyCode])) {
+                        $person->pending_tip_balance[$currencyCode] = 0;
+                    }
+
+                    $person->pending_tip_balance[$currencyCode] += $paymentIntent->amount;
                 }
             }
         }

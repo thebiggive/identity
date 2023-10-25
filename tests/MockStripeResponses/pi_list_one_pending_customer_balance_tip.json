@@ -1,0 +1,109 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "pi_3O4rNMKkGuKkxwBN1qc9aYQB",
+      "object": "payment_intent",
+      "amount": 100000,
+      "amount_capturable": 0,
+      "amount_details": {
+        "tip": []
+      },
+      "amount_received": 0,
+      "application": null,
+      "application_fee_amount": 1824,
+      "automatic_payment_methods": null,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic",
+      "charges": {
+        "object": "list",
+        "data": [],
+        "has_more": false,
+        "total_count": 0,
+        "url": "\/v1\/charges?payment_intent=pi_3O4rNMKkGuKkxwBN1qc9aYQB"
+      },
+      "client_secret": "pi_3O4rNMKkGuKkxwBN1qc9aYQB_secret_G1redacted",
+      "confirmation_method": "automatic",
+      "created": 1698179936,
+      "currency": "gbp",
+      "customer": "cus_NXjANmvjzh1W46",
+      "description": "Donation 4e2e1aa3-c13c-43d9-95ab-0c8421143dc3 to The Big Give Trust",
+      "invoice": null,
+      "last_payment_error": null,
+      "latest_charge": null,
+      "livemode": false,
+      "metadata": {
+        "campaignId": "a056900002LDXWgAAP",
+        "campaignName": "Big Give General Donations",
+        "charityId": "0011r00002IMRknAAH",
+        "charityName": "The Big Give Trust",
+        "coreDonationGiftAid": "false",
+        "donationId": "4e2e1aa3-c13c-43d9-95ab-0c8421143dc3",
+        "environment": "test",
+        "feeCoverAmount": "0",
+        "matchedAmount": "0.0",
+        "optInCharityEmail": "false",
+        "optInTbgEmail": "false",
+        "stripeFeeRechargeGross": "18.24",
+        "stripeFeeRechargeNet": "15.20",
+        "stripeFeeRechargeVat": "3.04",
+        "tbgTipGiftAid": "false",
+        "tipAmount": "0"
+      },
+      "next_action": {
+        "display_bank_transfer_instructions": {
+          "amount_remaining": 100000,
+          "currency": "gbp",
+          "financial_addresses": [
+            {
+              "sort_code": {
+                "account_holder_name": "The Big Give",
+                "account_number": "56908483",
+                "sort_code": "108800"
+              },
+              "supported_networks": [
+                "bacs",
+                "fps"
+              ],
+              "type": "sort_code"
+            }
+          ],
+          "hosted_instructions_url": "https:\/\/payments.stripe.com\/bank_transfers\/instructions\/test_YWNredacted",
+          "reference": "JS5WV6BEWNHX",
+          "type": "gb_bank_transfer"
+        },
+        "type": "display_bank_transfer_instructions"
+      },
+      "on_behalf_of": null,
+      "payment_method": "pm_1O4rNMKkGuKkxwBNhtCLEIkZ",
+      "payment_method_configuration_details": null,
+      "payment_method_options": {
+        "customer_balance": {
+          "bank_transfer": {
+            "type": "gb_bank_transfer"
+          },
+          "funding_type": "bank_transfer"
+        }
+      },
+      "payment_method_types": [
+        "customer_balance"
+      ],
+      "processing": null,
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": "Big Give The Big Give",
+      "statement_descriptor_suffix": null,
+      "status": "requires_action",
+      "transfer_data": {
+        "destination": "acct_1HIcwECfbtkd6Fy5"
+      },
+      "transfer_group": null
+    }
+  ],
+  "has_more": false,
+  "url": "/v1/payment_intents"
+}

@@ -470,12 +470,6 @@
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
-      <code><![CDATA[json_decode(
-            file_get_contents(dirname(__DIR__, 3) . '/MockStripeResponses/' . $mockName . '.json'),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
-        )]]></code>
     </MixedArgument>
     <MixedAssignment>
       <code>$payload</code>
