@@ -324,11 +324,7 @@ class GetTest extends TestCase
 
         if ($piMockName) {
             $stripePaymentIntentsProphecy = $this->prophesize(PaymentIntentService::class);
-            // The auto-iterator passes on the `customer` param but also sets its own
-            // limit & other vars – we don't need to test its internal specifics so
-            // we match `Argument::any()`.
-            $stripePaymentIntentsProphecy->all(Argument::any())
-                ->shouldBeCalledOnce()
+            $stripePaymentIntentsProphecy->all(['customer' => self::$testPersonStripeCustomerId])
                 ->willReturn($this->buildAutoIterableCollection($this->getMock($piMockName)));
             $stripeClientProphecy->paymentIntents = $stripePaymentIntentsProphecy->reveal();
         }
