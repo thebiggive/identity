@@ -78,7 +78,7 @@ class Person
      *                  in smallest unit (cents/pence), keyed on lowercase currency code.
      *                  Or may be null if no tip balances requested on Get.
      */
-    public ?array $pending_tip_balance = [];
+    public ?array $pending_tip_balance = null;
 
     /**
      * @ORM\Id
