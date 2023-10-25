@@ -51,6 +51,13 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class Get extends Action
 {
+    /**
+     * The campaign/project name for tips committed when preparing a bank transfer /
+     * donation funds topup. These are stored as donations to Big Give since they are
+     * standalone rather than an adjustment to another main donation.
+     */
+    public const FUND_TIPS_CAMPAIGN_NAME = 'Big Give General Donations';
+
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
@@ -109,7 +116,7 @@ class Get extends Action
                     $paymentIntentIsPendingDononFundsTip = (
                         $paymentIntent->status === 'requires_action' &&
                         $paymentIntent->payment_method_types === ['customer_balance'] &&
-                        $paymentIntent->metadata->campaignName === 'Big Give General Donations'
+                        $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
                     );
 
                     if (!$paymentIntentIsPendingDononFundsTip) {
