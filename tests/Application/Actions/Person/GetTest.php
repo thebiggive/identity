@@ -169,7 +169,7 @@ class GetTest extends TestCase
         $container = $app->getContainer();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->find(static::$testPersonUuid)
+        $personRepoProphecy->find(self::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
         $personRepoProphecy->persist(Argument::type(Person::class))
