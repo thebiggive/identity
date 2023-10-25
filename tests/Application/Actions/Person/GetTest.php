@@ -7,7 +7,7 @@ namespace BigGive\Identity\Tests\Application\Actions\Person;
 use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
-use BigGive\Identity\Tests\StripeFormattingTrait;
+use BigGive\Identity\Tests\StripeFormatting;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use DI\Container;
@@ -21,7 +21,6 @@ use Stripe\StripeObject;
 
 class GetTest extends TestCase
 {
-    use StripeFormattingTrait;
     use TestPeopleTrait;
 
     public function testSuccessWithSpendableStripeBalances(): void
@@ -325,7 +324,7 @@ class GetTest extends TestCase
         if ($piMockName) {
             $stripePaymentIntentsProphecy = $this->prophesize(PaymentIntentService::class);
             $stripePaymentIntentsProphecy->all(['customer' => self::$testPersonStripeCustomerId])
-                ->willReturn($this->buildAutoIterableCollection($this->getMock($piMockName)));
+                ->willReturn(StripeFormatting::buildAutoIterableCollection($this->getMock($piMockName)));
             $stripeClientProphecy->paymentIntents = $stripePaymentIntentsProphecy->reveal();
         }
 
