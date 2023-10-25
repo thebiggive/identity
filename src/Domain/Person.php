@@ -74,7 +74,7 @@ class Person
      *         "gbp": 123,
      *     }
      * )
-     * @var null|int[]  Pending Payment Intents for Big Give (i.e. donor fund top up tips)
+     * @var null|array<string,int>  Total Pending Payment Intents for Big Give (i.e. donor fund top up tips) for each currency
      *                  in smallest unit (cents/pence), keyed on lowercase currency code.
      *                  Or may be null if no tip balances requested on Get.
      */
