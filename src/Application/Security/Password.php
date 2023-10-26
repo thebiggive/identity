@@ -20,7 +20,7 @@ class Password
 
     public static function hash(string $rawPassword): string
     {
-        return password_hash($rawPassword, PASSWORD_DEFAULT);
+        return password_hash(password: $rawPassword, algo: PASSWORD_BCRYPT, options: ["cost" => 12]);
     }
 
     /**
