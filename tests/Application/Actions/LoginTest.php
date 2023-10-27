@@ -36,7 +36,7 @@ class LoginTest extends TestCase
             ->shouldBeCalledOnce()
             ->willReturn($personWithHashMatchingRawPasswordFromLoginObject);
 
-        $personRepoProphecy->upgradePasswordIfPossible($person->raw_password, Argument::type(Person::class))
+        $personRepoProphecy->upgradePasswordIfPossible($person->raw_password, $personWithHashMatchingRawPasswordFromLoginObject)
             ->shouldBeCalledOnce();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
