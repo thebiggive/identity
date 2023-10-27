@@ -91,6 +91,12 @@ class PersonRepository extends EntityRepository
         return $this->mailerClient->sendEmail($person->toMailerPayload());
     }
 
+    /**
+     * Generates and persists a new password hash for this person if our existing hash for them wasn't made
+     * using our current algorithm and settings.
+     *
+     * Must only be called for a person who has a password.
+     */
     public function upgradePasswordIfPossible(?string $raw_password, Person $person): void
     {
         $hash = $person->getPasswordHash();
