@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Repository;
 
+use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
@@ -88,5 +89,19 @@ class PersonRepository extends EntityRepository
     public function sendRegisteredEmail(Person $person): bool
     {
         return $this->mailerClient->sendEmail($person->toMailerPayload());
+    }
+
+    public function upgradePasswordIfPossible(?string $raw_password, Person $person): void
+    {
+        $hash = $person->getPasswordHash();
+
+        if ($hash === null) {
+            throw new \LogicException('upgradePasswordIfPossible() called on passwordless Person');
+        }
+
+        if (Password::needsRehash($hash)) {
+            $person->raw_password = $raw_password;
+            $this->persistForPasswordChange($person);
+        }
     }
 }

@@ -127,6 +127,8 @@ class Login extends Action
             return $this->fail($exception->getMessage());
         }
 
+        $this->personRepository->upgradePasswordIfPossible($credentials->raw_password, $person);
+
         $id = (string) $person->getId();
 
         return new JsonResponse([
