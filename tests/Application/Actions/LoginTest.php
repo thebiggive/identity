@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions;
 
-use BigGive\Identity\Application\Security\AuthenticationException;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
+use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 
@@ -35,6 +35,9 @@ class LoginTest extends TestCase
         $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
             ->shouldBeCalledOnce()
             ->willReturn($personWithHashMatchingRawPasswordFromLoginObject);
+
+        $personRepoProphecy->upgradePasswordIfPossible($person->raw_password, $personWithHashMatchingRawPasswordFromLoginObject)
+            ->shouldBeCalledOnce();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
