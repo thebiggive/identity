@@ -97,7 +97,7 @@ class PersonRepository extends EntityRepository
      *
      * Must only be called for a person who has a password.
      */
-    public function upgradePasswordIfPossible(?string $raw_password, Person $person): void
+    public function upgradePasswordIfPossible(string $raw_password, Person $person): void
     {
         $hash = $person->getPasswordHash();
 
