@@ -6,12 +6,13 @@ namespace BigGive\Identity\Application\Security;
 
 use BigGive\Identity\Domain\Person;
 
-/**
- * @todo support auto rehash when we have an Auth endpoint, so we can continually upgrade password
- * hashes.
- */
 class Password
 {
+    /** @var string */
+    private const ALGORITHM = PASSWORD_BCRYPT;
+    /** @var array<array-key, mixed> */
+    private const OPTIONS = ['cost' => 12];
+
     /**
      * Share this to make sure we don't surface the difference between no account + wrong password.
      * @var string
@@ -20,7 +21,12 @@ class Password
 
     public static function hash(string $rawPassword): string
     {
-        return password_hash($rawPassword, PASSWORD_DEFAULT);
+        return password_hash(password: $rawPassword, algo: self::ALGORITHM, options: self::OPTIONS);
+    }
+
+    public static function needsRehash(string $hash): bool
+    {
+        return password_needs_rehash(hash: $hash, algo: self::ALGORITHM, options: self::OPTIONS);
     }
 
     /**

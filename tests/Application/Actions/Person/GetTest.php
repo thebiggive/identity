@@ -7,12 +7,15 @@ namespace BigGive\Identity\Tests\Application\Actions\Person;
 use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
+use BigGive\Identity\Tests\StripeFormatting;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
+use DI\Container;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
+use Stripe\Service\PaymentIntentService;
 use Stripe\StripeClient;
 use Stripe\StripeObject;
 
@@ -156,7 +159,55 @@ class GetTest extends TestCase
         $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
     }
 
-    public function testSuccessWithNonAutomaticallyReconcileStripeBalances(): void
+    public function testSuccessWithPendingTipAndNoBalances(): void
+    {
+        $person = $this->getInitialisedPerson(true);
+
+        $app = $this->getAppInstance();
+        /** @var Container $container */
+        $container = $app->getContainer();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->find(self::$testPersonUuid)
+            ->shouldBeCalledOnce()
+            ->willReturn($person);
+        $personRepoProphecy->persist(Argument::type(Person::class))
+            ->shouldNotBeCalled();
+
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $container->set(
+            StripeClient::class,
+            $this->getStripeClientWithMock(
+                mockName: 'customer_no_credit',
+                // List of payment intents for the test customer will be 1x £1k customer_balance
+                // funded donation (tip) with metadata.campaignName = 'Big Give General Donations'.
+                piMockName: 'pi_list_one_pending_customer_balance_tip',
+            )
+        );
+
+        $response = $app->handle($this->buildRequest(
+            self::$testPersonUuid,
+            withTipBalance: true,
+        ));
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        /** @var object{cash_balance: mixed, pending_tip_balance: mixed} */
+        $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
+
+        $this->assertIsObject($payload->cash_balance);
+        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
+
+        $this->assertObjectHasAttribute('pending_tip_balance', $payload);
+        $this->assertIsObject($payload->pending_tip_balance);
+        $this->assertEquals((object) [
+            'gbp' => 1_000_00, // £1,000 tip (per mock response derived from local tests)
+        ], $payload->pending_tip_balance);
+    }
+
+    public function testSuccessWithNonAutomaticallyReconciledStripeBalances(): void
     {
         $person = $this->getInitialisedPerson(true);
 
@@ -241,10 +292,13 @@ class GetTest extends TestCase
         $app->handle($request);
     }
 
-    private function buildRequest(string $personId): ServerRequestInterface
+    private function buildRequest(string $personId, bool $withTipBalance = false): ServerRequestInterface
     {
         return $this->buildRequestRaw($personId)
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'));
+            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'))
+            ->withQueryParams([
+                'withTipBalances' => $withTipBalance ? 'true' : 'false',
+            ]);
     }
 
     private function buildRequestRaw(string $personId): ServerRequestInterface
@@ -253,23 +307,46 @@ class GetTest extends TestCase
         return $this->createRequest('GET', '/v1/people/' . $personId);
     }
 
-    private function getStripeClientWithMock(string $mockName): StripeClient
+    /**
+     * @param string $mockName          Main Customer mock name
+     * @param string|null $piMockName   Payment Intent list ["all"] mock name, if needed.
+     */
+    private function getStripeClientWithMock(string $mockName, ?string $piMockName = null): StripeClient
     {
-        $mockResponse = StripeObject::constructFrom(json_decode(
-            file_get_contents(dirname(__DIR__, 3) . '/MockStripeResponses/' . $mockName . '.json'),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
-        ));
-
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->retrieve(static::$testPersonStripeCustomerId, ['expand' => ['cash_balance']])
             ->shouldBeCalledOnce()
-            ->willReturn($mockResponse);
+            ->willReturn($this->getStripeObject($mockName));
 
         $stripeClientProphecy = $this->prophesize(StripeClient::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
+        if ($piMockName) {
+            $stripePaymentIntentsProphecy = $this->prophesize(PaymentIntentService::class);
+            $stripePaymentIntentsProphecy->all(['customer' => self::$testPersonStripeCustomerId])
+                ->willReturn(StripeFormatting::buildAutoIterableCollection($this->getMock($piMockName)));
+            $stripeClientProphecy->paymentIntents = $stripePaymentIntentsProphecy->reveal();
+        }
+
         return $stripeClientProphecy->reveal();
+    }
+
+    private function getStripeObject(string $mockName): StripeObject
+    {
+        /** @psalm-var array<array-key, mixed> */
+        $stripeSingleMockData = json_decode(
+            $this->getMock($mockName),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
+        return StripeObject::constructFrom($stripeSingleMockData);
+    }
+
+    private function getMock(string $mockName): string
+    {
+        return file_get_contents(
+            dirname(__DIR__, 3) . '/MockStripeResponses/' . $mockName . '.json'
+        );
     }
 }
