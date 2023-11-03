@@ -177,27 +177,12 @@
     </PossiblyUndefinedVariable>
   </file>
   <file src="src/Application/Actions/Person/Create.php">
-    <MixedArgument>
-      <code><![CDATA[$customer->id]]></code>
-    </MixedArgument>
     <MixedArrayAccess>
       <code><![CDATA[$this->settings->get('recaptcha')['bypass']]]></code>
     </MixedArrayAccess>
-    <MixedAssignment>
-      <code>$customer</code>
-    </MixedAssignment>
-    <MixedMethodCall>
-      <code>create</code>
-    </MixedMethodCall>
-    <MixedPropertyFetch>
-      <code><![CDATA[$customer->id]]></code>
-    </MixedPropertyFetch>
     <PossiblyUndefinedVariable>
       <code>$body</code>
     </PossiblyUndefinedVariable>
-    <UndefinedMagicPropertyFetch>
-      <code><![CDATA[$this->stripeClient->customers]]></code>
-    </UndefinedMagicPropertyFetch>
   </file>
   <file src="src/Application/Actions/Person/Get.php">
     <MixedAssignment>
@@ -805,12 +790,6 @@
       <code>set</code>
       <code>set</code>
     </UndefinedInterfaceMethod>
-  </file>
-  <file src="src/LoadTestServices/Stripe/StubCustomerService.php">
-    <PossiblyUnusedMethod>
-      <code>create</code>
-      <code>update</code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="tests/Domain/PersonTest.php">
     <MixedArgument>
