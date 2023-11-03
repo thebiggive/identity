@@ -12,7 +12,7 @@ class StubCustomerService
 
         /** @var string $customerJSON */
         $customerJSON = file_get_contents(
-            dirname(__DIR__, 2) . '/MockStripeResponses/customer_no_credit.json'
+            dirname(__DIR__, 3) . '/tests/MockStripeResponses/customer_no_credit.json'
         );
         /** @var array $customer */
         $customer = json_decode($customerJSON, true, 512, JSON_THROW_ON_ERROR);
