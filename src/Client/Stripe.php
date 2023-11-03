@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace BigGive\Identity\Client;
 
 use BigGive\Identity\Tests\Client\Stripe\StubCustomerService;
+use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
 
+/**
+ * @property ?StubCustomerService|CustomerService customers
+ */
 class Stripe
 {
     private ?StripeClient $stripeNativeClient = null;
