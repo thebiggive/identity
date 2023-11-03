@@ -806,7 +806,7 @@
       <code>set</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="tests/Client/Stripe/StubCustomerService.php">
+  <file src="src/LoadTestServices/Stripe/StubCustomerService.php">
     <PossiblyUnusedMethod>
       <code>create</code>
       <code>update</code>
