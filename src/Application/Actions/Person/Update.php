@@ -6,7 +6,7 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
-use BigGive\Identity\Client\Stripe;
+use BigGive\Identity\Client;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
