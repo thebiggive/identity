@@ -9,7 +9,7 @@ use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
 
 /**
- * @property ?StubCustomerService|CustomerService customers
+ * @property ?StubCustomerService|CustomerService $customers
  */
 class Stripe
 {
