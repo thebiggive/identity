@@ -27,7 +27,7 @@ class Stripe
         $this->customers = new StubCustomerService();
     }
 
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->stripeNativeClient->{$name};
     }
