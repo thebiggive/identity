@@ -18,11 +18,7 @@ class StubCustomerService
         $customer = json_decode($customerJSON, true, 512, JSON_THROW_ON_ERROR);
         $customer['id'] = 'cus_' . bin2hex(random_bytes(12));
 
-        $customer = Customer::constructFrom($customer);
-
-        \assert($customer instanceof Customer);
-
-        return $customer;
+        return Customer::constructFrom($customer);
     }
 
     /**
