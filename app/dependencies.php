@@ -24,6 +24,7 @@ use Psr\Log\LoggerInterface;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
+use Stripe\StripeClient;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
@@ -184,6 +185,14 @@ return function (ContainerBuilder $containerBuilder) {
                 'stripe_version' => $c->get(SettingsInterface::class)->get('stripe')['apiVersion'],
             ];
             return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
+        },
+
+        // TODO use the above abstracted Client class consistently
+        StripeClient::class => static function (ContainerInterface $c): StripeClient {
+            return new StripeClient([
+                'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
+                'stripe_version' => $c->get(SettingsInterface::class)->get('stripe')['apiVersion'],
+            ]);
         },
 
         ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {
