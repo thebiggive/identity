@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -177,6 +178,16 @@ return function (ContainerBuilder $containerBuilder) {
             return new Serializer($normalizers, $encoders);
         },
 
+        Client\Stripe::class => static function (ContainerInterface $c): Client\Stripe {
+            /** @var array $stripeOptions */
+            $stripeOptions = [
+                'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
+                'stripe_version' => $c->get(SettingsInterface::class)->get('stripe')['apiVersion'],
+            ];
+            return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
+        },
+
+        // TODO use the above abstracted Client class consistently
         StripeClient::class => static function (ContainerInterface $c): StripeClient {
             return new StripeClient([
                 'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],

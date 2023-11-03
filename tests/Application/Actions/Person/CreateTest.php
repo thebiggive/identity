@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
-use BigGive\Identity\Client\Mailer;
+use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
@@ -40,11 +40,11 @@ class CreateTest extends TestCase
         $stripeCustomersProphecy->create($this->getStripeCustomerCommonArgs())
             ->willReturn($customerMockResult)
             ->shouldBeCalledOnce();
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest([
             'captcha_code' => 'good response',

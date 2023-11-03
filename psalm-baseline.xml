@@ -7,6 +7,7 @@
       <code><![CDATA[$c->get(ProblemDetailsResponseFactory::class)]]></code>
       <code><![CDATA[$c->get(Psr16Cache::class)]]></code>
       <code><![CDATA[$c->get(Redis::class)]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('bypassPsp')]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('doctrine')['connection']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('los_rate_limit')]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
@@ -29,6 +30,8 @@
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiKey']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiKey']]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiVersion']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiVersion']]]></code>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
       <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
@@ -53,6 +56,9 @@
       <code>Mailer</code>
     </MixedInferredReturnType>
     <MixedMethodCall>
+      <code>get</code>
+      <code>get</code>
+      <code>get</code>
       <code>get</code>
       <code>get</code>
       <code>get</code>
@@ -171,12 +177,27 @@
     </PossiblyUndefinedVariable>
   </file>
   <file src="src/Application/Actions/Person/Create.php">
+    <MixedArgument>
+      <code><![CDATA[$customer->id]]></code>
+    </MixedArgument>
     <MixedArrayAccess>
       <code><![CDATA[$this->settings->get('recaptcha')['bypass']]]></code>
     </MixedArrayAccess>
+    <MixedAssignment>
+      <code>$customer</code>
+    </MixedAssignment>
+    <MixedMethodCall>
+      <code>create</code>
+    </MixedMethodCall>
+    <MixedPropertyFetch>
+      <code><![CDATA[$customer->id]]></code>
+    </MixedPropertyFetch>
     <PossiblyUndefinedVariable>
       <code>$body</code>
     </PossiblyUndefinedVariable>
+    <UndefinedMagicPropertyFetch>
+      <code><![CDATA[$this->stripeClient->customers]]></code>
+    </UndefinedMagicPropertyFetch>
   </file>
   <file src="src/Application/Actions/Person/Get.php">
     <MixedAssignment>
@@ -296,6 +317,14 @@
     <PossiblyUnusedMethod>
       <code>__construct</code>
     </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Client/Stripe.php">
+    <MixedArgumentTypeCoercion>
+      <code>$stripeOptions</code>
+    </MixedArgumentTypeCoercion>
+    <UndefinedThisPropertyAssignment>
+      <code><![CDATA[$this->customers]]></code>
+    </UndefinedThisPropertyAssignment>
   </file>
   <file src="src/Domain/Credentials.php">
     <MissingConstructor>
@@ -776,6 +805,12 @@
       <code>set</code>
       <code>set</code>
     </UndefinedInterfaceMethod>
+  </file>
+  <file src="tests/Client/Stripe/StubCustomerService.php">
+    <PossiblyUnusedMethod>
+      <code>create</code>
+      <code>update</code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="tests/Domain/PersonTest.php">
     <MixedArgument>

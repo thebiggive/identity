@@ -27,6 +27,10 @@ return function (ContainerBuilder $containerBuilder) {
                     ],
                 ],
                 'appEnv' => getenv('APP_ENV'),
+                'bypassPsp' => (
+                    ((bool) getenv('BYPASS_PSP')) === true &&
+                    getenv('APP_ENV') !== 'production'
+                ),
                 'displayErrorDetails' => true, // Should be set to false in production
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
