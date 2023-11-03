@@ -27,6 +27,10 @@ return function (ContainerBuilder $containerBuilder) {
                     ],
                 ],
                 'appEnv' => getenv('APP_ENV'),
+                'bypassPsp' => (
+                    ((bool) getenv('BYPASS_PSP')) === true &&
+                    getenv('APP_ENV') !== 'production'
+                ),
                 'displayErrorDetails' => true, // Should be set to false in production
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
@@ -54,13 +58,14 @@ return function (ContainerBuilder $containerBuilder) {
                 'logger' => [
                     'name' => 'identity',
                     'path' => 'php://stdout',
-                    'level' => getenv('APP_ENV') === 'local' ? Logger::DEBUG : Logger::INFO,
+                    'level' => getenv('APP_ENV') === 'local' ? Logger::INFO : Logger::INFO,
                 ],
                 'los_rate_limit' => [
                     // Dynamic so we can increase it for load tests or as needed based on observed
                     // Production behaviour.
-                    'ip_max_requests'   => (int) (getenv('MAX_CREATES_PER_IP_PER_5M') ?: '1'),
-                    'ip_reset_time'     => 300, // 5 minutes
+                    //'ip_max_requests'   => (int) (getenv('MAX_CREATES_PER_IP_PER_5M') ?: '1'),
+                    'ip_max_requests'   => 10000,
+                    'ip_reset_time'     => 5, // 5 minutes
                     // All non-local envs, including 'test', assume ALB-style forwarded headers will be used.
                     'prefer_forwarded' => getenv('APP_ENV') !== 'local',
                     'trust_forwarded' => getenv('APP_ENV') !== 'local',

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -23,7 +24,6 @@ use Psr\Log\LoggerInterface;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
-use Stripe\StripeClient;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
@@ -177,11 +177,13 @@ return function (ContainerBuilder $containerBuilder) {
             return new Serializer($normalizers, $encoders);
         },
 
-        StripeClient::class => static function (ContainerInterface $c): StripeClient {
-            return new StripeClient([
+        Client\Stripe::class => static function (ContainerInterface $c): Client\Stripe {
+            /** @var array $stripeOptions */
+            $stripeOptions = [
                 'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
                 'stripe_version' => $c->get(SettingsInterface::class)->get('stripe')['apiVersion'],
-            ]);
+            ];
+            return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
 
         ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {
