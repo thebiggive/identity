@@ -1,6 +1,6 @@
 <?php
 
-namespace BigGive\Identity\Tests\Client\Stripe;
+namespace BigGive\Identity\LoadTestServices\Stripe;
 
 use Stripe\Customer;
 

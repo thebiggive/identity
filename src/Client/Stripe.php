@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Client;
 
-use BigGive\Identity\Tests\Client\Stripe\StubCustomerService;
+use BigGive\Identity\LoadTestServices\Stripe\StubCustomerService;
 use Stripe\Service\CustomerService;
 use Stripe\StripeClient;
 
