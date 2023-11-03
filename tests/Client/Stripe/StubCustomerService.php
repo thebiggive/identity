@@ -3,26 +3,24 @@
 namespace BigGive\Identity\Tests\Client\Stripe;
 
 use Stripe\Customer;
-use Stripe\StripeObject;
 
 class StubCustomerService
 {
     public function create(array $_params): Customer
     {
-        throw new \Exception('test: STUB customer create!');
-
         $this->pause();
 
         /** @var string $customerJSON */
         $customerJSON = file_get_contents(
-            dirname(__DIR__, 3) . '/MockStripeResponses/customer_no_credit.json'
+            dirname(__DIR__, 2) . '/MockStripeResponses/customer_no_credit.json'
         );
         /** @var array $customer */
         $customer = json_decode($customerJSON, true, 512, JSON_THROW_ON_ERROR);
         $customer['id'] = 'cus_' . bin2hex(random_bytes(12));
 
-        $customer = StripeObject::constructFrom($customer);
-        assert($customer instanceof Customer);
+        $customer = Customer::constructFrom($customer);
+
+        \assert($customer instanceof Customer);
 
         return $customer;
     }
@@ -31,7 +29,7 @@ class StubCustomerService
      * @see BigGive\Identity\Application\Actions\Person\Update
      * This is called to patch data but its result isn't used, so we may pause and return void.
      */
-    public function update(string $_customerId, array $params): void
+    public function update(string $_customerId, array $_params): void
     {
         $this->pause();
     }

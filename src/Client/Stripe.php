@@ -7,8 +7,10 @@ namespace BigGive\Identity\Client;
 use BigGive\Identity\Tests\Client\Stripe\StubCustomerService;
 use Stripe\StripeClient;
 
-class Stripe extends StripeClient
+class Stripe
 {
+    private ?StripeClient $stripeNativeClient = null;
+
     public function __construct(bool $stubbed, array $stripeOptions)
     {
         if ($stubbed && getenv('APP_ENV') === 'production') {
@@ -16,20 +18,17 @@ class Stripe extends StripeClient
         }
 
         if (!$stubbed) {
-            parent::__construct($stripeOptions);
+            $this->stripeNativeClient = new StripeClient($stripeOptions);
             return;
         }
 
-        // Else, fake everything we must for load tests. "real" Stripe [with test key since the above guards should
-        // preclude this being reached in Production] may still be called for anything not explicitly stubbed, but
-        // currently that will fail because we never pass options like key to the constructor in stub mode.
+        // Else, fake everything we must for load tests. Anything not stubbed explicitly will crash in
+        // stub mode.
         $this->customers = new StubCustomerService();
     }
 
     public function __get($name)
     {
-        error_log('MAGIC GET: ' . $name);
-
-        return $this->$name;
+        return $this->stripeNativeClient->{$name};
     }
 }
