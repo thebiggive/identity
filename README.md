@@ -27,6 +27,7 @@ In advance of the first app run:
 
 * [get Docker](https://www.docker.com/get-started)
 * copy `.env.example` to `.env` and change any values you need to.
+* Optionally, copy `tests/local-users.php.example` to `tests/local-users.php` and edit as desired to preopulate user accounts
 
 Depending on your Docker version you may need to replace `docker-compose` with `docker compose` in all commands below.
 

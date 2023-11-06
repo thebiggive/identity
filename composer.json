@@ -31,6 +31,7 @@
         "slim/slim": "^4.10",
         "stripe/stripe-php": "^9.1.0",
         "symfony/cache": "^6.1",
+        "symfony/console": "^6.3",
         "symfony/doctrine-bridge": "^6.1",
         "symfony/http-client": "^6.2",
         "symfony/property-access": "^6.1",
@@ -83,7 +84,8 @@
         ],
         "doctrine:delete-and-recreate": [
             "doctrine orm:schema-tool:drop --full-database --force",
-            "@doctrine:migrate"
+            "@doctrine:migrate",
+            "./identity identity:populate-test-users"
         ],
         "doctrine:ensure-prod": "doctrine orm:ensure-production-settings",
         "doctrine:generate-proxies": "doctrine orm:generate-proxies",
