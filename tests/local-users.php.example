@@ -1,0 +1,14 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * To use, copy to local-users.php and edit the list of user details to your liking, adding as many accounts as you like.
+ * These users will then be inserted into your database when you recreate it.
+ */
+
+namespace BigGive\Identity\Domain;
+
+return [
+    // Firstname, Lastname,    email,                 stripe ID,   plaintext password
+    ['Fred', 'Flintstone', 'fred@biggive.org.uk', 'cus_xxxx', 'some_password_asdga3asf45d'],
+];

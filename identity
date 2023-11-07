@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use BigGive\Identity\Application\Commands\PopulateUsers;
+use BigGive\Identity\Repository\PersonRepository;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Application;
+
+$psr11App = require __DIR__ . '/bootstrap.php';
+
+$cliApp = new Application();
+
+
+$personRepository = $psr11App->get(PersonRepository::class);
+\assert($personRepository instanceof PersonRepository);
+
+$commands = [
+    new PopulateUsers(
+        $personRepository,
+    ),
+];
+
+foreach ($commands as $command) {
+    $cliApp->add($command);
+}
+
+$cliApp->run();

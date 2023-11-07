@@ -15,6 +15,7 @@
         <directory name="tests"/>
         <directory name="integrationTests"/>
         <directory name="public"/>
+        <file name="identity"/>
         <ignoreFiles>
             <directory name="vendor"/>
         </ignoreFiles>

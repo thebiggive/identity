@@ -5,7 +5,7 @@
 /logs/*
 !/logs/README.md
 .phpunit.result.cache
-
+/tests/local-users.php
 # Ignored so that PHP annotations remain the source of truth. Run `composer run docs` to generate.
 docs/openapi.yaml
 
