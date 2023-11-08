@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * JWT can't still be valid, then the record is useless so we delete it. They would need a new record next
  * time they come to the website anyway.
  */
-#[AsCommand(name: 'identity:populate-test-users')]
+#[AsCommand(name: 'identity:delete-unusable-person-records')]
 class DeleteUnusablePersonRecords extends Command
 {
     public function __construct(private Connection $connection, private \DateTimeImmutable $now)
