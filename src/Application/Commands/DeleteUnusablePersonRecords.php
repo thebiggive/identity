@@ -34,12 +34,14 @@ class DeleteUnusablePersonRecords extends Command
         $cuttOffTimeString = $this->now->sub(new \DateInterval('PT' . $cutoffTimeIntervalSeconds . 'S'))
             ->format('c');
 
-        $this->connection->executeStatement(
+        $deletedCount = $this->connection->executeStatement(
             <<<'SQL'
                     DELETE FROM Person where password is null AND Person.updated_at <= :cutoff
                     SQL,
             ['cutoff' => $cuttOffTimeString]
         );
+
+        $output->writeln("Deleted $deletedCount useless Person records from before $cuttOffTimeString.");
 
         return 0;
     }
