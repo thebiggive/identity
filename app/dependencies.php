@@ -7,6 +7,7 @@ use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
@@ -56,6 +57,12 @@ return function (ContainerBuilder $containerBuilder) {
                 "identity-{$c->get(SettingsInterface::class)->get('appEnv')}",
                 3600, // Allow Auto-clearing cache/rate limit data after an hour.
             );
+        },
+        Connection::class => static function (ContainerInterface $c): Connection {
+            $em = $c->get(EntityManagerInterface::class);
+            \assert($em instanceof EntityManagerInterface);
+
+            return $em->getConnection();
         },
 
         EntityManagerInterface::class => static function (ContainerInterface $c): EntityManagerInterface {
