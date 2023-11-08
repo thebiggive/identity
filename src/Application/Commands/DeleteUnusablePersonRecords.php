@@ -37,6 +37,8 @@ class DeleteUnusablePersonRecords extends Command
         $deletedCount = $this->connection->executeStatement(
             <<<'SQL'
                     DELETE FROM Person where password is null AND Person.updated_at <= :cutoff
+                    ORDER BY updated_at
+                    LIMIT 10000; -- we limit to deleting 10 000 at one go to avoid overloading the database.
                     SQL,
             ['cutoff' => $cuttOffTimeString]
         );
