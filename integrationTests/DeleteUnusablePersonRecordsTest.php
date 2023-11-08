@@ -74,8 +74,9 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
         $this->connection->executeStatement(<<<SQL
             INSERT INTO Person 
                 (id, first_name, last_name, email_address, created_at, updated_at, password) VALUES
-                ('{$this->personId->toBinary()}', 'first', 'last', '$this->randomEmail', '$createdAt', '$createdAt', $password)
-            SQL
+                (:id, 'first', 'last', '$this->randomEmail', '$createdAt', '$createdAt', $password)
+            SQL,
+            ['id' => $this->personId->toBinary()]
         );
     }
 
