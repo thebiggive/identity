@@ -4,6 +4,9 @@ namespace BigGive\Identity\LoadTestServices\Stripe;
 
 use Stripe\Customer;
 
+/**
+ * @psalm-api Psalm doesn't like the 2 possible Stripe services unless we add this.
+ */
 class StubCustomerService
 {
     public function create(array $_params): Customer
