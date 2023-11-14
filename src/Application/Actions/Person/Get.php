@@ -108,6 +108,10 @@ class Get extends Action
             if ($includeTipBalances) {
                 // If the pending tips balance was requested (e.g. by the transfer funds form),
                 // check for the sum of all relevant payment intents.
+                if (!$this->stripeClient->paymentIntents) {
+                    throw new \LogicException('Stripe paymentIntents service not available in current mode');
+                }
+
                 $tipPaymentIntentsPending = $this->stripeClient->paymentIntents->all([
                     'customer' => $person->stripe_customer_id,
                 ]);

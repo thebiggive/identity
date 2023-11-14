@@ -12,7 +12,7 @@ use Stripe\StripeClient;
 class Stripe
 {
     public CustomerService|StubCustomerService $customers;
-    public PaymentIntentService $paymentIntents;
+    public ?PaymentIntentService $paymentIntents = null;
 
     public function __construct(bool $stubbed, array $stripeOptions)
     {
@@ -27,9 +27,11 @@ class Stripe
             ? new StubCustomerService()
             : $stripeNativeClient->customers;
 
-        // Defer to the real service in both modes, for services we use but don't
-        // think need stubbing.
-        $this->paymentIntents = $stripeNativeClient->paymentIntents;
+        // Map other services to the real client, only in non-stub mode. No load tests
+        // and therefore no stubbed Stripe calls use these as yet.
+        if (!$stubbed) {
+            $this->paymentIntents = $stripeNativeClient->paymentIntents;
+        }
 
         // Any other service will crash in either mode, as we don't implement a magic
         // __get.
