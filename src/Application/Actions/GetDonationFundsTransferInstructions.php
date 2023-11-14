@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions;
 
+use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -12,7 +13,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpNotFoundException;
-use Stripe\StripeClient;
 
 /**
  * @OA\Get(
@@ -50,7 +50,7 @@ class GetDonationFundsTransferInstructions extends Action
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
-        private readonly StripeClient $stripeClient,
+        private readonly Stripe $stripeClient,
     ) {
         parent::__construct($logger);
     }

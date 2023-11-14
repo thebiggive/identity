@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Actions;
 
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Stripe\Service\CustomerService;
-use Stripe\StripeClient;
 
 class GetDonationFundsTransferInstructionsTest extends TestCase
 {
@@ -47,11 +47,11 @@ class GetDonationFundsTransferInstructionsTest extends TestCase
                 JSON_THROW_ON_ERROR,
             ));
 
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+        $app->getContainer()->set(Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->createRequest(
             'GET',

@@ -30,8 +30,6 @@
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiKey']]]></code>
-      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiKey']]]></code>
-      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiVersion']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiVersion']]]></code>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
       <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
@@ -56,8 +54,6 @@
       <code>Mailer</code>
     </MixedInferredReturnType>
     <MixedMethodCall>
-      <code>get</code>
-      <code>get</code>
       <code>get</code>
       <code>get</code>
       <code>get</code>
@@ -307,9 +303,6 @@
     <MixedArgumentTypeCoercion>
       <code>$stripeOptions</code>
     </MixedArgumentTypeCoercion>
-    <UndefinedThisPropertyAssignment>
-      <code><![CDATA[$this->customers]]></code>
-    </UndefinedThisPropertyAssignment>
   </file>
   <file src="src/Domain/Credentials.php">
     <MissingConstructor>

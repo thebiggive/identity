@@ -21,6 +21,21 @@ class StubCustomerService
         return Customer::constructFrom($customer);
     }
 
+    public function retrieve(): Customer
+    {
+        return $this->create([]);
+    }
+
+    /**
+     * For now, keep static analysis happy and our assumptions explicit by crashing
+     * on attempts to use funding instructions while in load test stub mode. No load
+     * tests are doing this for now.
+     */
+    public function createFundingInstructions(): never
+    {
+        throw new \LogicException('No stub createFundingInstructions()');
+    }
+
     /**
      * @see BigGive\Identity\Application\Actions\Person\Update
      * This is called to patch data but its result isn't used, so we may pause and return void.

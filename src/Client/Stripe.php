@@ -6,14 +6,13 @@ namespace BigGive\Identity\Client;
 
 use BigGive\Identity\LoadTestServices\Stripe\StubCustomerService;
 use Stripe\Service\CustomerService;
+use Stripe\Service\PaymentIntentService;
 use Stripe\StripeClient;
 
-/**
- * @property StubCustomerService|CustomerService $customers
- */
 class Stripe
 {
-    private ?StripeClient $stripeNativeClient = null;
+    public CustomerService|StubCustomerService $customers;
+    public ?PaymentIntentService $paymentIntents = null;
 
     public function __construct(bool $stubbed, array $stripeOptions)
     {
@@ -21,18 +20,20 @@ class Stripe
             throw new \LogicException('Cannot stub out Stripe in production');
         }
 
+        $stripeNativeClient = new StripeClient($stripeOptions);
+
+        // Fake everything we must for load tests.
+        $this->customers = $stubbed
+            ? new StubCustomerService()
+            : $stripeNativeClient->customers;
+
+        // Map other services to the real client, only in non-stub mode. No load tests
+        // and therefore no stubbed Stripe calls use these as yet.
         if (!$stubbed) {
-            $this->stripeNativeClient = new StripeClient($stripeOptions);
-            return;
+            $this->paymentIntents = $stripeNativeClient->paymentIntents;
         }
 
-        // Else, fake everything we must for load tests. Anything not stubbed explicitly will crash in
-        // stub mode.
-        $this->customers = new StubCustomerService();
-    }
-
-    public function __get(string $name)
-    {
-        return $this->stripeNativeClient->{$name};
+        // Any other service will crash in either mode, as we don't implement a magic
+        // __get.
     }
 }

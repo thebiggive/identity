@@ -14,7 +14,6 @@ use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
-use Stripe\StripeClient;
 
 class CreateTest extends TestCase
 {

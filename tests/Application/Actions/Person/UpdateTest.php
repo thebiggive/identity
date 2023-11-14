@@ -15,7 +15,6 @@ use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
-use Stripe\StripeClient;
 use Symfony\Component\Uid\Uuid;
 
 class UpdateTest extends TestCase
