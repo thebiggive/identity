@@ -31,7 +31,7 @@ class StubCustomerService
      * on attempts to use funding instructions while in load test stub mode. No load
      * tests are doing this for now.
      */
-    public function createFundingInstructions(): void
+    public function createFundingInstructions(): never
     {
         throw new \LogicException('No stub createFundingInstructions()');
     }
