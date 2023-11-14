@@ -307,9 +307,6 @@
     <MixedArgumentTypeCoercion>
       <code>$stripeOptions</code>
     </MixedArgumentTypeCoercion>
-    <UndefinedThisPropertyAssignment>
-      <code><![CDATA[$this->customers]]></code>
-    </UndefinedThisPropertyAssignment>
   </file>
   <file src="src/Domain/Credentials.php">
     <MissingConstructor>

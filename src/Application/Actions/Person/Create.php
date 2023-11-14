@@ -127,9 +127,7 @@ class Create extends Action
         $this->personRepository->persist($person);
 
         try {
-            /** @var CustomerService|StubCustomerService $customers */
-            $customers = $this->stripeClient->customers;
-            $customer = $customers->create([
+            $customer = $this->stripeClient->customers->create([
                 'metadata' => [
                     'environment'   => getenv('APP_ENV'),
                     'personId'      => (string) $person->getId(),

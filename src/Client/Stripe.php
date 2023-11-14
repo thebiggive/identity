@@ -9,12 +9,11 @@ use Stripe\Service\CustomerService;
 use Stripe\Service\PaymentIntentService;
 use Stripe\StripeClient;
 
-/**
- * @property StubCustomerService|CustomerService $customers
- * @property PaymentIntentService $paymentIntents We never stub this, for now.
- */
 class Stripe
 {
+    public CustomerService|StubCustomerService $customers;
+    public PaymentIntentService $paymentIntents;
+
     public function __construct(bool $stubbed, array $stripeOptions)
     {
         if ($stubbed && getenv('APP_ENV') === 'production') {

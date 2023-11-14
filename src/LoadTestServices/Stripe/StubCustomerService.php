@@ -4,9 +4,6 @@ namespace BigGive\Identity\LoadTestServices\Stripe;
 
 use Stripe\Customer;
 
-/**
- * @psalm-api Psalm doesn't like the 2 possible Stripe services unless we add this.
- */
 class StubCustomerService
 {
     public function create(array $_params): Customer
@@ -22,6 +19,21 @@ class StubCustomerService
         $customer['id'] = 'cus_' . bin2hex(random_bytes(12));
 
         return Customer::constructFrom($customer);
+    }
+
+    public function retrieve(): Customer
+    {
+        return $this->create([]);
+    }
+
+    /**
+     * For now, keep static analysis happy and our assumptions explicit by crashing
+     * on attempts to use funding instructions while in load test stub mode. No load
+     * tests are doing this for now.
+     */
+    public function createFundingInstructions(): void
+    {
+        throw new \LogicException('No stub createFundingInstructions()');
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
+use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
@@ -14,7 +15,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
-use Stripe\StripeClient;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -62,7 +62,7 @@ class Get extends Action
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
-        private readonly StripeClient $stripeClient,
+        private readonly Stripe $stripeClient,
     ) {
         parent::__construct($logger);
     }

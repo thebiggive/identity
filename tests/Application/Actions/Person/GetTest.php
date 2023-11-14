@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\StripeFormatting;
@@ -16,7 +17,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\Service\PaymentIntentService;
-use Stripe\StripeClient;
 use Stripe\StripeObject;
 
 class GetTest extends TestCase
@@ -37,7 +37,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_usable_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_usable_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -85,7 +85,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_zero_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_zero_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -129,7 +129,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_no_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_no_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -176,7 +176,7 @@ class GetTest extends TestCase
 
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
         $container->set(
-            StripeClient::class,
+            Stripe::class,
             $this->getStripeClientWithMock(
                 mockName: 'customer_no_credit',
                 // List of payment intents for the test customer will be 1x £1k customer_balance
@@ -221,7 +221,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_manual_only_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_manual_only_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -311,14 +311,14 @@ class GetTest extends TestCase
      * @param string $mockName          Main Customer mock name
      * @param string|null $piMockName   Payment Intent list ["all"] mock name, if needed.
      */
-    private function getStripeClientWithMock(string $mockName, ?string $piMockName = null): StripeClient
+    private function getStripeClientWithMock(string $mockName, ?string $piMockName = null): Stripe
     {
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->retrieve(static::$testPersonStripeCustomerId, ['expand' => ['cash_balance']])
             ->shouldBeCalledOnce()
             ->willReturn($this->getStripeObject($mockName));
 
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         if ($piMockName) {
