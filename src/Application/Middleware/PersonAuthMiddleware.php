@@ -17,7 +17,11 @@ abstract class PersonAuthMiddleware implements MiddlewareInterface
 {
     use ErrorTrait;
 
-    abstract protected function getCompletePropertyRequirement(): bool;
+    /**
+     * @return ?bool    The required "complete" property value IF there should be a
+     *                  restriction. `null` otherwise.
+     */
+    abstract protected function getCompletePropertyRequirement(): ?bool;
 
     #[Pure]
     public function __construct(

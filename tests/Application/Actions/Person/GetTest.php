@@ -18,6 +18,7 @@ use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\Service\PaymentIntentService;
 use Stripe\StripeObject;
+use Symfony\Component\Uid\Uuid;
 
 class GetTest extends TestCase
 {
@@ -252,24 +253,47 @@ class GetTest extends TestCase
         $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
     }
 
-    public function testIncompleteAuthToken(): void
+    /**
+     * The frontend is trying to GET Person provisional info after view init, if any, so as
+     * of Nov '23 we support that token type too.
+     */
+    public function testSuccessWithIncompleteAuthToken(): void
     {
-        $this->expectException(HttpUnauthorizedException::class);
-        $this->expectExceptionMessage('Unauthorised');
+        // Almost totally blank, but DB-and-Stripe-persisted, Person for this case.
+        $person = new Person();
+        self::initialisePerson(person: $person, withPassword: false);
 
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
-            ->shouldNotBeCalled();
+            ->shouldBeCalledOnce()
+            ->willReturn($person);
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        /** @var Container $container */
+        $container = $app->getContainer();
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $container->set(Stripe::class, $this->getStripeClientWithMock('customer_new_no_pii'));
 
-        $request = $this->buildRequestRaw(static::$testPersonUuid)
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
-        $app->handle($request);
+        $response = $app->handle($this->buildRequest(static::$testPersonUuid));
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        /** @var \stdClass $payload */
+        $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
+
+        // Mocked PersonRepsoitory sets a UUID in code.
+        $this->assertSame(36, strlen((string) $payload->id));
+
+        $this->assertNotEmpty($payload->created_at);
+        $this->assertEquals('cus_aaaaaaaaaaaa11', $payload->stripe_customer_id);
+        $this->assertNull($payload->first_name);
+        $this->assertNull($payload->email_address);
+        $this->assertFalse($payload->has_password);
     }
 
     public function testMissingAuthToken(): void

@@ -44,9 +44,9 @@ trait TestPeopleTrait
 
     private function getInitialisedPerson(bool $withPassword): Person
     {
-            $person = clone $this->getTestPerson(false, $withPassword);
-            self::initialisePerson($person, $withPassword);
-            return $person;
+        $person = clone $this->getTestPerson(false, $withPassword);
+        self::initialisePerson($person, $withPassword);
+        return $person;
     }
 
     public static function initialisePerson(Person $person, bool $withPassword): void
