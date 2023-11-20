@@ -10,7 +10,7 @@ namespace BigGive\Identity\Application\Middleware;
  */
 class PersonPatchAuthMiddleware extends PersonAuthMiddleware
 {
-    protected function getCompletePropertyRequirement(): bool
+    protected function getCompletePropertyRequirement(): ?bool
     {
         return false;
     }
