@@ -7,6 +7,7 @@
       <code><![CDATA[$c->get(ProblemDetailsResponseFactory::class)]]></code>
       <code><![CDATA[$c->get(Psr16Cache::class)]]></code>
       <code><![CDATA[$c->get(Redis::class)]]></code>
+      <code><![CDATA[$c->get(SettingsInterface::class)->get('bypassPsp')]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('doctrine')['connection']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('los_rate_limit')]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
@@ -53,6 +54,7 @@
       <code>Mailer</code>
     </MixedInferredReturnType>
     <MixedMethodCall>
+      <code>get</code>
       <code>get</code>
       <code>get</code>
       <code>get</code>
@@ -297,6 +299,11 @@
       <code>__construct</code>
     </PossiblyUnusedMethod>
   </file>
+  <file src="src/Client/Stripe.php">
+    <MixedArgumentTypeCoercion>
+      <code>$stripeOptions</code>
+    </MixedArgumentTypeCoercion>
+  </file>
   <file src="src/Domain/Credentials.php">
     <MissingConstructor>
       <code>$email_address</code>
@@ -513,10 +520,8 @@
       <code>set</code>
       <code>set</code>
       <code>set</code>
-      <code>set</code>
     </PossiblyNullReference>
     <UndefinedInterfaceMethod>
-      <code>set</code>
       <code>set</code>
       <code>set</code>
       <code>set</code>

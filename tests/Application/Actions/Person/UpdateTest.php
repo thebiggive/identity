@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
-use BigGive\Identity\Application\Actions\Person\Update;
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
@@ -15,7 +15,6 @@ use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
-use Stripe\StripeClient;
 use Symfony\Component\Uid\Uuid;
 
 class UpdateTest extends TestCase
@@ -64,11 +63,11 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->willReturn($customerMockResult)
             ->shouldBeCalled();
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -152,11 +151,11 @@ class UpdateTest extends TestCase
         // Expected failure is before we push to Stripe so no call with this ID expected.
         $stripeCustomersProphecy->update($newStripeCustomerId, Argument::type('array'))
             ->shouldNotBeCalled();
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -229,11 +228,11 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->willReturn($customerMockResult)
             ->shouldBeCalled();
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -270,11 +269,11 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->willReturn($customerMockResult)
             ->shouldBeCalledOnce();
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -408,11 +407,11 @@ class UpdateTest extends TestCase
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->update(static::$testPersonStripeCustomerId, Argument::type('array'))
             ->shouldNotBeCalled();
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $stripeClientProphecy->reveal());
+        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequestRaw(static::$testPersonUuid, json_encode([
             'first_name' => $person->first_name,

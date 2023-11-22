@@ -22,9 +22,9 @@ class Token
     /**
      * @param string    $personId   UUID for a person
      * @param bool      $complete   Whether the token is for a login-ready Person. If so, it should be
-     *                              issued only after password authentication and lasts for longer. When
-     *                              this is false, it's for a Person who has just been created and is
-     *                              designed for setting basic details and optionally an initial password.
+     *                              issued only after password authentication. When this is false, it's
+     *                              for a Person who has just been created and is designed for reading
+     *                              & setting basic details and optionally an initial password.
      * @return string Signed JWS
      */
     public static function create(string $personId, bool $complete, ?string $pspCustomerId): string
@@ -54,12 +54,13 @@ class Token
 
     /**
      * @param string            $personId   UUID for a person
-     * @param bool              $complete   Whether the token is for a login-ready Person
+     * @param ?bool             $complete   Whether the token is meant to be for a login-ready Person.
+     *                                      `null` if either is acceptable.
      * @param string            $jws        Compact JWS (signed JWT)
      * @param LoggerInterface   $logger
      * @return bool Whether the token is valid for the given person.
      */
-    public static function check(string $personId, bool $complete, string $jws, LoggerInterface $logger): bool
+    public static function check(string $personId, ?bool $complete, string $jws, LoggerInterface $logger): bool
     {
         $key = new Key(static::getSecret(), static::$algorithm);
         try {
@@ -87,7 +88,7 @@ class Token
             return false;
         }
 
-        if ($complete !== $decodedJwtBody->sub->complete) {
+        if ($complete !== null && $complete !== $decodedJwtBody->sub->complete) {
             $logger->warning(
                 sprintf("JWT error: Not authorised for %s status", $complete ? 'complete' : 'incomplete'),
             );

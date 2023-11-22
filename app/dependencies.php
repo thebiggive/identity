@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
@@ -23,7 +25,6 @@ use Psr\Log\LoggerInterface;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
-use Stripe\StripeClient;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
@@ -55,6 +56,12 @@ return function (ContainerBuilder $containerBuilder) {
                 "identity-{$c->get(SettingsInterface::class)->get('appEnv')}",
                 3600, // Allow Auto-clearing cache/rate limit data after an hour.
             );
+        },
+        Connection::class => static function (ContainerInterface $c): Connection {
+            $em = $c->get(EntityManagerInterface::class);
+            \assert($em instanceof EntityManagerInterface);
+
+            return $em->getConnection();
         },
 
         EntityManagerInterface::class => static function (ContainerInterface $c): EntityManagerInterface {
@@ -177,11 +184,13 @@ return function (ContainerBuilder $containerBuilder) {
             return new Serializer($normalizers, $encoders);
         },
 
-        StripeClient::class => static function (ContainerInterface $c): StripeClient {
-            return new StripeClient([
+        Client\Stripe::class => static function (ContainerInterface $c): Client\Stripe {
+            /** @var array $stripeOptions */
+            $stripeOptions = [
                 'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
                 'stripe_version' => $c->get(SettingsInterface::class)->get('stripe')['apiVersion'],
-            ]);
+            ];
+            return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
 
         ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {

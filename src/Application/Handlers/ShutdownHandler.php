@@ -77,12 +77,20 @@ class ShutdownHandler
             }
 
             $exception = new HttpInternalServerErrorException($this->request, $message);
+
+            $logErrors = true;
+            if (str_contains($message, 'Missing boundary in multipart/form-data POST data')) {
+                $logErrors = false;
+                // Don't add alarm noise / extra logs for a known bot scan that can leave Slim
+                // surfacing a PHP warning as an ERROR level log despite returning HTTP 405.
+            }
+
             $response = $this->errorHandler->__invoke(
-                $this->request,
-                $exception,
-                $this->displayErrorDetails,
-                true,
-                true,
+                request: $this->request,
+                exception: $exception,
+                displayErrorDetails: $this->displayErrorDetails,
+                logErrors: $logErrors,
+                logErrorDetails: $logErrors,
             );
 
             $responseEmitter = new ResponseEmitter();

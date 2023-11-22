@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\StripeFormatting;
@@ -16,8 +17,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Service\CustomerService;
 use Stripe\Service\PaymentIntentService;
-use Stripe\StripeClient;
 use Stripe\StripeObject;
+use Symfony\Component\Uid\Uuid;
 
 class GetTest extends TestCase
 {
@@ -37,7 +38,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_usable_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_usable_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -85,7 +86,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_zero_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_zero_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -129,7 +130,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_no_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_no_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -176,7 +177,7 @@ class GetTest extends TestCase
 
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
         $container->set(
-            StripeClient::class,
+            Stripe::class,
             $this->getStripeClientWithMock(
                 mockName: 'customer_no_credit',
                 // List of payment intents for the test customer will be 1x £1k customer_balance
@@ -221,7 +222,7 @@ class GetTest extends TestCase
             ->shouldNotBeCalled();
 
         $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(StripeClient::class, $this->getStripeClientWithMock('customer_manual_only_credit'));
+        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_manual_only_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -252,24 +253,47 @@ class GetTest extends TestCase
         $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
     }
 
-    public function testIncompleteAuthToken(): void
+    /**
+     * The frontend is trying to GET Person provisional info after view init, if any, so as
+     * of Nov '23 we support that token type too.
+     */
+    public function testSuccessWithIncompleteAuthToken(): void
     {
-        $this->expectException(HttpUnauthorizedException::class);
-        $this->expectExceptionMessage('Unauthorised');
+        // Almost totally blank, but DB-and-Stripe-persisted, Person for this case.
+        $person = new Person();
+        self::initialisePerson(person: $person, withPassword: false);
 
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
-            ->shouldNotBeCalled();
+            ->shouldBeCalledOnce()
+            ->willReturn($person);
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        /** @var Container $container */
+        $container = $app->getContainer();
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $container->set(Stripe::class, $this->getStripeClientWithMock('customer_new_no_pii'));
 
-        $request = $this->buildRequestRaw(static::$testPersonUuid)
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
-        $app->handle($request);
+        $response = $app->handle($this->buildRequest(static::$testPersonUuid));
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        /** @var \stdClass $payload */
+        $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
+
+        // Mocked PersonRepsoitory sets a UUID in code.
+        $this->assertSame(36, strlen((string) $payload->id));
+
+        $this->assertNotEmpty($payload->created_at);
+        $this->assertEquals('cus_aaaaaaaaaaaa11', $payload->stripe_customer_id);
+        $this->assertNull($payload->first_name);
+        $this->assertNull($payload->email_address);
+        $this->assertFalse($payload->has_password);
     }
 
     public function testMissingAuthToken(): void
@@ -311,14 +335,14 @@ class GetTest extends TestCase
      * @param string $mockName          Main Customer mock name
      * @param string|null $piMockName   Payment Intent list ["all"] mock name, if needed.
      */
-    private function getStripeClientWithMock(string $mockName, ?string $piMockName = null): StripeClient
+    private function getStripeClientWithMock(string $mockName, ?string $piMockName = null): Stripe
     {
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
         $stripeCustomersProphecy->retrieve(static::$testPersonStripeCustomerId, ['expand' => ['cash_balance']])
             ->shouldBeCalledOnce()
             ->willReturn($this->getStripeObject($mockName));
 
-        $stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $stripeClientProphecy = $this->prophesize(Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
         if ($piMockName) {

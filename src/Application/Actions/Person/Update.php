@@ -6,6 +6,7 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
+use BigGive\Identity\Client;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -15,7 +16,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpNotFoundException;
-use Stripe\StripeClient;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -79,7 +79,7 @@ class Update extends Action
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
-        private readonly StripeClient $stripeClient,
+        private readonly Client\Stripe $stripeClient,
         private readonly ValidatorInterface $validator,
     ) {
         parent::__construct($logger);

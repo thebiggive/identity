@@ -7,7 +7,9 @@ namespace BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
+use BigGive\Identity\LoadTestServices\Stripe\StubCustomerService;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;
@@ -16,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Stripe\Exception\ApiErrorException;
-use Stripe\StripeClient;
+use Stripe\Service\CustomerService;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -65,7 +67,7 @@ class Create extends Action
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
         private readonly SettingsInterface $settings,
-        private readonly StripeClient $stripeClient,
+        private readonly Stripe $stripeClient,
         private readonly ValidatorInterface $validator,
     ) {
         parent::__construct($logger);

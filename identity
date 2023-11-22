@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use BigGive\Identity\Application\Commands\DeleteUnusablePersonRecords;
+use BigGive\Identity\Application\Commands\PopulateUsers;
+use BigGive\Identity\Repository\PersonRepository;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Application;
+
+$psr11App = require __DIR__ . '/bootstrap.php';
+
+$cliApp = new Application();
+
+
+$personRepository = $psr11App->get(PersonRepository::class);
+\assert($personRepository instanceof PersonRepository);
+
+$connection = $psr11App->get(\Doctrine\DBAL\Connection::class);
+\assert($connection instanceof \Doctrine\DBAL\Connection);
+
+$now = new \DateTimeImmutable();
+
+$commands = [
+    new PopulateUsers(
+        $personRepository,
+    ),
+    new DeleteUnusablePersonRecords($connection, $now),
+];
+
+foreach ($commands as $command) {
+    $cliApp->add($command);
+}
+
+$cliApp->run();
