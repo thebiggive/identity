@@ -4,10 +4,12 @@ namespace BigGive\Identity\Application\Security;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Cors
+class CorsMiddleware implements MiddlewareInterface
 {
-    public static function addHeaders(Request $request, ResponseInterface $response): ResponseInterface
+    public function process(Request $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $givenOrigin = $request->getHeaderLine('Origin');
         $corsAllowedOrigin = 'https://donate.thebiggive.org.uk';
@@ -31,7 +33,7 @@ class Cors
 
         // Basic approach based on https://www.slimframework.com/docs/v4/cookbook/enable-cors.html
         // - adapted to allow for multiple potential origins per-Identity instance.
-        $response = $response
+        $response = $handler->handle($request)
             ->withHeader('Access-Control-Allow-Origin', $corsAllowedOrigin)
             ->withHeader(
                 'Access-Control-Allow-Headers',
