@@ -1,6 +1,6 @@
 <?php
 
-namespace BigGive\Identity\Application\Security;
+namespace BigGive\Identity\Application\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;

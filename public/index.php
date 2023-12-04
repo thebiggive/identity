@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Handlers\HttpErrorHandler;
 use BigGive\Identity\Application\Handlers\ShutdownHandler;
-use BigGive\Identity\Application\Security\CorsMiddleware;
+use BigGive\Identity\Application\Middleware\CorsMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
