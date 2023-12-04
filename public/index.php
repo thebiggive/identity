@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Handlers\HttpErrorHandler;
 use BigGive\Identity\Application\Handlers\ShutdownHandler;
+use BigGive\Identity\Application\Security\Cors;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
@@ -65,5 +66,6 @@ $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 // Run App & Emit Response
 $response = $app->handle($request);
+$response = Cors::addHeaders($request, $response);
 $responseEmitter = new ResponseEmitter();
 $responseEmitter->emit($response);
