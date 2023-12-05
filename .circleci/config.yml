@@ -30,7 +30,7 @@ jobs:
         environment:
           MYSQL_DATABASE: identity
           MYSQL_ROOT_PASSWORD: tbgCircle123
-      - image: redis:7.0
+      - image: redis:7.1
         auth:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN
