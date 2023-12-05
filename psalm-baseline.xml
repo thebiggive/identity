@@ -98,26 +98,12 @@
   <file src="app/routes.php">
     <MissingClosureParamType>
       <code>$args</code>
-      <code>$handler</code>
       <code>$request</code>
       <code>$response</code>
     </MissingClosureParamType>
     <MissingClosureReturnType>
       <code>function ($request, $response, $args) {</code>
-      <code>function (Request $request, $handler) {</code>
     </MissingClosureReturnType>
-    <MixedAssignment>
-      <code>$response</code>
-    </MixedAssignment>
-    <MixedMethodCall>
-      <code>handle</code>
-      <code>withAddedHeader</code>
-      <code>withHeader</code>
-      <code>withHeader</code>
-      <code>withHeader</code>
-      <code>withHeader</code>
-      <code>withHeader</code>
-    </MixedMethodCall>
     <UnusedClosureParam>
       <code>$args</code>
     </UnusedClosureParam>

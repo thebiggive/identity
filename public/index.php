@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Handlers\HttpErrorHandler;
 use BigGive\Identity\Application\Handlers\ShutdownHandler;
+use BigGive\Identity\Application\Middleware\CorsMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Psr\Log\LoggerInterface;
@@ -62,6 +63,8 @@ $app->addBodyParsingMiddleware();
 // Add Error Middleware
 $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, $logError, $logErrorDetails);
 $errorMiddleware->setDefaultErrorHandler($errorHandler);
+
+$app->add(new CorsMiddleware());
 
 // Run App & Emit Response
 $response = $app->handle($request);
