@@ -79,7 +79,7 @@ class ChangePasswordUsingToken extends Action
                 $violation->getPropertyPath() === 'raw_password' ||
                 str_contains((string) $violation->getMessage(), 'password')
             ) {
-                $relevantViolationMessages[] = $violation->getMessage();
+                $relevantViolationMessages[] = $this->summariseConstraintViolationAsHtmlSnippet($violation);
             }
         }
 
