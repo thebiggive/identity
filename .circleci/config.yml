@@ -9,11 +9,15 @@ orbs:
 
 jobs:
   test: # Also lints first
+    parameters:
+      php_version:
+        type: string
+        default: dev-8.1
     # Working directory must match docker-compose mount / Docker `COPY` for real Doctrine proxy
     # generation-dependent tests to work.
     working_directory: /var/www/html
     docker:
-      - image: thebiggive/php:dev-8.1
+      - image: thebiggive/php:<< parameters.php_version >>
         auth:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN
@@ -74,6 +78,9 @@ workflows:
   build:
     jobs:
       - test:
+          matrix:
+            parameters:
+              php_version: [ "dev-8.1", "dev-8.2", "dev-8.3" ]
           context:
             - docker-hub-creds
             - jira
