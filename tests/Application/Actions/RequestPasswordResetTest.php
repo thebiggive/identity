@@ -47,7 +47,7 @@ class RequestPasswordResetTest extends TestCase
 
         // asert
 
-        $passwordResetTokenProphecy->persist(Argument::that(function (PasswordResetToken $token) use ($person){
+        $passwordResetTokenProphecy->persist(Argument::that(function (PasswordResetToken $token) use ($person) {
             return $token->person === $person;
         }))->shouldBeCalledOnce();
 

@@ -175,7 +175,8 @@ class Update extends Action
 
             return $this->validationError(
                 logMessage: "Update not valid: {$duplicateException->getMessage()}",
-                publicMessage: "Your password could not be set. There is already a password set for your email address.",
+                publicMessage: 'Your password could not be set. There is already a password set for ' .
+                'your email address.',
                 errorType: ActionError::DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD,
             );
         }
