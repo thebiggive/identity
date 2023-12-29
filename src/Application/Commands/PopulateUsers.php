@@ -31,7 +31,9 @@ class PopulateUsers extends Command
 
         if (! file_exists($filename)) {
             $output->writeln("File not found at $relativePath.");
-            $output->writeln("If you wish to have users populated, copy $relativePath.example to $relativePath and edit");
+            $output->writeln(
+                "If you wish to have users populated, copy $relativePath.example to $relativePath and edit"
+            );
             return 0;
         }
 

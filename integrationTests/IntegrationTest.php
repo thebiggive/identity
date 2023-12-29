@@ -41,7 +41,8 @@ abstract class IntegrationTest extends TestCase
      * @template T
      * @param class-string<T> $name
      * @return T
-     */ public function getService(string $name): mixed
+     */
+    public function getService(string $name): mixed
     {
         $service = $this->getContainer()->get($name);
         $this->assertInstanceOf($name, $service);

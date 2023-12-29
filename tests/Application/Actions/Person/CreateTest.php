@@ -28,7 +28,8 @@ class CreateTest extends TestCase
             ->shouldBeCalledTimes(2) // Currently once for stable UUID, once w/ Stripe Customer ID.
             ->will(/**
              * @param array<Person> $args
-             */ fn (array $args) => CreateTest::initialisePerson($args[0], false));
+             */                fn (array $args) => CreateTest::initialisePerson($args[0], false)
+            );
 
         $customerMockResult = (object) [
             'id' => static::$testPersonStripeCustomerId,

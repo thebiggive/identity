@@ -46,7 +46,6 @@ abstract class PersonAuthMiddleware implements MiddlewareInterface
             $this->unauthorised($this->logger, true, $request);
         }
 
-
         if (!Token::check($personId, $this->getCompletePropertyRequirement(), $jws, $this->logger)) {
             $this->unauthorised($this->logger, false, $request);
         }
