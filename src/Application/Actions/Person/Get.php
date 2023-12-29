@@ -75,6 +75,8 @@ class Get extends Action
      */
     protected function action(Request $request, array $args): Response
     {
+        throw new HttpBadRequestException($request, 'A test error!');
+
         /** @var Person|null $person */
         $person = $this->personRepository->find($this->resolveArg($args, $request, 'personId'));
         if (!$person) {
