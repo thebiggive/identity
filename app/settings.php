@@ -13,7 +13,8 @@ return function (ContainerBuilder $containerBuilder) {
         SettingsInterface::class => function () {
             $doctrineConnectionOptions = [];
             if (getenv('APP_ENV') !== 'local') {
-                $doctrineConnectionOptions[PDO::MYSQL_ATTR_SSL_CA] = dirname(__DIR__) . '/deploy/rds-ca-2019-root.pem';
+                $doctrineConnectionOptions[PDO::MYSQL_ATTR_SSL_CA]
+                    = dirname(__DIR__) . '/deploy/rds-ca-eu-west-1-bundle.pem';
             }
 
             return new Settings([
