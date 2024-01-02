@@ -77,7 +77,8 @@ class TokenTest extends TestCase
             [
                 [
                 'level' => 'warning',
-                'message' => 'JWT error: decoding for person ID somePersonId: Firebase\JWT\ExpiredException - Expired token',
+                'message' =>
+                    'JWT error: decoding for person ID somePersonId: Firebase\JWT\ExpiredException - Expired token',
                 'context' => []
                 ]
             ],

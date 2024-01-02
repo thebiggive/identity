@@ -48,7 +48,8 @@ class UpdateTest extends TestCase
             ->shouldBeCalledOnce()
             ->will(/**
              * @param array<Person> $args
-             */ fn(array $args) => UpdateTest::initialisePerson($args[0], true));
+             */                fn(array $args) => UpdateTest::initialisePerson($args[0], true)
+            );
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -213,7 +214,8 @@ class UpdateTest extends TestCase
             ->shouldBeCalledOnce()
             ->will(/**
              * @param array<Person> $args
-             */ fn(array $args) => UpdateTest::initialisePerson($args[0], true));
+             */                fn(array $args) => UpdateTest::initialisePerson($args[0], true)
+            );
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(false);
@@ -381,8 +383,10 @@ class UpdateTest extends TestCase
 
         $expectedJSON = json_encode([
             'error' => [
-                'description' => 'Your password could not be set. Please ensure you chose one with at least 10 characters.',
-                'htmlDescription' => 'Your password could not be set. Please ensure you chose one with at least 10 characters.',
+                'description' =>
+                    'Your password could not be set. Please ensure you chose one with at least 10 characters.',
+                'htmlDescription' =>
+                    'Your password could not be set. Please ensure you chose one with at least 10 characters.',
                 'type' => 'BAD_REQUEST',
             ],
         ], JSON_THROW_ON_ERROR);
