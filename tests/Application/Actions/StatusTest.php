@@ -93,6 +93,7 @@ class StatusTest extends TestCase
     private function getConnectedMockEntityManager(
         string $proxyPath = '/var/www/html/var/doctrine/proxies',
     ): EntityManagerInterface {
+        /** @psalm-suppress DeprecatedMethod **/
         $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
             ['/var/www/html/src/Domain'],
             false, // Simulate live mode for these tests.
@@ -105,6 +106,7 @@ class StatusTest extends TestCase
         // No auto-generation – like live mode – for these tests.
         $config->setAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl(
+            /** @psalm-suppress DeprecatedClass **/
             new AnnotationDriver(new AnnotationReader(), ['/var/www/html/src/Domain']),
         );
 

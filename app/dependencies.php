@@ -69,6 +69,7 @@ return function (ContainerBuilder $containerBuilder) {
                 Type::addType('uuid', UuidType::class);
             }
 
+            /** @psalm-suppress DeprecatedMethod */
             return EntityManager::create(
                 $c->get(SettingsInterface::class)->get('doctrine')['connection'],
                 $c->get(ORM\Configuration::class),
@@ -105,6 +106,7 @@ return function (ContainerBuilder $containerBuilder) {
             $settings = $c->get(SettingsInterface::class);
             $doctrineSettings = $settings->get('doctrine');
 
+            /** @psalm-suppress DeprecatedMethod */
             $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
                 $doctrineSettings['metadata_dirs'],
                 $doctrineSettings['dev_mode'],
@@ -116,6 +118,7 @@ return function (ContainerBuilder $containerBuilder) {
             // files indefinitely.
             $config->setAutoGenerateProxyClasses($doctrineSettings['dev_mode']);
 
+            /** @psalm-suppress DeprecatedClass */
             $config->setMetadataDriverImpl(
                 new AnnotationDriver(new AnnotationReader(), $doctrineSettings['metadata_dirs'])
             );
@@ -193,6 +196,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
 
+        /** @psalm-suppress DeprecatedMethod */
         ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {
             return Validation::createValidatorBuilder()
                 ->enableAnnotationMapping()

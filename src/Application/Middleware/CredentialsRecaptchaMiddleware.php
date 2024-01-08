@@ -13,7 +13,6 @@ class CredentialsRecaptchaMiddleware extends RecaptchaMiddleware
     {
         $body = (string) $request->getBody();
 
-        /** @var Credentials $credentials */
         $credentials = $this->serializer->deserialize(
             $body,
             Credentials::class,
