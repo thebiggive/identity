@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.13.0@a0a9c27630bcf8301ee78cb06741d2907d8c9fef">
+<files psalm-version="5.18.0@b113f3ed0259fd6e212d87c3df80eec95a6abf19">
   <file src="app/dependencies.php">
+    <DeprecatedMethod>
+      <code>addDefaultDoctrineAnnotationReader</code>
+      <code>enableAnnotationMapping</code>
+    </DeprecatedMethod>
     <MixedArgument>
       <code><![CDATA[$c->get(CacheItemPoolInterface::class)]]></code>
       <code><![CDATA[$c->get(ORM\Configuration::class)]]></code>
@@ -188,6 +192,9 @@
     <InternalMethod>
       <code>connect</code>
     </InternalMethod>
+    <InvalidDocblock>
+      <code>connect</code>
+    </InvalidDocblock>
     <PossiblyNullArgument>
       <code><![CDATA[$emConfig->getProxyDir()]]></code>
       <code><![CDATA[$emConfig->getProxyNamespace()]]></code>
@@ -211,9 +218,6 @@
       <code>HttpErrorHandler</code>
       <code>HttpErrorHandler</code>
       <code>HttpErrorHandler</code>
-      <code>HttpErrorHandler</code>
-      <code>HttpErrorHandler</code>
-      <code>HttpErrorHandler</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="src/Application/Middleware/PersonAuthMiddleware.php">
@@ -227,22 +231,6 @@
       <code>__construct</code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="src/Application/Middleware/PersonRecaptchaMiddleware.php">
-    <MixedAssignment>
-      <code>$captchaCode</code>
-      <code>$person</code>
-    </MixedAssignment>
-    <MixedInferredReturnType>
-      <code>?string</code>
-    </MixedInferredReturnType>
-    <MixedPropertyFetch>
-      <code><![CDATA[$person->captcha_code]]></code>
-    </MixedPropertyFetch>
-    <MixedReturnStatement>
-      <code>$captchaCode</code>
-      <code>$captchaCode</code>
-    </MixedReturnStatement>
-  </file>
   <file src="src/Application/Middleware/RecaptchaMiddleware.php">
     <MixedArgument>
       <code><![CDATA[$request->getAttribute('client-ip')]]></code>
@@ -255,9 +243,6 @@
     </PossiblyNullArgument>
   </file>
   <file src="src/Client/Mailer.php">
-    <ImplicitToStringCast>
-      <code><![CDATA[$response->getBody()]]></code>
-    </ImplicitToStringCast>
     <MixedArgument>
       <code><![CDATA[$ex->getResponse() ? $ex->getResponse()->getBody() : 'N/A']]></code>
       <code><![CDATA[$this->settings->get('apiClient')['mailer']['sendSecret']]]></code>
@@ -453,11 +438,6 @@
       <code>$payload</code>
       <code>$payload</code>
       <code>$payload</code>
-      <code>$payload</code>
-      <code>$payload</code>
-      <code>$payload</code>
-      <code>$payload</code>
-      <code>$payload</code>
     </MixedArgument>
     <MixedAssignment>
       <code>$payload</code>
@@ -466,10 +446,6 @@
       <code>$payload</code>
     </MixedAssignment>
     <MixedPropertyFetch>
-      <code><![CDATA[$payload->cash_balance]]></code>
-      <code><![CDATA[$payload->cash_balance]]></code>
-      <code><![CDATA[$payload->cash_balance]]></code>
-      <code><![CDATA[$payload->cash_balance]]></code>
       <code><![CDATA[$payload->created_at]]></code>
       <code><![CDATA[$payload->created_at]]></code>
       <code><![CDATA[$payload->created_at]]></code>
@@ -518,8 +494,6 @@
     <MixedArgument>
       <code>$payload</code>
       <code>$payload</code>
-      <code>$payload</code>
-      <code>$payload</code>
     </MixedArgument>
     <MixedAssignment>
       <code>$payload</code>
@@ -534,7 +508,6 @@
       <code><![CDATA[$payload->has_password]]></code>
       <code><![CDATA[$payload->id]]></code>
       <code><![CDATA[$payload->id]]></code>
-      <code><![CDATA[$payload->stripe_customer_id]]></code>
       <code><![CDATA[$payload->updated_at]]></code>
       <code><![CDATA[$payload->updated_at]]></code>
     </MixedPropertyFetch>
@@ -576,6 +549,9 @@
     </UnnecessaryVarAnnotation>
   </file>
   <file src="tests/Application/Actions/StatusTest.php">
+    <DeprecatedClass>
+      <code><![CDATA[new AnnotationDriver(new AnnotationReader(), ['/var/www/html/src/Domain'])]]></code>
+    </DeprecatedClass>
     <DeprecatedMethod>
       <code><![CDATA[ConsoleRunner::createHelperSet($container->get(EntityManagerInterface::class))]]></code>
     </DeprecatedMethod>

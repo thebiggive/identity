@@ -102,8 +102,8 @@ class UpdateTest extends TestCase
 
         $this->assertTrue($payload->has_password);
         // These should be unset by `HasPasswordNormalizer`.
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
 
         // Validate that the response contains the original, not the fake overridden, Stripe
         // customer ID.
@@ -304,8 +304,8 @@ class UpdateTest extends TestCase
         $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
 
         $this->assertFalse($payload->has_password);
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
     }
 
     public function testMissingData(): void

@@ -81,7 +81,6 @@ class Create extends Action
     protected function action(Request $request, array $args): Response
     {
         try {
-            /** @var Person $person */
             $person = $this->serializer->deserialize(
                 $body = ((string) $request->getBody()),
                 Person::class,
