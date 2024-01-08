@@ -11,3 +11,4 @@ docs/openapi.yaml
 
 .env
 /coverage.xml
+/coverage-integration.xml

@@ -6,13 +6,12 @@ use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use LosMiddleware\RateLimit\RateLimitOptions;
 use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
@@ -120,7 +119,7 @@ return function (ContainerBuilder $containerBuilder) {
 
             /** @psalm-suppress DeprecatedClass */
             $config->setMetadataDriverImpl(
-                new AnnotationDriver(new AnnotationReader(), $doctrineSettings['metadata_dirs'])
+                new AttributeDriver($doctrineSettings['metadata_dirs']),
             );
 
             // Note that we *don't* use a result cache for this app, for both functional and security
@@ -196,11 +195,9 @@ return function (ContainerBuilder $containerBuilder) {
             return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
 
-        /** @psalm-suppress DeprecatedMethod */
         ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {
             return Validation::createValidatorBuilder()
-                ->enableAnnotationMapping()
-                ->addDefaultDoctrineAnnotationReader()
+                ->enableAttributeMapping()
                 ->getValidator();
         },
     ]);

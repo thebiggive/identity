@@ -2,45 +2,36 @@
 
 namespace BigGive\Identity\Domain;
 
+use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Exception;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
-/**
- * @ORM\Entity(repositoryClass="BigGive\Identity\Repository\PasswordResetTokenRepository")
- * @ORM\Table(name="PasswordResetToken", indexes={
- *     @ORM\Index(name="secret", columns={"secret"}),
- * })
- */
+#[ORM\Table(name: 'PasswordResetToken')]
+#[ORM\Index(name: 'secret', columns: ['secret'])]
+#[ORM\Entity(repositoryClass: PasswordResetTokenRepository::class)]
 class PasswordResetToken
 {
     use TimestampsTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private ?Uuid $id = null;
 
-    /**
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
-     */
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private readonly Uuid $secret;
 
-    /**
-     * @ManyToOne(targetEntity="Person")
-     * @JoinColumn(name="person", referencedColumnName="id")
-     */
+    #[ManyToOne(targetEntity: Person::class)]
+    #[JoinColumn(name: 'person', referencedColumnName: 'id')]
     public readonly Person $person;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeImmutable $used = null;
 
     private function __construct(Person $person, Uuid $secret)
