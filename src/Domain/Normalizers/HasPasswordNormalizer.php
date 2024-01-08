@@ -16,6 +16,14 @@ class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInter
     {
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod - called by Symfony Serializer.
+     */
+    public function getSupportedTypes(): array
+    {
+        return [Person::class => true,];
+    }
+
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         $data = $this->normalizer->normalize($object, $format, $context);
