@@ -202,7 +202,6 @@ class Update extends Action
                 $customerDetails['address']['country'] = $person->home_country_code;
             }
         }
-
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
         if (!$personHadPassword && $personHasPasswordNow) {

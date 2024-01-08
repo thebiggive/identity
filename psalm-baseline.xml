@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="5.18.0@b113f3ed0259fd6e212d87c3df80eec95a6abf19">
   <file src="app/dependencies.php">
-    <DeprecatedMethod>
-      <code>addDefaultDoctrineAnnotationReader</code>
-      <code>enableAnnotationMapping</code>
-    </DeprecatedMethod>
     <MixedArgument>
       <code><![CDATA[$c->get(CacheItemPoolInterface::class)]]></code>
       <code><![CDATA[$c->get(ORM\Configuration::class)]]></code>
