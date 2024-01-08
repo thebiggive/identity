@@ -72,8 +72,8 @@ class CreateTest extends TestCase
 
         $this->assertNotEmpty($payload->updated_at);
         $this->assertFalse($payload->has_password);
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
     }
 
     public function testFailingCaptcha(): void

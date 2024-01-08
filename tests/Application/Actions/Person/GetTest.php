@@ -61,10 +61,10 @@ class GetTest extends TestCase
 
         $this->assertTrue($payload->has_password);
         // These should be unset by `HasPasswordNormalizer`.
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
 
-        $this->assertObjectHasAttribute('cash_balance', $payload);
+        $this->assertObjectHasProperty('cash_balance', $payload);
         $this->assertIsObject($payload->cash_balance);
         $this->assertEquals((object) [
             'eur' => 123,
@@ -109,11 +109,11 @@ class GetTest extends TestCase
 
         $this->assertTrue($payload->has_password);
         // These should be unset by `HasPasswordNormalizer`.
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
 
         $this->assertIsObject($payload->cash_balance);
-        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
+        $this->assertObjectNotHasProperty('gbp', $payload->cash_balance);
     }
 
     public function testSuccessWithNoStripeBalances(): void
@@ -153,11 +153,11 @@ class GetTest extends TestCase
 
         $this->assertTrue($payload->has_password);
         // These should be unset by `HasPasswordNormalizer`.
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
 
         $this->assertIsObject($payload->cash_balance);
-        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
+        $this->assertObjectNotHasProperty('gbp', $payload->cash_balance);
     }
 
     public function testSuccessWithPendingTipAndNoBalances(): void
@@ -199,9 +199,9 @@ class GetTest extends TestCase
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsObject($payload->cash_balance);
-        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
+        $this->assertObjectNotHasProperty('gbp', $payload->cash_balance);
 
-        $this->assertObjectHasAttribute('pending_tip_balance', $payload);
+        $this->assertObjectHasProperty('pending_tip_balance', $payload);
         $this->assertIsObject($payload->pending_tip_balance);
         $this->assertEquals((object) [
             'gbp' => 1_000_00, // £1,000 tip (per mock response derived from local tests)
@@ -245,12 +245,12 @@ class GetTest extends TestCase
 
         $this->assertTrue($payload->has_password);
         // These should be unset by `HasPasswordNormalizer`.
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
 
         $this->assertIsObject($payload->cash_balance);
-        $this->assertObjectNotHasAttribute('eur', $payload->cash_balance);
-        $this->assertObjectNotHasAttribute('gbp', $payload->cash_balance);
+        $this->assertObjectNotHasProperty('eur', $payload->cash_balance);
+        $this->assertObjectNotHasProperty('gbp', $payload->cash_balance);
     }
 
     /**
