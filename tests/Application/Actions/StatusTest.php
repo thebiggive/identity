@@ -6,14 +6,13 @@ namespace BigGive\Identity\Tests\Application\Actions;
 
 use BigGive\Identity\Application\Actions\ActionPayload;
 use BigGive\Identity\Tests\TestCase;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
@@ -93,8 +92,7 @@ class StatusTest extends TestCase
     private function getConnectedMockEntityManager(
         string $proxyPath = '/var/www/html/var/doctrine/proxies',
     ): EntityManagerInterface {
-        /** @psalm-suppress DeprecatedMethod **/
-        $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
+        $config = ORM\ORMSetup::createAttributeMetadataConfiguration(
             ['/var/www/html/src/Domain'],
             false, // Simulate live mode for these tests.
             $proxyPath,
@@ -106,8 +104,7 @@ class StatusTest extends TestCase
         // No auto-generation – like live mode – for these tests.
         $config->setAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl(
-            /** @psalm-suppress DeprecatedClass **/
-            new AnnotationDriver(new AnnotationReader(), ['/var/www/html/src/Domain']),
+            new AttributeDriver(['/var/www/html/src/Domain']),
         );
 
         $connectionProphecy = $this->prophesize(Connection::class);

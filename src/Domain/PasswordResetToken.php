@@ -13,6 +13,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Table(name: 'PasswordResetToken')]
 #[ORM\Index(name: 'secret', columns: ['secret'])]
 #[ORM\Entity(repositoryClass: PasswordResetTokenRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class PasswordResetToken
 {
     use TimestampsTrait;

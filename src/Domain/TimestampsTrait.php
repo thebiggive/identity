@@ -7,8 +7,8 @@ namespace BigGive\Identity\Domain;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Trait to define timestamp fields and set them when appropriate. For this to work the models *must* be
- * annotated with `@ORM\HasLifecycleCallbacks` at class level.
+ * Trait to define timestamp fields and set them when appropriate. For this to work the models *must*
+ * have the `#[ORM\HasLifecycleCallbacks]` attribute at class level.
  */
 trait TimestampsTrait
 {

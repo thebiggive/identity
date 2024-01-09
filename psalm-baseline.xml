@@ -48,13 +48,8 @@
       <code>$redis</code>
       <code>$settings</code>
       <code>$settings</code>
-      <code>$settings</code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code>Mailer</code>
-    </MixedInferredReturnType>
     <MixedMethodCall>
-      <code>get</code>
       <code>get</code>
       <code>get</code>
       <code>get</code>
@@ -71,20 +66,6 @@
     <MixedOperand>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
     </MixedOperand>
-    <MixedReturnStatement>
-      <code><![CDATA[new Mailer(
-                $settings,
-                new Client([
-                    'timeout' => $settings->get('apiClient')['global']['timeout'],
-                ]),
-            )]]></code>
-    </MixedReturnStatement>
-    <UndefinedClass>
-      <code>Client</code>
-      <code>Mailer</code>
-      <code>Mailer</code>
-      <code>Mailer</code>
-    </UndefinedClass>
     <UnusedClosureParam>
       <code>$c</code>
       <code>$c</code>
@@ -257,9 +238,6 @@
       <code>getResponse</code>
       <code>getResponse</code>
     </PossiblyUndefinedMethod>
-    <PossiblyUnusedMethod>
-      <code>__construct</code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="src/Client/Stripe.php">
     <MixedArgumentTypeCoercion>
@@ -545,9 +523,6 @@
     </UnnecessaryVarAnnotation>
   </file>
   <file src="tests/Application/Actions/StatusTest.php">
-    <DeprecatedClass>
-      <code><![CDATA[new AnnotationDriver(new AnnotationReader(), ['/var/www/html/src/Domain'])]]></code>
-    </DeprecatedClass>
     <DeprecatedMethod>
       <code><![CDATA[ConsoleRunner::createHelperSet($container->get(EntityManagerInterface::class))]]></code>
     </DeprecatedMethod>
@@ -681,7 +656,16 @@
   <file src="tests/Client/MailerTest.php">
     <ArgumentTypeCoercion>
       <code>$requestBody</code>
+      <code>$requestBody</code>
+      <code>$requestBody</code>
+      <code>$requestBody</code>
     </ArgumentTypeCoercion>
+    <MixedArgument>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+    </MixedArgument>
     <MixedArrayAccess>
       <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
       <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
@@ -691,14 +675,6 @@
       <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
     </MixedArrayAccess>
     <MixedAssignment>
-      <code>$mailerClient</code>
-      <code>$mailerClient</code>
-      <code>$mailerClient</code>
-      <code>$mailerClient</code>
-      <code>$sendSuccessful</code>
-      <code>$sendSuccessful</code>
-      <code>$sendSuccessful</code>
-      <code>$sendSuccessful</code>
       <code>$settings</code>
       <code>$settings</code>
       <code>$settings</code>
@@ -711,10 +687,6 @@
       <code>get</code>
       <code>get</code>
       <code>get</code>
-      <code>sendEmail</code>
-      <code>sendEmail</code>
-      <code>sendEmail</code>
-      <code>sendEmail</code>
     </MixedMethodCall>
     <MixedOperand>
       <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
@@ -729,11 +701,6 @@
       <code>get</code>
       <code>get</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code>set</code>
-      <code>set</code>
-      <code>set</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Domain/PersonTest.php">
     <MixedArgument>
