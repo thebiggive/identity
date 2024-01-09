@@ -66,7 +66,6 @@
     <MixedOperand>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
     </MixedOperand>
-    <UndefinedClass/>
     <UnusedClosureParam>
       <code>$c</code>
       <code>$c</code>
@@ -657,7 +656,16 @@
   <file src="tests/Client/MailerTest.php">
     <ArgumentTypeCoercion>
       <code>$requestBody</code>
+      <code>$requestBody</code>
+      <code>$requestBody</code>
+      <code>$requestBody</code>
     </ArgumentTypeCoercion>
+    <MixedArgument>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
+    </MixedArgument>
     <MixedArrayAccess>
       <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
       <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
@@ -667,14 +675,6 @@
       <code><![CDATA[$settings->get('apiClient')['mailer']]]></code>
     </MixedArrayAccess>
     <MixedAssignment>
-      <code>$mailerClient</code>
-      <code>$mailerClient</code>
-      <code>$mailerClient</code>
-      <code>$mailerClient</code>
-      <code>$sendSuccessful</code>
-      <code>$sendSuccessful</code>
-      <code>$sendSuccessful</code>
-      <code>$sendSuccessful</code>
       <code>$settings</code>
       <code>$settings</code>
       <code>$settings</code>
@@ -687,10 +687,6 @@
       <code>get</code>
       <code>get</code>
       <code>get</code>
-      <code>sendEmail</code>
-      <code>sendEmail</code>
-      <code>sendEmail</code>
-      <code>sendEmail</code>
     </MixedMethodCall>
     <MixedOperand>
       <code><![CDATA[$settings->get('apiClient')['mailer']['baseUri']]]></code>
@@ -705,11 +701,6 @@
       <code>get</code>
       <code>get</code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code>set</code>
-      <code>set</code>
-      <code>set</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Domain/PersonTest.php">
     <MixedArgument>
