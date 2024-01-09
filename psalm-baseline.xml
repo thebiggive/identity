@@ -48,10 +48,8 @@
       <code>$redis</code>
       <code>$settings</code>
       <code>$settings</code>
-      <code>$settings</code>
     </MixedAssignment>
     <MixedMethodCall>
-      <code>get</code>
       <code>get</code>
       <code>get</code>
       <code>get</code>

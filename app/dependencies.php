@@ -93,13 +93,18 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         Mailer::class => static function (ContainerInterface $c): Mailer {
+            /** @var SettingsInterface $settings */
             $settings = $c->get(SettingsInterface::class);
+
+            /** @var LoggerInterface $logger */
+            $logger = $c->get(LoggerInterface::class);
+
             return new Mailer(
                 new GuzzleClient([
                     'timeout' => $settings->get('apiClient')['global']['timeout'],
                 ]),
                 $settings,
-                $c->get(LoggerInterface::class),
+                $logger,
             );
         },
 
