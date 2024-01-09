@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Psr\Log\NullLogger;
 
 class MailerTest extends TestCase
 {
@@ -49,8 +50,7 @@ class MailerTest extends TestCase
 
         $container->set(Client::class, $clientProphecy->reveal());
 
-        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
-        $mailerClient = $container->get(Mailer::class);
+        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
         $this->assertEquals(true, $sendSuccessful);
@@ -81,10 +81,7 @@ class MailerTest extends TestCase
         )->shouldBeCalledOnce()
         ->willReturn($mockedResponse);
 
-        $container->set(Client::class, $clientProphecy->reveal());
-
-        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
-        $mailerClient = $container->get(Mailer::class);
+        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
@@ -122,10 +119,7 @@ class MailerTest extends TestCase
             )
         );
 
-        $container->set(Client::class, $clientProphecy->reveal());
-
-        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
-        $mailerClient = $container->get(Mailer::class);
+        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
@@ -162,10 +156,7 @@ class MailerTest extends TestCase
             )
         );
 
-        $container->set(Client::class, $clientProphecy->reveal());
-
-        // Get DI client after it's been set, so the get below uses the mocked Guzzle client instead of the real one
-        $mailerClient = $container->get(Mailer::class);
+        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
