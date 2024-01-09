@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
@@ -12,6 +13,7 @@ use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use GuzzleHttp\Client as GuzzleClient;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use LosMiddleware\RateLimit\RateLimitOptions;
 use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
@@ -93,10 +95,11 @@ return function (ContainerBuilder $containerBuilder) {
         Mailer::class => static function (ContainerInterface $c): Mailer {
             $settings = $c->get(SettingsInterface::class);
             return new Mailer(
-                $settings,
-                new Client([
+                new GuzzleClient([
                     'timeout' => $settings->get('apiClient')['global']['timeout'],
                 ]),
+                $settings,
+                $c->get(LoggerInterface::class),
             );
         },
 
