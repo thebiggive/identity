@@ -50,7 +50,11 @@ class MailerTest extends TestCase
 
         $container->set(Client::class, $clientProphecy->reveal());
 
-        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
+        $mailerClient = new Mailer(
+            $clientProphecy->reveal(),
+            $container->get(SettingsInterface::class),
+            new NullLogger(),
+        );
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
         $this->assertEquals(true, $sendSuccessful);
@@ -81,7 +85,11 @@ class MailerTest extends TestCase
         )->shouldBeCalledOnce()
         ->willReturn($mockedResponse);
 
-        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
+        $mailerClient = new Mailer(
+            $clientProphecy->reveal(),
+            $container->get(SettingsInterface::class),
+            new NullLogger(),
+        );
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
@@ -119,7 +127,11 @@ class MailerTest extends TestCase
             )
         );
 
-        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
+        $mailerClient = new Mailer(
+            $clientProphecy->reveal(),
+            $container->get(SettingsInterface::class),
+            new NullLogger(),
+        );
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
@@ -156,7 +168,11 @@ class MailerTest extends TestCase
             )
         );
 
-        $mailerClient = new Mailer($clientProphecy->reveal(), $container->get(SettingsInterface::class), new NullLogger());
+        $mailerClient = new Mailer(
+            $clientProphecy->reveal(),
+            $container->get(SettingsInterface::class),
+            new NullLogger(),
+        );
 
         $sendSuccessful = $mailerClient->sendEmail($requestBody);
 
