@@ -17,6 +17,7 @@
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
+        "doctrine/annotations": "^2.0",
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^2.12",
         "firebase/php-jwt": "^6.3",
