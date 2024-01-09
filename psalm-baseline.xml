@@ -545,9 +545,6 @@
     </UnnecessaryVarAnnotation>
   </file>
   <file src="tests/Application/Actions/StatusTest.php">
-    <DeprecatedClass>
-      <code><![CDATA[new AnnotationDriver(new AnnotationReader(), ['/var/www/html/src/Domain'])]]></code>
-    </DeprecatedClass>
     <DeprecatedMethod>
       <code><![CDATA[ConsoleRunner::createHelperSet($container->get(EntityManagerInterface::class))]]></code>
     </DeprecatedMethod>

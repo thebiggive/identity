@@ -105,8 +105,7 @@ return function (ContainerBuilder $containerBuilder) {
             $settings = $c->get(SettingsInterface::class);
             $doctrineSettings = $settings->get('doctrine');
 
-            /** @psalm-suppress DeprecatedMethod */
-            $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
+            $config = ORM\ORMSetup::createAttributeMetadataConfiguration(
                 $doctrineSettings['metadata_dirs'],
                 $doctrineSettings['dev_mode'],
                 $doctrineSettings['cache_dir'] . '/proxies',
@@ -117,7 +116,6 @@ return function (ContainerBuilder $containerBuilder) {
             // files indefinitely.
             $config->setAutoGenerateProxyClasses($doctrineSettings['dev_mode']);
 
-            /** @psalm-suppress DeprecatedClass */
             $config->setMetadataDriverImpl(
                 new AttributeDriver($doctrineSettings['metadata_dirs']),
             );
