@@ -71,7 +71,8 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
     {
         $password = $withPassword ? '\'$2y$10$4..1A/6AYEi7aL1sKz1M3OPKKSZYBGXXCoH7mL88ZwzA4KO.c9asK\'' : 'null';
 
-        $this->connection->executeStatement(<<<SQL
+        $this->connection->executeStatement(
+            <<<SQL
             INSERT INTO Person 
                 (id, first_name, last_name, email_address, created_at, updated_at, password) VALUES
                 (:id, 'first', 'last', '$this->randomEmail', '$createdAt', '$createdAt', $password)
@@ -82,6 +83,8 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
 
     public function tearDown(): void
     {
-        $this->connection->executeStatement('DELETE FROM Person where Person.email_address like \'test_delete_unusable%\';');
+        $this->connection->executeStatement(
+            'DELETE FROM Person where Person.email_address like \'test_delete_unusable%\';'
+        );
     }
 }

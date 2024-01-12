@@ -175,7 +175,8 @@ class Update extends Action
 
             return $this->validationError(
                 logMessage: "Update not valid: {$duplicateException->getMessage()}",
-                publicMessage: "Your password could not be set. There is already a password set for your email address.",
+                publicMessage: 'Your password could not be set. There is already a password set for ' .
+                'your email address.',
                 errorType: ActionError::DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD,
             );
         }
@@ -201,7 +202,6 @@ class Update extends Action
                 $customerDetails['address']['country'] = $person->home_country_code;
             }
         }
-
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
         if (!$personHadPassword && $personHasPasswordNow) {

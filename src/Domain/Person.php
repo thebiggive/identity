@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use BigGive\Identity\Application\Security\Password;
+use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,17 +16,16 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ORM\Entity(repositoryClass="BigGive\Identity\Repository\PersonRepository")
- * @ORM\HasLifecycleCallbacks
- * @ORM\Table(name="Person", indexes={
- *     @ORM\Index(name="email_and_password", columns={"email_address", "password"}),
- * })
  * @OA\Schema(
  *  description="Person – initially anonymous. To be login-ready, first_name,
  *  last_name, email_address and password are required.",
  * )
  * @see Credentials
  */
+#[ORM\Table(name: 'Person')]
+#[ORM\Index(name: 'email_and_password', columns: ['email_address', 'password'])]
+#[ORM\Entity(repositoryClass: PersonRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Person
 {
     use TimestampsTrait;
@@ -74,17 +75,14 @@ class Person
      *         "gbp": 123,
      *     }
      * )
-     * @var null|array<string,int>  Total Pending Payment Intents for Big Give (i.e. donor fund top up tips) for each currency
+     * @var null|array<string,int>  Total Pending Payment Intents for Big Give
+     *                  (i.e. donor fund top up tips) for each currency
      *                  in smallest unit (cents/pence), keyed on lowercase currency code.
      *                  Or may be null if no tip balances requested on Get.
      */
     public ?array $pending_tip_balance = null;
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="\Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator")
      * @OA\Property(
      *  property="id",
      *  format="uuid",
@@ -92,11 +90,13 @@ class Person
      *  pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
      * )
      */
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private ?Uuid $id = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="first_name",
      *  description="The person's first name",
@@ -104,11 +104,11 @@ class Person
      * )
      * @var string The person's first name.
      */
+    #[Assert\NotBlank(groups: ['complete'])]
+    #[ORM\Column(type: 'string', nullable: true)]
     public ?string $first_name = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="last_name",
      *  description="The person's surname",
@@ -116,11 +116,11 @@ class Person
      * )
      * @var string The person's last name / surname.
      */
+    #[Assert\NotBlank(groups: ['complete'])]
+    #[ORM\Column(type: 'string', nullable: true)]
     public ?string $last_name = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank(groups={"complete"})
      * @OA\Property(
      *  property="email_address",
      *  format="email",
@@ -129,29 +129,31 @@ class Person
      * @var string The email address of the person. Email address must be unique amongst
      * password-enabled Person records.
      */
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(groups: ['complete'])]
     public ?string $email_address = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @OA\Property()
      * @var string|null From residential address, if donor is claiming Gift Aid.
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     public ?string $home_address_line_1 = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @OA\Property()
      * @var string|null From residential address, if donor is claiming Gift Aid and is GB-resident.
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     public ?string $home_postcode = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @OA\Property()
      * @var string|null From residential address, if donor is claiming Gift Aid. Can be 'GB' or 'OVERSEAS',
      *                  or null if not applicable. Consuming code should assume that additional ISO 3166-1
      *                  alpha-2 country codes could be set in the future.
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     public ?string $home_country_code = null;
 
     /**
@@ -165,9 +167,9 @@ class Person
     public bool $has_password = false;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @var string|null Hashed password, if a password has been set.
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $password = null;
 
     private bool $skipCaptchaCheck = false;
@@ -197,9 +199,9 @@ class Person
     public ?string $raw_password = null;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
      * @OA\Property()
      */
+    #[ORM\Column(type: 'string', nullable: true)]
     public ?string $stripe_customer_id = null;
 
     public function __construct()
@@ -259,9 +261,9 @@ class Person
     }
 
     /**
-     * @Assert\Callback(groups={"new"})
      * @see Person::$captcha_code
      */
+    #[Assert\Callback(groups: ['new'])]
     public function validateCaptchaExistsIfNew(ExecutionContextInterface $context): void
     {
         // Brand new entity + no captcha solved.
@@ -273,11 +275,11 @@ class Person
     }
 
     /**
-     * @Assert\Callback(groups={"complete"})
      * @see Person::$raw_password
      *
      * Checks for whether password was compromised using the API of https://haveibeenpwned.com/Passwords
      */
+    #[Assert\Callback(groups: ["complete"])]
     public function validatePasswordIfNotBlank(ExecutionContextInterface $context): void
     {
         $passwordUpdated = $this->raw_password !== null && $this->raw_password !== '';

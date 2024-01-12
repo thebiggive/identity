@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use GuzzleHttp\Client as GuzzleClient;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use LosMiddleware\RateLimit\RateLimitOptions;
 use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
@@ -69,6 +70,7 @@ return function (ContainerBuilder $containerBuilder) {
                 Type::addType('uuid', UuidType::class);
             }
 
+            /** @psalm-suppress DeprecatedMethod */
             return EntityManager::create(
                 $c->get(SettingsInterface::class)->get('doctrine')['connection'],
                 $c->get(ORM\Configuration::class),
@@ -91,12 +93,18 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         Mailer::class => static function (ContainerInterface $c): Mailer {
+            /** @var SettingsInterface $settings */
             $settings = $c->get(SettingsInterface::class);
+
+            /** @var LoggerInterface $logger */
+            $logger = $c->get(LoggerInterface::class);
+
             return new Mailer(
-                $settings,
-                new Client([
+                new GuzzleClient([
                     'timeout' => $settings->get('apiClient')['global']['timeout'],
                 ]),
+                $settings,
+                $logger,
             );
         },
 
@@ -105,7 +113,7 @@ return function (ContainerBuilder $containerBuilder) {
             $settings = $c->get(SettingsInterface::class);
             $doctrineSettings = $settings->get('doctrine');
 
-            $config = ORM\ORMSetup::createAnnotationMetadataConfiguration(
+            $config = ORM\ORMSetup::createAttributeMetadataConfiguration(
                 $doctrineSettings['metadata_dirs'],
                 $doctrineSettings['dev_mode'],
                 $doctrineSettings['cache_dir'] . '/proxies',
@@ -117,7 +125,7 @@ return function (ContainerBuilder $containerBuilder) {
             $config->setAutoGenerateProxyClasses($doctrineSettings['dev_mode']);
 
             $config->setMetadataDriverImpl(
-                new AnnotationDriver(new AnnotationReader(), $doctrineSettings['metadata_dirs'])
+                new AttributeDriver($doctrineSettings['metadata_dirs']),
             );
 
             // Note that we *don't* use a result cache for this app, for both functional and security
@@ -195,8 +203,7 @@ return function (ContainerBuilder $containerBuilder) {
 
         ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {
             return Validation::createValidatorBuilder()
-                ->enableAnnotationMapping()
-                ->addDefaultDoctrineAnnotationReader()
+                ->enableAttributeMapping()
                 ->getValidator();
         },
     ]);

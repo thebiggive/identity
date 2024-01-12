@@ -28,7 +28,8 @@ class CreateTest extends TestCase
             ->shouldBeCalledTimes(2) // Currently once for stable UUID, once w/ Stripe Customer ID.
             ->will(/**
              * @param array<Person> $args
-             */ fn (array $args) => CreateTest::initialisePerson($args[0], false));
+             */                fn (array $args) => CreateTest::initialisePerson($args[0], false)
+            );
 
         $customerMockResult = (object) [
             'id' => static::$testPersonStripeCustomerId,
@@ -71,8 +72,8 @@ class CreateTest extends TestCase
 
         $this->assertNotEmpty($payload->updated_at);
         $this->assertFalse($payload->has_password);
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
     }
 
     public function testFailingCaptcha(): void

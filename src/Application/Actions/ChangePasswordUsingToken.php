@@ -2,8 +2,6 @@
 
 namespace BigGive\Identity\Application\Actions;
 
-use BigGive\Identity\Client\Mailer;
-use BigGive\Identity\Domain\PasswordResetToken;
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -13,7 +11,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -35,7 +32,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *     ),
 *      @OA\Response(
 *         response=400,
-*         description="Returned if the new password is bad (e.g. too short), or it the secret token is invalid or expired",
+*         description="Returned if the new password is bad (e.g. too short), or it the secret token is
+ * invalid or expired",
 *         @OA\JsonContent(),
 *     ),
  * ),
@@ -48,7 +46,6 @@ class ChangePasswordUsingToken extends Action
         private readonly PersonRepository $personRepository,
         private readonly PasswordResetTokenRepository $tokenRepository,
         private readonly ValidatorInterface $validator,
-        private readonly Mailer $mailer,
     ) {
         parent::__construct($logger);
     }

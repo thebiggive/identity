@@ -42,6 +42,7 @@ class Status extends Action
      * @param array $args
      * @return Response
      * @throws HttpBadRequestException
+     *
      */
     protected function action(Request $request, array $args): Response
     {

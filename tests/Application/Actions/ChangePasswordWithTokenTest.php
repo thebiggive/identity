@@ -55,7 +55,8 @@ class ChangePasswordWithTokenTest extends TestCase
 
     public function testCannotChangePasswordUsingExpiredToken(): void
     {
-        // may not be worth doing now the test is written, but we could simplify by testing just PasswordResetToken class directly instead of the whole app.
+        // may not be worth doing now the test is written, but we could simplify by testing just
+        // PasswordResetToken class directly instead of the whole app.
 
         $secret = Uuid::v4();
         $personId = Uuid::v4();
@@ -88,7 +89,8 @@ class ChangePasswordWithTokenTest extends TestCase
 
     public function testCannotChangePasswordTwiceWithSameToken(): void
     {
-        //  may not be worth doing now the test is written, but we could simplify by testing just PasswordResetToken class directly instead of the whole app.
+        // may not be worth doing now the test is written, but we could simplify by testing just
+        // PasswordResetToken class directly instead of the whole app.
         $secret = Uuid::v4();
         $personId = Uuid::v4();
         $person = new Person();
@@ -128,7 +130,8 @@ class ChangePasswordWithTokenTest extends TestCase
 
     public function testCannotSetPasswordShorterThanMinLength(): void
     {
-        //  may not be worth doing now the test is written, but we could simplify by testing just PasswordResetToken class directly instead of the whole app.
+        // may not be worth doing now the test is written, but we could simplify by testing just
+        // PasswordResetToken class directly instead of the whole app.
         $secret = Uuid::v4();
         $personId = Uuid::v4();
         $person = new Person();
@@ -147,7 +150,9 @@ class ChangePasswordWithTokenTest extends TestCase
         $container->set(PasswordResetTokenRepository::class, $passwordResetTokenProphecy->reveal());
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
 
-        $this->expectExceptionMessage('Your password could not be set. Please ensure you chose one with at least 10 characters.');
+        $this->expectExceptionMessage(
+            'Your password could not be set. Please ensure you chose one with at least 10 characters.'
+        );
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
             'new_password' => 'short',

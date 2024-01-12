@@ -1,0 +1,8 @@
+# Run this command to always ignore formatting commits in `git blame`
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Style fix, following a Docker-paths phpcs config compatibility fix 29/12/23, mk I
+fdb630fcd79fa44c494c4a18b388dc3e7088da6e
+
+# Style fix, following a Docker-paths phpcs config compatibility fix 29/12/23, mk II
+638cb285023c6a87c079e5a8a76d6d4026eb29d2

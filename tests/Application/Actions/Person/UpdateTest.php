@@ -48,7 +48,8 @@ class UpdateTest extends TestCase
             ->shouldBeCalledOnce()
             ->will(/**
              * @param array<Person> $args
-             */ fn(array $args) => UpdateTest::initialisePerson($args[0], true));
+             */                fn(array $args) => UpdateTest::initialisePerson($args[0], true)
+            );
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -101,8 +102,8 @@ class UpdateTest extends TestCase
 
         $this->assertTrue($payload->has_password);
         // These should be unset by `HasPasswordNormalizer`.
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
 
         // Validate that the response contains the original, not the fake overridden, Stripe
         // customer ID.
@@ -213,7 +214,8 @@ class UpdateTest extends TestCase
             ->shouldBeCalledOnce()
             ->will(/**
              * @param array<Person> $args
-             */ fn(array $args) => UpdateTest::initialisePerson($args[0], true));
+             */                fn(array $args) => UpdateTest::initialisePerson($args[0], true)
+            );
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
             ->shouldBeCalledOnce()
             ->willReturn(false);
@@ -302,8 +304,8 @@ class UpdateTest extends TestCase
         $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
 
         $this->assertFalse($payload->has_password);
-        $this->assertObjectNotHasAttribute('raw_password', $payload);
-        $this->assertObjectNotHasAttribute('password', $payload);
+        $this->assertObjectNotHasProperty('raw_password', $payload);
+        $this->assertObjectNotHasProperty('password', $payload);
     }
 
     public function testMissingData(): void
@@ -381,8 +383,10 @@ class UpdateTest extends TestCase
 
         $expectedJSON = json_encode([
             'error' => [
-                'description' => 'Your password could not be set. Please ensure you chose one with at least 10 characters.',
-                'htmlDescription' => 'Your password could not be set. Please ensure you chose one with at least 10 characters.',
+                'description' =>
+                    'Your password could not be set. Please ensure you chose one with at least 10 characters.',
+                'htmlDescription' =>
+                    'Your password could not be set. Please ensure you chose one with at least 10 characters.',
                 'type' => 'BAD_REQUEST',
             ],
         ], JSON_THROW_ON_ERROR);

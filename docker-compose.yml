@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
     app:
-        image: thebiggive/php:dev-8.1
+        image: thebiggive/php:dev-8.3
         platform: linux/amd64
         environment:
             docker: "true"

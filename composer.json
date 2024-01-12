@@ -11,13 +11,13 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
-        "doctrine/annotations": "^1.13",
+        "doctrine/annotations": "^2.0",
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^2.12",
         "firebase/php-jwt": "^6.3",
@@ -61,7 +61,7 @@
             "phpstan/extension-installer": true
         },
         "platform": {
-            "php": "8.1.9"
+            "php": "8.3.1"
         }
     },
     "autoload": {
