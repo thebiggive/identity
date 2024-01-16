@@ -65,7 +65,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
         /** @var array $decoded */
         $decoded = json_decode($request->getBody()->__toString(), true, 512, \JSON_THROW_ON_ERROR);
         $email = (string) $decoded['email_address'];
-        $violations = $this->validator->validate($email, constraints: new Email());
+        $violations = $this->validator->validate($email, constraints: new Email(mode: Email::VALIDATION_MODE_HTML5));
         if (count($violations) > 0) {
             throw new HttpBadRequestException($request, 'Invalid email address');
         }
