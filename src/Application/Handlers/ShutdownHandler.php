@@ -69,10 +69,12 @@ class ShutdownHandler
                 return;
             }
 
-            if ($errorType === E_DEPRECATED) {
-                // Don't let deprecations trigger `HttpInternalServerErrorException`, at least for as
-                // long as we know our rate limit middleware has one in PHP 8.1.
-                // See https://github.com/Lansoweb/LosRateLimit/issues/11
+            if (in_array($errorType, [\E_DEPRECATED, \E_USER_DEPRECATED], true)) {
+                // Deprecations should not be shown as errors to users - we just have to
+                // fix them before we upgrade PHP or the dependancy that triggered them.
+
+                // E.g. symfony creates E_USER_DEPRECATED error types in advance of removing
+                // support for a feature or mode.
                 return;
             }
 
