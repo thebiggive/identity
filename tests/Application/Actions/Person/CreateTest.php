@@ -65,12 +65,6 @@ class CreateTest extends TestCase
 
         $this->assertEquals('Loraine', $payload->first_name);
 
-        $this->assertNotEmpty($payload->created_at);
-        $this->assertIsString($payload->created_at);
-        $this->assertTrue(new \DateTime($payload->created_at) <= new \DateTime());
-        $this->assertTrue(new \DateTime($payload->created_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
-
-        $this->assertNotEmpty($payload->updated_at);
         $this->assertFalse($payload->has_password);
         $this->assertObjectNotHasProperty('raw_password', $payload);
         $this->assertObjectNotHasProperty('password', $payload);

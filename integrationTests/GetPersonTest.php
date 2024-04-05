@@ -24,10 +24,8 @@ class GetPersonTest extends IntegrationTest
         \assert(is_array($decodedBody));
         $this->assertEqualsCanonicalizing(
             [
-                "captcha_code",
                 "cash_balance",
                 "completion_jwt",
-                "created_at",
                 "email_address",
                 "first_name",
                 "has_password",
@@ -37,9 +35,7 @@ class GetPersonTest extends IntegrationTest
                 "id",
                 "last_name",
                 "pending_tip_balance",
-                "skipCaptchaCheck",
                 "stripe_customer_id",
-                "updated_at",
             ],
             array_keys($decodedBody)
         );
