@@ -43,12 +43,13 @@ class Person
     ];
 
     /**
-     * Keeping this placeholder for now (used in 3 places) for convenience if we do decide to
-     * exclude public properties, though this is less certain now we're using the Symfony serializer
-     * more appropriately. Keep until we pick up ID-19 and either populate or delete use at that point.
-     * @var string[]
+     * These properties should be excluded from serialisation, as the front-end does not use them.
      */
     public const NON_SERIALISED_ATTRIBUTES = [
+        'created_at',
+        'updated_at',
+        "captcha_code", // sent FROM frontend, doesn't ever need to be sent to frontend.
+        "skipCaptchaCheck",
     ];
 
     /**
@@ -176,7 +177,8 @@ class Person
 
     /**
      * @OA\Property(
-     *  description="One-time code for a solved captcha; required on new registration",
+     *  description="One-time code for a solved captcha; required on new registration. Write-only property, not sent
+     * in responses.",
      *  type="string",
      *  example="some-token-123",
      * )

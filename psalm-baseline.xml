@@ -420,10 +420,6 @@
       <code>$payload</code>
     </MixedAssignment>
     <MixedPropertyFetch>
-      <code><![CDATA[$payload->created_at]]></code>
-      <code><![CDATA[$payload->created_at]]></code>
-      <code><![CDATA[$payload->created_at]]></code>
-      <code><![CDATA[$payload->created_at]]></code>
       <code><![CDATA[$payload->first_name]]></code>
       <code><![CDATA[$payload->first_name]]></code>
       <code><![CDATA[$payload->first_name]]></code>
@@ -436,10 +432,6 @@
       <code><![CDATA[$payload->id]]></code>
       <code><![CDATA[$payload->id]]></code>
       <code><![CDATA[$payload->id]]></code>
-      <code><![CDATA[$payload->updated_at]]></code>
-      <code><![CDATA[$payload->updated_at]]></code>
-      <code><![CDATA[$payload->updated_at]]></code>
-      <code><![CDATA[$payload->updated_at]]></code>
     </MixedPropertyFetch>
     <PossiblyNullReference>
       <code>set</code>
@@ -474,16 +466,12 @@
       <code>$payload</code>
     </MixedAssignment>
     <MixedPropertyFetch>
-      <code><![CDATA[$payload->created_at]]></code>
-      <code><![CDATA[$payload->created_at]]></code>
       <code><![CDATA[$payload->first_name]]></code>
       <code><![CDATA[$payload->first_name]]></code>
       <code><![CDATA[$payload->has_password]]></code>
       <code><![CDATA[$payload->has_password]]></code>
       <code><![CDATA[$payload->id]]></code>
       <code><![CDATA[$payload->id]]></code>
-      <code><![CDATA[$payload->updated_at]]></code>
-      <code><![CDATA[$payload->updated_at]]></code>
     </MixedPropertyFetch>
     <PossiblyNullArgument>
       <code><![CDATA[$person->raw_password]]></code>
