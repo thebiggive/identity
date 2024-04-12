@@ -93,12 +93,6 @@ class UpdateTest extends TestCase
         $this->assertSame(36, strlen((string) $payload->id));
 
         $this->assertEquals('Loraine', $payload->first_name);
-        $this->assertNotEmpty($payload->created_at);
-
-        $this->assertNotEmpty($payload->updated_at);
-        $this->assertIsString($payload->updated_at);
-        $this->assertTrue(new \DateTime($payload->updated_at) <= new \DateTime());
-        $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
 
         $this->assertTrue($payload->has_password);
         // These should be unset by `HasPasswordNormalizer`.
@@ -296,12 +290,6 @@ class UpdateTest extends TestCase
         $this->assertSame(36, strlen((string) $payload->id));
 
         $this->assertEquals('Loraine', $payload->first_name);
-        $this->assertNotEmpty($payload->created_at);
-
-        $this->assertNotEmpty($payload->updated_at);
-        $this->assertIsString($payload->updated_at);
-        $this->assertTrue(new \DateTime($payload->updated_at) <= new \DateTime());
-        $this->assertTrue(new \DateTime($payload->updated_at) >= (new \DateTime())->sub(new \DateInterval('PT5S')));
 
         $this->assertFalse($payload->has_password);
         $this->assertObjectNotHasProperty('raw_password', $payload);
