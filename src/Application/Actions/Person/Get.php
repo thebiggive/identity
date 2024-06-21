@@ -56,7 +56,7 @@ class Get extends Action
      * donation funds topup. These are stored as donations to Big Give since they are
      * standalone rather than an adjustment to another main donation.
      */
-    public const FUND_TIPS_CAMPAIGN_NAME = 'Big Give General Donations';
+    public const string FUND_TIPS_CAMPAIGN_NAME = 'Big Give General Donations';
 
     public function __construct(
         LoggerInterface $logger,

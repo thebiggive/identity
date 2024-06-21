@@ -320,7 +320,7 @@ class GetTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        if ($piMockName) {
+        if ($piMockName !== null) {
             $stripePaymentIntentsProphecy = $this->prophesize(PaymentIntentService::class);
             $stripePaymentIntentsProphecy->all(['customer' => self::$testPersonStripeCustomerId])
                 ->willReturn(StripeFormatting::buildAutoIterableCollection($this->getMock($piMockName)));

@@ -19,7 +19,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class PersonRepository extends EntityRepository
 {
-    public const EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
+    public const string EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
     private Mailer $mailerClient;
 
     public function __construct(EntityManagerInterface $em, ClassMetadata $class)
