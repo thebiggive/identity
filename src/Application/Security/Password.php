@@ -8,16 +8,14 @@ use BigGive\Identity\Domain\Person;
 
 class Password
 {
-    /** @var string */
-    private const ALGORITHM = PASSWORD_BCRYPT;
+    private const string ALGORITHM = PASSWORD_BCRYPT;
     /** @var array<array-key, mixed> */
-    private const OPTIONS = ['cost' => 12];
+    private const array OPTIONS = ['cost' => 12];
 
     /**
      * Share this to make sure we don't surface the difference between no account + wrong password.
-     * @var string
      */
-    public const BAD_LOGIN_MESSAGE = 'Your email or password is incorrect';
+    public const string BAD_LOGIN_MESSAGE = 'Your email or password is incorrect';
 
     public static function hash(string $rawPassword): string
     {
@@ -37,11 +35,11 @@ class Password
         $hash = $person->getPasswordHash();
 
         if ($hash === null) {
-            throw new AuthenticationException(static::BAD_LOGIN_MESSAGE);
+            throw new AuthenticationException(self::BAD_LOGIN_MESSAGE);
         }
 
         if (!password_verify($rawPassword, $hash)) {
-            throw new AuthenticationException(static::BAD_LOGIN_MESSAGE);
+            throw new AuthenticationException(self::BAD_LOGIN_MESSAGE);
         }
     }
 }

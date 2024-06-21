@@ -43,13 +43,13 @@
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
         "jetbrains/phpstorm-attributes": "^1.0",
+        "phpcsstandards/php_codesniffer": "^3.10",
         "phpspec/prophecy-phpunit": "^2.2",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.6",
         "psalm/plugin-phpunit": "^0.18",
         "roave/security-advisories": "dev-latest",
-        "squizlabs/php_codesniffer": "^3.10",
         "vimeo/psalm": "^5.25.0",
         "weirdan/doctrine-psalm-plugin": "^2.9"
     },

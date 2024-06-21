@@ -30,9 +30,9 @@ class Person
 {
     use TimestampsTrait;
 
-    public const MIN_PASSWORD_LENGTH = 10;
+    public const int MIN_PASSWORD_LENGTH = 10;
 
-    public const SERIALISED_FOR_UPDATE_ATTRIBUTES = [
+    public const array SERIALISED_FOR_UPDATE_ATTRIBUTES = [
         'first_name',
         'last_name',
         'email_address',
@@ -45,7 +45,7 @@ class Person
     /**
      * These properties should be excluded from serialisation, as the front-end does not use them.
      */
-    public const NON_SERIALISED_ATTRIBUTES = [
+    public const array NON_SERIALISED_ATTRIBUTES = [
         'created_at',
         'updated_at',
         "captcha_code", // sent FROM frontend, doesn't ever need to be sent to frontend.
