@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class Token
 {
-    public const VALIDITY_PERIOD_SECONDS = 8 * 60 * 60;
+    public const int VALIDITY_PERIOD_SECONDS = 8 * 60 * 60;
 
     /**
      * @link https://stackoverflow.com/questions/39239051/rs256-vs-hs256-whats-the-difference has info on hash

@@ -17,6 +17,9 @@ return function (ContainerBuilder $containerBuilder) {
                     = dirname(__DIR__) . '/deploy/rds-ca-eu-west-1-bundle.pem';
             }
 
+            /**
+             * @psalm-suppress RiskyTruthyFalsyComparison - hard to avoid when working with env variables.
+             */
             return new Settings([
                 'apiClient' => [
                     'global' => [
