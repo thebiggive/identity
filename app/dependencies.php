@@ -196,7 +196,8 @@ return function (ContainerBuilder $containerBuilder) {
             /** @var array $stripeOptions */
             $stripeOptions = [
                 'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
-                'stripe_version' => '2022-08-01',
+                // 'stripe_version' determined by default built into stripe-php library - upgrade the library to get
+                // a new version. See \Stripe\Util\ApiVersion::CURRENT
             ];
             return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
