@@ -94,7 +94,7 @@ class Get extends Action
             $balanceIsApplicable = (
                 !empty($stripeCustomer->cash_balance) &&
                 $stripeCustomer->cash_balance->available !== null &&
-                $stripeCustomer->cash_balance->settings->reconciliation_mode === 'automatic'
+                $stripeCustomer->cash_balance->settings['reconciliation_mode'] === 'automatic'
             );
 
             if ($balanceIsApplicable) {
@@ -117,6 +117,14 @@ class Get extends Action
                 ]);
 
                 foreach ($tipPaymentIntentsPending->autoPagingIterator() as $paymentIntent) {
+
+                    /**
+                     * @psalm-suppress UndefinedMagicPropertyFetch
+                     *
+                     * We could use the \ArrayAccess interface to metadata to avoid this issue, but that would
+                     * require changing test data substantially. Previous Stripe library versions declared types that
+                     * allowed this.
+                     */
                     $paymentIntentIsPendingDononFundsTip = (
                         $paymentIntent->status === 'requires_action' &&
                         $paymentIntent->payment_method_types === ['customer_balance'] &&
