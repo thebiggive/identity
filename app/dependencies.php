@@ -196,7 +196,7 @@ return function (ContainerBuilder $containerBuilder) {
             /** @var array $stripeOptions */
             $stripeOptions = [
                 'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
-                'stripe_version' => $c->get(SettingsInterface::class)->get('stripe')['apiVersion'],
+                'stripe_version' => '2022-08-01',
             ];
             return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
