@@ -26,6 +26,7 @@ use Psr\Log\LoggerInterface;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
+use Stripe\Util\ApiVersion;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
@@ -193,11 +194,13 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         Client\Stripe::class => static function (ContainerInterface $c): Client\Stripe {
-            /** @var array $stripeOptions */
+            // Both hardcoding the version and using library default - see discussion at
+            // https://github.com/thebiggive/matchbot/pull/927/files/5fa930f3eee3b0c919bcc1027319dc7ae9d0be05#diff-c4fef49ee08946228bb39de898c8770a1a6a8610fc281627541ec2e49c67b118
+            \assert(ApiVersion::CURRENT === '2024-06-20');
+
             $stripeOptions = [
                 'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
-                // 'stripe_version' determined by default built into stripe-php library - upgrade the library to get
-                // a new version. See \Stripe\Util\ApiVersion::CURRENT
+                'stripe_version' => ApiVersion::CURRENT,
             ];
             return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
