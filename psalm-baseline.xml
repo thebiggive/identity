@@ -30,7 +30,6 @@
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiKey']]]></code>
-      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiVersion']]]></code>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
       <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
       <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
@@ -50,7 +49,6 @@
       <code><![CDATA[$settings]]></code>
     </MixedAssignment>
     <MixedMethodCall>
-      <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>

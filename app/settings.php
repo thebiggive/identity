@@ -89,7 +89,6 @@ return function (ContainerBuilder $containerBuilder) {
                 ],
                 'stripe' => [
                     'apiKey' => getenv('STRIPE_SECRET_KEY'),
-                    'apiVersion' => getenv('STRIPE_API_VERSION'),
                 ],
                 'accountManagement' => [
                     'baseUri' => getenv('ACCOUNT_MANAGEMENT_BASE_URI'),
