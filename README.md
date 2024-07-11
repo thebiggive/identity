@@ -34,8 +34,9 @@ Depending on your Docker version you may need to replace `docker-compose` with `
 ### Start the app
 
 To start the app and its dependency (`db`) locally:
-
-    docker-compose up -d app # (see note above about docker-compose command)
+```shell
+docker-compose up -d app # (see note above about docker-compose command)
+```
 
 ### First run
 
