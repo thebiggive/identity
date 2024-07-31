@@ -39,7 +39,6 @@ class UpdateTest extends TestCase
         // It's important we are prescriptive about the most essential properties of the mock-persisted
         // object in at least 1 test. Otherwise we can end up with bugs like ID-30 where properties
         // are set unexpectedly but unit tests do not surface a problem.
-        /** @var Argument\Token\CallbackToken $personToken */
         $personToken = Argument::that(function ($actual) {
             return $actual instanceof Person && $actual->stripe_customer_id === static::$testPersonStripeCustomerId;
         });

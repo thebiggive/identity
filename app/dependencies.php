@@ -140,7 +140,7 @@ return function (ContainerBuilder $containerBuilder) {
             return $config;
         },
 
-        ProblemDetailsResponseFactory::class => static function (ContainerInterface $c): ProblemDetailsResponseFactory {
+        ProblemDetailsResponseFactory::class => static function (): ProblemDetailsResponseFactory {
             return new ProblemDetailsResponseFactory(new ResponseFactory());
         },
 
@@ -205,7 +205,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
         },
 
-        ValidatorInterface::class => static function (ContainerInterface $c): ValidatorInterface {
+        ValidatorInterface::class => static function (): ValidatorInterface {
             return Validation::createValidatorBuilder()
                 ->enableAttributeMapping()
                 ->getValidator();

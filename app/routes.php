@@ -16,6 +16,8 @@ use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PlainRecaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
@@ -59,7 +61,8 @@ return function (App $app) {
         ->add(RateLimitMiddleware::class);
 
     // CORS Pre-Flight OPTIONS Request Handler
-    $app->options('/{routes:.+}', function ($request, $response, $args) {
-        return $response;
-    });
+    $app->options(
+        '/{routes:.+}',
+        fn(RequestInterface $request, ResponseInterface $response, array $_args) => $response
+    );
 };

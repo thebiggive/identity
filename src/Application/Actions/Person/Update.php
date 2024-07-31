@@ -122,7 +122,6 @@ class Update extends Action
         $personHadPassword = $person->getPasswordHash() !== null;
 
         try {
-            /** @var Person $person */
             $this->serializer->deserialize(
                 $body = ((string) $request->getBody()),
                 Person::class,

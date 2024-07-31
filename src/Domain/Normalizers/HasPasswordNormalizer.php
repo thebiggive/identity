@@ -12,6 +12,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInterface
 {
+    /**
+     * @psalm-suppress PossiblyUnusedMethod - called by PHP-DI
+     */
     public function __construct(private readonly PropertyNormalizer $normalizer)
     {
     }
@@ -27,6 +30,10 @@ class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInter
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         $data = $this->normalizer->normalize($object, $format, $context);
+
+        \assert(is_array($data));
+        // in other usages normalize can return several types, as we've been using it is always array.
+
         $data['has_password'] = $object->getPasswordHash() !== null;
 
         // Don't leak unnecessary sensitive password data back in the response object.
