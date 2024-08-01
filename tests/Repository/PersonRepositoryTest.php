@@ -8,14 +8,14 @@ use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
+use DI\Container;
 use Prophecy\Argument;
 
 class PersonRepositoryTest extends TestCase
 {
     public function testRegistrationMailSuccess(): void
     {
-        $app = $this->getAppInstance();
-        $container = $app->getContainer();
+        $container = $this->getContainer();
 
         $mailerProphecy = $this->prophesize(Mailer::class);
         $mailerProphecy
@@ -33,8 +33,7 @@ class PersonRepositoryTest extends TestCase
 
     public function testRegistrationMailFailure(): void
     {
-        $app = $this->getAppInstance();
-        $container = $app->getContainer();
+        $container = $this->getContainer();
 
         $mailerProphecy = $this->prophesize(Mailer::class);
         $mailerProphecy

@@ -42,7 +42,7 @@ class LoginTest extends TestCase
         )
             ->shouldBeCalledOnce();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
             'captcha_code' => 'good response',
@@ -75,7 +75,7 @@ class LoginTest extends TestCase
             ->shouldBeCalledOnce()
             ->willReturn(null);
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
             'captcha_code' => 'good response',
@@ -114,7 +114,7 @@ class LoginTest extends TestCase
             ->shouldBeCalledOnce()
             ->willReturn($personWithHashNotMatchingRawPassword);
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
             'captcha_code' => 'good response',
@@ -154,7 +154,7 @@ class LoginTest extends TestCase
         $personRepoProphecy->findPasswordEnabledPersonByEmailAddress($person->email_address)
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
             'captcha_code' => 'bad response',

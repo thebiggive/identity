@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests;
 
+use DI\Container;
 use DI\ContainerBuilder;
 use Exception;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
@@ -25,12 +26,18 @@ class TestCase extends PHPUnit_TestCase
 {
     use ProphecyTrait;
 
+    private ?App $appInstance = null;
+
     /**
      * @return App
      * @throws Exception
      */
     protected function getAppInstance(): App
     {
+        if ($this->appInstance) {
+            return $this->appInstance;
+        }
+
         // Instantiate PHP-DI ContainerBuilder
         $containerBuilder = new ContainerBuilder();
 
@@ -89,6 +96,8 @@ class TestCase extends PHPUnit_TestCase
         $routes = require __DIR__ . '/../app/routes.php';
         $routes($app);
 
+        $this->appInstance = $app;
+
         return $app;
     }
 
@@ -120,5 +129,14 @@ class TestCase extends PHPUnit_TestCase
         }
 
         return new SlimRequest($method, $uri, $h, $cookies, $serverParams, $stream);
+    }
+
+    protected function getContainer(): Container
+    {
+        $container = $this->getAppInstance()->getContainer();
+
+        \assert($container instanceof Container);
+
+        return $container;
     }
 }

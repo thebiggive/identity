@@ -43,8 +43,8 @@ class CreateTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest([
             'captcha_code' => 'good response',
@@ -83,7 +83,7 @@ class CreateTest extends TestCase
         $entityManagerProphecy->persist(Argument::type(Person::class))->shouldNotBeCalled();
         $entityManagerProphecy->flush()->shouldNotBeCalled();
 
-        $app->getContainer()->set(EntityManagerInterface::class, $entityManagerProphecy->reveal());
+        $this->getContainer()->set(EntityManagerInterface::class, $entityManagerProphecy->reveal());
 
         $request = $this->buildRequest([
             'first_name' => $person->first_name,
@@ -109,7 +109,7 @@ class CreateTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest([
             'first_name' => $person->first_name,

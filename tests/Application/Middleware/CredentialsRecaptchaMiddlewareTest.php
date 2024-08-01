@@ -9,6 +9,7 @@ use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Credentials;
 use BigGive\Identity\Tests\TestCase;
+use DI\Container;
 use Psr\Log\LoggerInterface;
 use ReCaptcha\ReCaptcha;
 use Slim\CallableResolver;
@@ -70,8 +71,7 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
 
     public function testSuccessWithBypass(): void
     {
-        $app = $this->getAppInstance();
-        $container = $app->getContainer();
+        $container = $this->getContainer();
 
         $standardSettings = $container->get(SettingsInterface::class);
 
