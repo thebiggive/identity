@@ -12,8 +12,7 @@ class FriendlyCaptchaVerifier
         private string $secret,
         private string $siteKey,
         private LoggerInterface $logger,
-    )
-    {
+    ) {
     }
     /**
      * @param string $solution Captcha solution submitted from the browser
