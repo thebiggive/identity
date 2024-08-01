@@ -7,7 +7,6 @@
       <code><![CDATA[$c->get(ProblemDetailsResponseFactory::class)]]></code>
       <code><![CDATA[$c->get(Psr16Cache::class)]]></code>
       <code><![CDATA[$c->get(Redis::class)]]></code>
-      <code><![CDATA[$c->get(SettingsInterface::class)->get('bypassPsp')]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('doctrine')['connection']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('los_rate_limit')]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
@@ -29,7 +28,6 @@
       <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
-      <code><![CDATA[$c->get(SettingsInterface::class)->get('stripe')['apiKey']]]></code>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
       <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
       <code><![CDATA[$doctrineSettings['dev_mode']]]></code>
@@ -49,7 +47,6 @@
       <code><![CDATA[$settings]]></code>
     </MixedAssignment>
     <MixedMethodCall>
-      <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
@@ -180,9 +177,6 @@
     <PossiblyNullArgument>
       <code><![CDATA[$personId]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullReference>
-      <code><![CDATA[getArgument]]></code>
-    </PossiblyNullReference>
   </file>
   <file src="src/Application/Middleware/RecaptchaMiddleware.php">
     <MixedArgument>
@@ -467,14 +461,6 @@
   </file>
   <file src="tests/Application/Middleware/CredentialsRecaptchaMiddlewareTest.php">
     <MixedArgument>
-      <code><![CDATA[$container->get(LoggerInterface::class)]]></code>
-      <code><![CDATA[$container->get(LoggerInterface::class)]]></code>
-      <code><![CDATA[$container->get(ReCaptcha::class)]]></code>
-      <code><![CDATA[$container->get(ReCaptcha::class)]]></code>
-      <code><![CDATA[$container->get(SerializerInterface::class)]]></code>
-      <code><![CDATA[$container->get(SerializerInterface::class)]]></code>
-      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
-      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
       <code><![CDATA[$credentialsSerialised]]></code>
       <code><![CDATA[$credentialsSerialised]]></code>
       <code><![CDATA[$credentialsSerialised]]></code>
@@ -522,10 +508,6 @@
   </file>
   <file src="tests/Application/Middleware/PersonRecaptchaMiddlewareTest.php">
     <MixedArgument>
-      <code><![CDATA[$container->get(LoggerInterface::class)]]></code>
-      <code><![CDATA[$container->get(ReCaptcha::class)]]></code>
-      <code><![CDATA[$container->get(SerializerInterface::class)]]></code>
-      <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
       <code><![CDATA[$personSerialised]]></code>
       <code><![CDATA[$personSerialised]]></code>
       <code><![CDATA[$personSerialised]]></code>

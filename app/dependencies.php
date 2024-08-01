@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client;
 use BigGive\Identity\Client\Mailer;
@@ -160,6 +161,24 @@ return function (ContainerBuilder $containerBuilder) {
             return new ReCaptcha($c->get(SettingsInterface::class)->get('recaptcha')['secret_key'], new CurlPost());
         },
 
+        FriendlyCaptchaVerifier::class => static function (ContainerInterface $c): FriendlyCaptchaVerifier {
+        /** @var array{api_key: string, site_key: string} $settings */
+            $settings = $c->get(SettingsInterface::class)->get('friendly_captcha');
+
+            $client = $c->get(GuzzleClient::class);
+            \assert($client instanceof GuzzleClient);
+
+            $logger = $c->get(LoggerInterface::class);
+            \assert($logger instanceof LoggerInterface);
+
+            return new FriendlyCaptchaVerifier(
+                client: $client,
+                secret: $settings['api_key'],
+                siteKey: $settings['site_key'],
+                logger: $logger,
+            );
+        },
+
         // Note that *unlike MatchBot* we share the same instance with Doctrine + other stuff,
         // as we do not require the serializer option to be set off for anything in this app.
         Redis::class => static function (ContainerInterface $c): ?Redis {
@@ -198,11 +217,19 @@ return function (ContainerBuilder $containerBuilder) {
             // https://github.com/thebiggive/matchbot/pull/927/files/5fa930f3eee3b0c919bcc1027319dc7ae9d0be05#diff-c4fef49ee08946228bb39de898c8770a1a6a8610fc281627541ec2e49c67b118
             \assert(ApiVersion::CURRENT === '2024-06-20');
 
+            $settings = $c->get(SettingsInterface::class);
+            \assert($settings instanceof SettingsInterface);
+
+            /** @var array{apiKey: string} $stripeSettings */
+            $stripeSettings = $settings->get('stripe');
             $stripeOptions = [
-                'api_key' => $c->get(SettingsInterface::class)->get('stripe')['apiKey'],
+                'api_key' => $stripeSettings['apiKey'],
                 'stripe_version' => ApiVersion::CURRENT,
             ];
-            return new Client\Stripe($c->get(SettingsInterface::class)->get('bypassPsp'), $stripeOptions);
+            $stubbed = $settings->get('bypassPsp');
+            \assert(is_bool($stubbed));
+
+            return new Client\Stripe($stubbed, $stripeOptions);
         },
 
         ValidatorInterface::class => static function (): ValidatorInterface {

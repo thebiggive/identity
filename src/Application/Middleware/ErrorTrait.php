@@ -13,7 +13,7 @@ use Slim\Exception\HttpUnauthorizedException;
  */
 trait ErrorTrait
 {
-    protected function unauthorised(LoggerInterface $logger, bool $likelyBot, ServerRequestInterface $request): void
+    protected function unauthorised(LoggerInterface $logger, bool $likelyBot, ServerRequestInterface $request): never
     {
         if ($likelyBot) {
             // We've seen traffic with no JWTs from crawlers etc. before so don't

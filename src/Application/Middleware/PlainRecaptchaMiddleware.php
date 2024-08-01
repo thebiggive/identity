@@ -15,4 +15,9 @@ class PlainRecaptchaMiddleware extends RecaptchaMiddleware
 
         return reset($captchaHeaders);
     }
+
+    protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): bool
+    {
+        return false;
+    }
 }
