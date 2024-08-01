@@ -40,7 +40,7 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
     {
         $captchaCode = $this->getCode($request);
 
-        if ($this->isUsingFriendlyCaptcha($request)) {
+        if ($this->isUsingFriendlyCaptcha($request) && getenv('APP_ENV') !== 'production') {
             if (!$this->friendlyCaptchaVerifier->verify($captchaCode)) {
                 $this->unauthorised($this->logger, true, $request);
             }
