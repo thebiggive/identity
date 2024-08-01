@@ -11,25 +11,7 @@ use Symfony\Component\Uid\Uuid;
 
 class PersonTest extends TestCase
 {
-    public function personProvider(): array
-    {
-        return [
-            [1, 'bill.gates', 'Bill', 'Gates'],
-            [2, 'steve.jobs', 'Steve', 'Jobs'],
-            [3, 'mark.zuckerberg', 'Mark', 'Zuckerberg'],
-            [4, 'evan.spiegel', 'Evan', 'Spiegel'],
-            [5, 'jack.dorsey', 'Jack', 'Dorsey'],
-        ];
-    }
-
-    /**
-     * @dataProvider personProvider
-     * @param int    $id
-     * @param string $username
-     * @param string $firstName
-     * @param string $lastName
-     */
-    public function testGetters(int $id, string $username, string $firstName, string $lastName): void
+    public function testGetters(): void
     {
         $person = new Person();
         $person->setId(Uuid::v4());
@@ -42,14 +24,7 @@ class PersonTest extends TestCase
         $this->assertEquals('James', $person->getLastName());
     }
 
-    /**
-     * @dataProvider personProvider
-     * @param int    $id
-     * @param string $username
-     * @param string $firstName
-     * @param string $lastName
-     */
-    public function testJsonSerialize(int $id, string $username, string $firstName, string $lastName): void
+    public function testJsonSerialize(): void
     {
         $person = new Person();
         $person->setId(Uuid::v4());
@@ -65,13 +40,6 @@ class PersonTest extends TestCase
         $this->assertEquals('loraine@hyperdub.net', $jsonData['email_address']);
     }
 
-    /**
-     * @dataProvider personProvider
-     * @param int    $id
-     * @param string $username
-     * @param string $firstName
-     * @param string $lastName
-     */
     public function testToMailerPayload(): void
     {
         $person = new Person();

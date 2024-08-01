@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * @psalm-suppress PossiblyUnusedProperty - properties are used in FE after this is serialised.
+ *
  * @OA\Schema(
  *  description="Person – initially anonymous. To be login-ready, first_name,
  *  last_name, email_address and password are required.",
@@ -164,7 +166,7 @@ class Person
 
     /**
      * @OA\Property()
-     */
+     * */
     public bool $has_password = false;
 
     /**
@@ -264,6 +266,8 @@ class Person
 
     /**
      * @see Person::$captcha_code
+     *
+     * @psalm-suppress PossiblyUnusedMethod - used via callback.
      */
     #[Assert\Callback(groups: ['new'])]
     public function validateCaptchaExistsIfNew(ExecutionContextInterface $context): void
@@ -280,6 +284,8 @@ class Person
      * @see Person::$raw_password
      *
      * Checks for whether password was compromised using the API of https://haveibeenpwned.com/Passwords
+     *
+     * @psalm-suppress PossiblyUnusedMethod - used via callback.
      */
     #[Assert\Callback(groups: ["complete"])]
     public function validatePasswordIfNotBlank(ExecutionContextInterface $context): void

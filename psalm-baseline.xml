@@ -64,28 +64,11 @@
     <MixedOperand>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
     </MixedOperand>
-    <UnusedClosureParam>
-      <code><![CDATA[$c]]></code>
-      <code><![CDATA[$c]]></code>
-    </UnusedClosureParam>
   </file>
   <file src="app/repositories.php">
     <MixedMethodCall>
       <code><![CDATA[getRepository]]></code>
     </MixedMethodCall>
-  </file>
-  <file src="app/routes.php">
-    <MissingClosureParamType>
-      <code><![CDATA[$args]]></code>
-      <code><![CDATA[$request]]></code>
-      <code><![CDATA[$response]]></code>
-    </MissingClosureParamType>
-    <MissingClosureReturnType>
-      <code><![CDATA[function ($request, $response, $args) {]]></code>
-    </MissingClosureReturnType>
-    <UnusedClosureParam>
-      <code><![CDATA[$args]]></code>
-    </UnusedClosureParam>
   </file>
   <file src="public/index.php">
     <MixedArgument>
@@ -120,9 +103,6 @@
     <PossiblyNullArgument>
       <code><![CDATA[$person->stripe_customer_id]]></code>
     </PossiblyNullArgument>
-    <UnnecessaryVarAnnotation>
-      <code><![CDATA[Person|null]]></code>
-    </UnnecessaryVarAnnotation>
   </file>
   <file src="src/Application/Actions/Login.php">
     <PossiblyNullArgument>
@@ -150,9 +130,6 @@
     <RiskyTruthyFalsyComparison>
       <code><![CDATA[$person->stripe_customer_id]]></code>
     </RiskyTruthyFalsyComparison>
-    <UnnecessaryVarAnnotation>
-      <code><![CDATA[Person|null]]></code>
-    </UnnecessaryVarAnnotation>
   </file>
   <file src="src/Application/Actions/Person/Update.php">
     <PossiblyNullArgument>
@@ -166,9 +143,6 @@
       <code><![CDATA[empty($person->home_address_line_1)]]></code>
       <code><![CDATA[empty($person->home_postcode)]]></code>
     </RiskyTruthyFalsyComparison>
-    <UnnecessaryVarAnnotation>
-      <code><![CDATA[Person]]></code>
-    </UnnecessaryVarAnnotation>
   </file>
   <file src="src/Application/Actions/Status.php">
     <InternalMethod>
@@ -209,9 +183,6 @@
     <PossiblyNullReference>
       <code><![CDATA[getArgument]]></code>
     </PossiblyNullReference>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="src/Application/Middleware/RecaptchaMiddleware.php">
     <MixedArgument>
@@ -255,57 +226,14 @@
     </MissingConstructor>
   </file>
   <file src="src/Domain/Normalizers/HasPasswordNormalizer.php">
-    <InvalidReturnStatement>
-      <code><![CDATA[$data]]></code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code><![CDATA[array]]></code>
-    </InvalidReturnType>
     <MixedMethodCall>
       <code><![CDATA[getPasswordHash]]></code>
     </MixedMethodCall>
-    <NullableReturnStatement>
-      <code><![CDATA[$data]]></code>
-    </NullableReturnStatement>
-    <PossiblyInvalidArrayAccess>
-      <code><![CDATA[$data['password']]]></code>
-      <code><![CDATA[$data['raw_password']]]></code>
-    </PossiblyInvalidArrayAccess>
-    <PossiblyInvalidArrayAssignment>
-      <code><![CDATA[$data['has_password']]]></code>
-    </PossiblyInvalidArrayAssignment>
-    <PossiblyNullArrayAccess>
-      <code><![CDATA[$data['password']]]></code>
-      <code><![CDATA[$data['raw_password']]]></code>
-    </PossiblyNullArrayAccess>
-    <PossiblyNullReference>
-      <code><![CDATA[$data]]></code>
-      <code><![CDATA[$data]]></code>
-      <code><![CDATA[$data]]></code>
-      <code><![CDATA[$data]]></code>
-    </PossiblyNullReference>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="src/Domain/PasswordResetToken.php">
-    <UnusedProperty>
-      <code><![CDATA[$id]]></code>
-    </UnusedProperty>
   </file>
   <file src="src/Domain/Person.php">
     <MixedArgument>
       <code><![CDATA[static::MIN_PASSWORD_LENGTH]]></code>
     </MixedArgument>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[validateCaptchaExistsIfNew]]></code>
-      <code><![CDATA[validatePasswordIfNotBlank]]></code>
-    </PossiblyUnusedMethod>
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$cash_balance]]></code>
-      <code><![CDATA[$completion_jwt]]></code>
-      <code><![CDATA[$has_password]]></code>
-    </PossiblyUnusedProperty>
     <PropertyNotSetInConstructor>
       <code><![CDATA[Person]]></code>
       <code><![CDATA[Person]]></code>
@@ -317,21 +245,17 @@
   </file>
   <file src="src/Repository/PersonRepository.php">
     <ArgumentTypeCoercion>
-      <code><![CDATA[$class]]></code>
       <code><![CDATA[$person->toMailerPayload()]]></code>
     </ArgumentTypeCoercion>
+    <MissingConstructor>
+      <code><![CDATA[$mailerClient]]></code>
+    </MissingConstructor>
     <MixedInferredReturnType>
       <code><![CDATA[?Person]]></code>
     </MixedInferredReturnType>
     <MixedReturnStatement>
       <code><![CDATA[$qb->getQuery()->getOneOrNullResult()]]></code>
     </MixedReturnStatement>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-    <PropertyNotSetInConstructor>
-      <code><![CDATA[$mailerClient]]></code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Application/Actions/ActionTest.php">
     <MissingReturnType>
@@ -515,9 +439,6 @@
       <code><![CDATA[set]]></code>
       <code><![CDATA[set]]></code>
     </UndefinedInterfaceMethod>
-    <UnnecessaryVarAnnotation>
-      <code><![CDATA[Argument\Token\CallbackToken]]></code>
-    </UnnecessaryVarAnnotation>
   </file>
   <file src="tests/Application/Actions/StatusTest.php">
     <DeprecatedMethod>
@@ -643,9 +564,6 @@
     <InternalMethod>
       <code><![CDATA[addToAssertionCount]]></code>
     </InternalMethod>
-    <NullArgument>
-      <code><![CDATA[null]]></code>
-    </NullArgument>
     <RedundantCondition>
       <code><![CDATA[assertIsString]]></code>
     </RedundantCondition>
@@ -712,31 +630,12 @@
       <code><![CDATA[$json]]></code>
       <code><![CDATA[$jsonData]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code><![CDATA[array]]></code>
-    </MixedInferredReturnType>
     <MixedMethodCall>
       <code><![CDATA[serialize]]></code>
     </MixedMethodCall>
     <PossiblyNullReference>
       <code><![CDATA[get]]></code>
     </PossiblyNullReference>
-    <PossiblyUnusedParam>
-      <code><![CDATA[$firstName]]></code>
-      <code><![CDATA[$firstName]]></code>
-      <code><![CDATA[$id]]></code>
-      <code><![CDATA[$id]]></code>
-      <code><![CDATA[$lastName]]></code>
-      <code><![CDATA[$lastName]]></code>
-      <code><![CDATA[$username]]></code>
-      <code><![CDATA[$username]]></code>
-    </PossiblyUnusedParam>
-    <UnusedDocblockParam>
-      <code><![CDATA[$firstName]]></code>
-      <code><![CDATA[$id]]></code>
-      <code><![CDATA[$lastName]]></code>
-      <code><![CDATA[$username]]></code>
-    </UnusedDocblockParam>
   </file>
   <file src="tests/Repository/PersonRepositoryTest.php">
     <MixedAssignment>

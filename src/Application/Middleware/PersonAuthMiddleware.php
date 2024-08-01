@@ -23,6 +23,9 @@ abstract class PersonAuthMiddleware implements MiddlewareInterface
      */
     abstract protected function getCompletePropertyRequirement(): ?bool;
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod - called by PHP-DI
+     */
     #[Pure]
     public function __construct(
         private LoggerInterface $logger
