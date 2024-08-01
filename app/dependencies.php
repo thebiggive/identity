@@ -168,10 +168,14 @@ return function (ContainerBuilder $containerBuilder) {
             $client = $c->get(GuzzleClient::class);
             \assert($client instanceof GuzzleClient);
 
+            $logger = $c->get(LoggerInterface::class);
+            \assert($logger instanceof LoggerInterface);
+
             return new FriendlyCaptchaVerifier(
                 client: $client,
                 secret: $settings['api_key'],
                 siteKey: $settings['site_key'],
+                logger: $logger,
             );
         },
 

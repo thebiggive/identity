@@ -3,10 +3,16 @@
 namespace BigGive\Identity\Application\Middleware;
 
 use GuzzleHttp\Client;
+use Psr\Log\LoggerInterface;
 
 class FriendlyCaptchaVerifier
 {
-    public function __construct(private Client $client, private string $secret, private string $siteKey)
+    public function __construct(
+        private Client $client,
+        private string $secret,
+        private string $siteKey,
+        private LoggerInterface $logger,
+    )
     {
     }
     /**
@@ -28,7 +34,9 @@ class FriendlyCaptchaVerifier
             ]
         );
 
-        if ($response->getStatusCode() !== 200) {
+        $statusCode = $response->getStatusCode();
+        if ($statusCode  !== 200) {
+            $this->logger->error("Friendly Captcha verification failed: ($statusCode), {$response->getReasonPhrase()}");
             // not the fault of the client if we don't get a 200 response, so we must assume their solution was good.
             return true;
         }
