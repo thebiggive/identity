@@ -25,22 +25,28 @@ class FriendlyCaptchaVerifier
         $response = $this->client->post(
             'https://api.friendlycaptcha.com/api/v1/siteverify',
             [
-                'body' => \json_encode([
+                'json' => [
                     'solution' => $solution,
                     'secret' => $this->secret,
                     'siteKey' => $this->siteKey,
-                ])
+                ],
+                'http_errors' => false, // https://docs.guzzlephp.org/en/stable/request-options.html#http-errors
             ]
         );
 
         $statusCode = $response->getStatusCode();
+        $responseContent = $response->getBody()->getContents();
+
         if ($statusCode  !== 200) {
             $this->logger->error("Friendly Captcha verification failed: ($statusCode), {$response->getReasonPhrase()}");
+            $this->logger->error("Friendly Captcha verification response:" . $responseContent);
             // not the fault of the client if we don't get a 200 response, so we must assume their solution was good.
+
             return true;
         }
 
-        $responseData = json_decode($response->getBody()->getContents(), true);
+        $responseData = json_decode($responseContent, true);
+
         \assert(is_array($responseData));
 
         return (bool) $responseData['success'];
