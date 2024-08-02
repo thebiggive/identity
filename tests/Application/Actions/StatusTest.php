@@ -6,6 +6,7 @@ namespace BigGive\Identity\Tests\Application\Actions;
 
 use BigGive\Identity\Application\Actions\ActionPayload;
 use BigGive\Identity\Tests\TestCase;
+use DI\Container;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
@@ -33,7 +34,7 @@ class StatusTest extends TestCase
         $app = $this->getAppInstance();
 
         $entityManager = $this->getConnectedMockEntityManager();
-        $app->getContainer()->set(EntityManagerInterface::class, $entityManager);
+        $this->getContainer()->set(EntityManagerInterface::class, $entityManager);
 
         $request = $this->createRequest('GET', '/ping');
         $response = $app->handle($request);
@@ -57,7 +58,7 @@ class StatusTest extends TestCase
         $entityManagerProphecy = $this->prophesize(EntityManagerInterface::class);
         $entityManagerProphecy->getConnection()->shouldBeCalledTimes(2)->willReturn($connectionProphecy->reveal());
 
-        $app->getContainer()->set(EntityManagerInterface::class, $entityManagerProphecy->reveal());
+        $this->getContainer()->set(EntityManagerInterface::class, $entityManagerProphecy->reveal());
 
         $request = $this->createRequest('GET', '/ping');
         $response = $app->handle($request);
@@ -76,7 +77,7 @@ class StatusTest extends TestCase
 
         // Use a deliberately wrong path so proxies are absent.
         $entityManager = $this->getConnectedMockEntityManager('/tmp/not/this/dir/proxies');
-        $app->getContainer()->set(EntityManagerInterface::class, $entityManager);
+        $this->getContainer()->set(EntityManagerInterface::class, $entityManager);
 
         $request = $this->createRequest('GET', '/ping');
         $response = $app->handle($request);
@@ -159,8 +160,7 @@ class StatusTest extends TestCase
      */
     private function generateORMProxiesAtRealPath(): void
     {
-        $app = $this->getAppInstance();
-        $container = $app->getContainer();
+        $container = $this->getContainer();
 
         $container->set(EntityManagerInterface::class, $this->getConnectedMockEntityManager());
 

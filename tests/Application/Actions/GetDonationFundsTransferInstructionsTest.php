@@ -50,8 +50,8 @@ class GetDonationFundsTransferInstructionsTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Stripe::class, $stripeClientProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->createRequest(
             'GET',

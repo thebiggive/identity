@@ -101,6 +101,12 @@ class Token
 
     private static function getSecret(): string
     {
-        return getenv('JWT_ID_SECRET');
+        $secret = getenv('JWT_ID_SECRET');
+
+        if ($secret === false) {
+            throw new \Exception("JWT_ID_SECRET not set in environment");
+        }
+
+        return $secret;
     }
 }

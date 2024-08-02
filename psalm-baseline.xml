@@ -154,12 +154,6 @@
     </PossiblyNullArgument>
   </file>
   <file src="src/Application/Auth/Token.php">
-    <FalsableReturnStatement>
-      <code><![CDATA[getenv('JWT_ID_SECRET')]]></code>
-    </FalsableReturnStatement>
-    <InvalidFalsableReturnType>
-      <code><![CDATA[string]]></code>
-    </InvalidFalsableReturnType>
     <MixedPropertyFetch>
       <code><![CDATA[$decodedJwtBody->sub->complete]]></code>
       <code><![CDATA[$decodedJwtBody->sub->person_id]]></code>
@@ -286,14 +280,6 @@
       <code><![CDATA[$responseData->bank_transfer->financial_addresses[0]->sort_code->account_number]]></code>
       <code><![CDATA[$responseData->object]]></code>
     </MixedPropertyFetch>
-    <PossiblyNullReference>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/LoginTest.php">
     <MixedAssignment>
@@ -306,32 +292,6 @@
     <PossiblyNullArgument>
       <code><![CDATA[$person->raw_password]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullReference>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
-  </file>
-  <file src="tests/Application/Actions/Person/CreateTest.php">
-    <PossiblyNullReference>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/Person/GetTest.php">
     <MixedArgument>
@@ -360,28 +320,6 @@
       <code><![CDATA[$payload->id]]></code>
       <code><![CDATA[$payload->id]]></code>
     </MixedPropertyFetch>
-    <PossiblyNullReference>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/Person/UpdateTest.php">
     <MixedArgument>
@@ -403,36 +341,6 @@
     <PossiblyNullArgument>
       <code><![CDATA[$person->raw_password]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullReference>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Actions/StatusTest.php">
     <DeprecatedMethod>
@@ -445,19 +353,6 @@
       <code><![CDATA[$config->getProxyDir()]]></code>
       <code><![CDATA[$config->getProxyNamespace()]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullReference>
-      <code><![CDATA[get]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Middleware/CredentialsRecaptchaMiddlewareTest.php">
     <MixedArgument>
@@ -500,11 +395,7 @@
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
-      <code><![CDATA[get]]></code>
     </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Application/Middleware/PersonRecaptchaMiddlewareTest.php">
     <MixedArgument>
@@ -630,16 +521,6 @@
       <code><![CDATA[setMailerClient]]></code>
       <code><![CDATA[setMailerClient]]></code>
     </MixedMethodCall>
-    <PossiblyNullReference>
-      <code><![CDATA[get]]></code>
-      <code><![CDATA[get]]></code>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </PossiblyNullReference>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[set]]></code>
-      <code><![CDATA[set]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/TestCase.php">
     <MixedArgument>
