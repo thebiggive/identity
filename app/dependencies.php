@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Middleware\AlwaysPassFriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client;
@@ -170,6 +171,15 @@ return function (ContainerBuilder $containerBuilder) {
 
             $logger = $c->get(LoggerInterface::class);
             \assert($logger instanceof LoggerInterface);
+
+            if (getenv('APP_ENV') === 'regression') {
+                return new AlwaysPassFriendlyCaptchaVerifier(
+                    client: $client,
+                    secret: $settings['api_key'],
+                    siteKey: $settings['site_key'],
+                    logger: $logger,
+                );
+            }
 
             return new FriendlyCaptchaVerifier(
                 client: $client,
