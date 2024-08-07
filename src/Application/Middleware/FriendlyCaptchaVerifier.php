@@ -38,8 +38,12 @@ class FriendlyCaptchaVerifier
         $responseContent = $response->getBody()->getContents();
 
         if ($statusCode  !== 200) {
+            // we can log part of the secret for debugging so we can see which one its using without exposing the whole
+            // secret.
+            $secretEndsWith = substr($this->secret, -3);
             $this->logger->error("Friendly Captcha verification failed: ($statusCode), {$response->getReasonPhrase()}");
             $this->logger->error("Friendly Captcha verification response:" . $responseContent);
+            $this->logger->info("Configured friendly captcha secret ends with: $secretEndsWith");
             // not the fault of the client if we don't get a 200 response, so we must assume their solution was good.
 
             return true;
