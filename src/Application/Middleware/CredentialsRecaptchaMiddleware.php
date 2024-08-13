@@ -21,4 +21,9 @@ class CredentialsRecaptchaMiddleware extends RecaptchaMiddleware
 
         return $credentials->captcha_code;
     }
+
+    protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): bool
+    {
+        return false;
+    }
 }

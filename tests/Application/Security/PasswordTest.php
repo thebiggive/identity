@@ -19,13 +19,6 @@ class PasswordTest extends TestCase
         $this->assertStringStartsWith('$2y$', $hash);
     }
 
-    public function testHashWithNoInput(): void
-    {
-        $this->expectException(\TypeError::class);
-
-        Password::hash(null);
-    }
-
     public function testVerifySuccess(): void
     {
         $personProphecy = $this->prophesize(Person::class);

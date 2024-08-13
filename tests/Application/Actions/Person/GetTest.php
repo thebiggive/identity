@@ -37,8 +37,8 @@ class GetTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_usable_credit'));
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_usable_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -79,8 +79,8 @@ class GetTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_zero_credit'));
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_zero_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -117,8 +117,8 @@ class GetTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_no_credit'));
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_no_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -147,8 +147,7 @@ class GetTest extends TestCase
         $person = $this->getInitialisedPerson(true);
 
         $app = $this->getAppInstance();
-        /** @var Container $container */
-        $container = $app->getContainer();
+        $container = $this->getContainer();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(self::$testPersonUuid)
@@ -203,8 +202,8 @@ class GetTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_manual_only_credit'));
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Stripe::class, $this->getStripeClientWithMock('customer_manual_only_credit'));
 
         $response = $app->handle($this->buildRequest(static::$testPersonUuid));
         $payloadJSON = (string) $response->getBody();
@@ -248,8 +247,7 @@ class GetTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        /** @var Container $container */
-        $container = $app->getContainer();
+        $container = $this->getContainer();
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
         $container->set(Stripe::class, $this->getStripeClientWithMock('customer_new_no_pii'));
 
@@ -284,7 +282,7 @@ class GetTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequestRaw(static::$testPersonUuid);
 

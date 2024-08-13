@@ -57,7 +57,6 @@ class GetDonationFundsTransferInstructions extends Action
 
     public function action(Request $request, array $args): ResponseInterface
     {
-        /** @var Person|null $person */
         $person = $this->personRepository->find($this->resolveArg($args, $request, 'personId'));
         if (!$person) {
             throw new HttpNotFoundException($request, 'Person not found');

@@ -22,11 +22,6 @@ class PersonRepository extends EntityRepository
     public const string EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
     private Mailer $mailerClient;
 
-    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
-    {
-        parent::__construct($em, $class);
-    }
-
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
         $qb = new QueryBuilder($this->getEntityManager());

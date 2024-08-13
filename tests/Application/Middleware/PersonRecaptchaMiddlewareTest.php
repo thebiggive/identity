@@ -6,6 +6,7 @@ namespace BigGive\Identity\Tests\Application\Middleware;
 
 use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
+use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
 use Psr\Log\LoggerInterface;
@@ -93,12 +94,9 @@ class PersonRecaptchaMiddlewareTest extends TestCase
         // outside the middleware, since that would mean creating a Person and so mocking DB bits
         // etc. So unlike for failure, we create an isolated middleware object to invoke.
 
-        $middleware = new PersonRecaptchaMiddleware(
-            $container->get(LoggerInterface::class), // null logger already set up
-            $container->get(ReCaptcha::class), // already mocked with success simulation
-            $container->get(SerializerInterface::class),
-            $container->get(SettingsInterface::class),
-        );
+        $middleware = $container->get(PersonRecaptchaMiddleware::class);
+        \assert($middleware instanceof PersonRecaptchaMiddleware);
+
         $response = $middleware->process($request, $this->getSuccessHandler());
 
         $this->assertEquals(200, $response->getStatusCode());

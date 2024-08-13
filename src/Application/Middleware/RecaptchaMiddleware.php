@@ -20,12 +20,16 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
 {
     use ErrorTrait;
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod - constructor called by framework
+     */
     #[Pure]
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly ReCaptcha $captcha,
         protected SerializerInterface $serializer,
         protected readonly SettingsInterface $settings,
+        private FriendlyCaptchaVerifier $friendlyCaptchaVerifier,
     ) {
     }
 
@@ -34,6 +38,16 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $captchaCode = $this->getCode($request);
+
+        if ($this->isUsingFriendlyCaptcha($request) && getenv('APP_ENV') !== 'production') {
+            if (!$this->friendlyCaptchaVerifier->verify($captchaCode)) {
+                $this->unauthorised($this->logger, true, $request);
+            }
+
+            return $handler->handle($request);
+        }
+
         if ($this->settings->get('recaptcha')['bypass']) {
             $this->logger->warning('Recaptcha verification bypassed');
             return $handler->handle($request);
@@ -42,8 +56,6 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
         $timesToAttemptCaptchaVerification = 2;
 
         for ($counter = 0; $counter < $timesToAttemptCaptchaVerification; $counter++) {
-            $captchaCode = $this->getCode($request);
-
             if ($captchaCode === null) {
                 $this->logger->log(LogLevel::WARNING, 'Security: captcha code not sent');
                 $this->unauthorised($this->logger, true, $request);
@@ -84,4 +96,6 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
     }
 
     abstract protected function getCode(ServerRequestInterface $request): ?string;
+
+    abstract protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): bool;
 }

@@ -39,7 +39,6 @@ class UpdateTest extends TestCase
         // It's important we are prescriptive about the most essential properties of the mock-persisted
         // object in at least 1 test. Otherwise we can end up with bugs like ID-30 where properties
         // are set unexpectedly but unit tests do not surface a problem.
-        /** @var Argument\Token\CallbackToken $personToken */
         $personToken = Argument::that(function ($actual) {
             return $actual instanceof Person && $actual->stripe_customer_id === static::$testPersonStripeCustomerId;
         });
@@ -67,8 +66,8 @@ class UpdateTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -149,8 +148,8 @@ class UpdateTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -227,8 +226,8 @@ class UpdateTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -268,8 +267,8 @@ class UpdateTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -317,7 +316,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -353,7 +352,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
@@ -402,8 +401,8 @@ class UpdateTest extends TestCase
         $stripeClientProphecy = $this->prophesize(Client\Stripe::class);
         $stripeClientProphecy->customers = $stripeCustomersProphecy->reveal();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
-        $app->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(Client\Stripe::class, $stripeClientProphecy->reveal());
 
         $request = $this->buildRequestRaw(static::$testPersonUuid, json_encode([
             'first_name' => $person->first_name,
@@ -426,7 +425,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->persist(Argument::type(Person::class))
             ->shouldNotBeCalled();
 
-        $app->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequestRaw(static::$testPersonUuid, '<')
             ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));

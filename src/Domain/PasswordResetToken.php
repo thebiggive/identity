@@ -10,6 +10,9 @@ use Exception;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * @psalm-suppress UnusedProperty - properties used in serialized token.
+ */
 #[ORM\Table(name: 'PasswordResetToken')]
 #[ORM\Index(name: 'secret', columns: ['secret'])]
 #[ORM\Entity(repositoryClass: PasswordResetTokenRepository::class)]

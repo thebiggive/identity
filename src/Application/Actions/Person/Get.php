@@ -75,7 +75,6 @@ class Get extends Action
      */
     protected function action(Request $request, array $args): Response
     {
-        /** @var Person|null $person */
         $person = $this->personRepository->find($this->resolveArg($args, $request, 'personId'));
         if (!$person) {
             throw new HttpNotFoundException($request, 'Person not found');
