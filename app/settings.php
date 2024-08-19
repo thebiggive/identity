@@ -11,6 +11,8 @@ return function (ContainerBuilder $containerBuilder) {
     // Global Settings Object
     $containerBuilder->addDefinitions([
         SettingsInterface::class => function () {
+            $isProduction = getenv('APP_ENV') === 'production';
+
             $doctrineConnectionOptions = [];
             if (getenv('APP_ENV') !== 'local') {
                 $doctrineConnectionOptions[PDO::MYSQL_ATTR_SSL_CA]
@@ -33,9 +35,9 @@ return function (ContainerBuilder $containerBuilder) {
                 'appEnv' => getenv('APP_ENV'),
                 'bypassPsp' => (
                     ((bool) getenv('BYPASS_PSP')) === true &&
-                    getenv('APP_ENV') !== 'production'
+                    ! $isProduction
                 ),
-                'displayErrorDetails' => true, // Should be set to false in production
+                'displayErrorDetails' => ! $isProduction,
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
                     'dev_mode' => in_array(getenv('APP_ENV'), ['local', 'test'], true),
@@ -80,7 +82,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'recaptcha' => [
                     'bypass' => (
                         ((bool) getenv('RECAPTCHA_BYPASS')) === true &&
-                        getenv('APP_ENV') !== 'production'
+                        ! $isProduction
                     ),
                     'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
                 ],
