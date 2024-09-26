@@ -14,11 +14,13 @@ class PasswordTest extends TestCase
     public function testHashSuccess(): void
     {
         $hash = Password::hash('somePass123');
-
-        $this->assertIsString($hash);
         $this->assertStringStartsWith('$2y$', $hash);
     }
 
+    /**
+     * @doesNotPerformAssertions - Implicit no-exceptions-on-verify assertion.
+     *
+     */
     public function testVerifySuccess(): void
     {
         $personProphecy = $this->prophesize(Person::class);
@@ -28,8 +30,6 @@ class PasswordTest extends TestCase
             ->shouldBeCalledOnce();
 
         Password::verify('somePass123', $personProphecy->reveal());
-        // Implicit no-exceptions-on-verify assertion.
-        $this->addToAssertionCount(1);
     }
 
     public function testVerifyFailure(): void

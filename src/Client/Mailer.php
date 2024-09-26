@@ -8,6 +8,10 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @psalm-type RequestBody = array{templateKey: string, recipientEmailAddress: string, params: array, ...}
+ * /
+ */
 class Mailer
 {
     public function __construct(
@@ -18,7 +22,7 @@ class Mailer
     }
 
     /**
-     * @psalm-param array{templateKey: string, recipientEmailAddress: string, params: array, ...} $requestBody
+     * @psalm-param RequestBody $requestBody
      */
     public function sendEmail(array $requestBody): bool
     {
