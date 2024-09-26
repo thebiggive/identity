@@ -84,7 +84,7 @@ return function (ContainerBuilder $containerBuilder) {
                         ! $isProduction &&
                         (
                             ((bool) getenv('RECAPTCHA_BYPASS')) === true ||
-                            isset($_SERVER['HTTP_X-Captcha-Bypass'])
+                            isset($_SERVER['HTTP_X_CAPTCHA_BYPASS'])
                         )
                     ),
                     'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
