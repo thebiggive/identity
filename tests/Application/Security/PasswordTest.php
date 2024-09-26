@@ -17,10 +17,6 @@ class PasswordTest extends TestCase
         $this->assertStringStartsWith('$2y$', $hash);
     }
 
-    /**
-     * @doesNotPerformAssertions - Implicit no-exceptions-on-verify assertion.
-     *
-     */
     public function testVerifySuccess(): void
     {
         $personProphecy = $this->prophesize(Person::class);
@@ -29,6 +25,7 @@ class PasswordTest extends TestCase
             ->willReturn('$2y$10$oR7vPV9UhgcU2.H3zGCS4.fZc1PlWOBQ56/k8cQPTEqzSggcKP9ei')
             ->shouldBeCalledOnce();
 
+        //  Implicit no-exceptions-on-verify assertion.
         Password::verify('somePass123', $personProphecy->reveal());
     }
 
