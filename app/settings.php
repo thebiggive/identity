@@ -81,8 +81,11 @@ return function (ContainerBuilder $containerBuilder) {
                 ],
                 'recaptcha' => [
                     'bypass' => (
-                        ((bool) getenv('RECAPTCHA_BYPASS')) === true &&
-                        ! $isProduction
+                        ! $isProduction &&
+                        (
+                            ((bool) getenv('RECAPTCHA_BYPASS')) === true ||
+                            isset($_SERVER['HTTP_X-Captcha-Bypass'])
+                        )
                     ),
                     'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
                 ],
