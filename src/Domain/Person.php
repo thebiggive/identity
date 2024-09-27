@@ -257,7 +257,11 @@ class Person
      */
     public function toMailerPayload(): array
     {
-        \assert($this->email_address !== null);
+        if ($this->email_address === null) {
+            throw new \RuntimeException(
+                "Email address is null for {$this->id?->__tostring()}, cannot make mailer payload"
+            );
+        }
 
         $data = [
             'templateKey' => 'donor-registered',
