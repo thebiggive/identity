@@ -30,7 +30,7 @@ class CorsMiddleware implements MiddlewareInterface
         }
 
         $headers = 'Accept, Authorization, Content-Type, Origin, X-Requested-With, ' .
-            'X-Tbg-Auth, X-Captcha-Bypass, x-captcha-code';
+            'X-Tbg-Auth, x-captcha-code, X-Is-Load-Test';
 
         // Basic approach based on https://www.slimframework.com/docs/v4/cookbook/enable-cors.html
         // - adapted to allow for multiple potential origins per-Identity instance.
