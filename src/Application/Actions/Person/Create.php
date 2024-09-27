@@ -9,7 +9,6 @@ use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
-use BigGive\Identity\LoadTestServices\Stripe\StubCustomerService;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
 use OpenApi\Annotations as OA;

@@ -12,6 +12,7 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         SettingsInterface::class => function () {
             $isProduction = getenv('APP_ENV') === 'production';
+            $isLoadTest = !$isProduction && isset($_SERVER['HTTP_X_IS_LOAD_TEST']);
 
             $doctrineConnectionOptions = [];
             if (getenv('APP_ENV') !== 'local') {
@@ -33,10 +34,7 @@ return function (ContainerBuilder $containerBuilder) {
                     ],
                 ],
                 'appEnv' => getenv('APP_ENV'),
-                'bypassPsp' => (
-                    ((bool) getenv('BYPASS_PSP')) === true &&
-                    ! $isProduction
-                ),
+                'bypassPsp' => $isLoadTest,
                 'displayErrorDetails' => ! $isProduction,
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
@@ -80,13 +78,7 @@ return function (ContainerBuilder $containerBuilder) {
                     'hash_ips' => true, // Required for Redis storage of IPv6 addresses.
                 ],
                 'recaptcha' => [
-                    'bypass' => (
-                        ! $isProduction &&
-                        (
-                            ((bool) getenv('RECAPTCHA_BYPASS')) === true ||
-                            isset($_SERVER['HTTP_X_CAPTCHA_BYPASS'])
-                        )
-                    ),
+                    'bypass' => $isLoadTest,
                     'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
                 ],
                 'friendly_captcha' => [
