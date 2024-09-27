@@ -28,7 +28,9 @@ class PersonRepositoryTest extends TestCase
         $repo = $container->get(PersonRepository::class);
         $repo->setMailerClient($mailerProphecy->reveal());
 
-        $this->assertTrue($repo->sendRegisteredEmail(new Person()));
+        $person = new Person();
+        $person->email_address = 'foo@example.com';
+        $this->assertTrue($repo->sendRegisteredEmail($person));
     }
 
     public function testRegistrationMailFailure(): void
@@ -46,6 +48,8 @@ class PersonRepositoryTest extends TestCase
         $repo = $container->get(PersonRepository::class);
         $repo->setMailerClient($mailerProphecy->reveal());
 
-        $this->assertFalse($repo->sendRegisteredEmail(new Person()));
+        $person = new Person();
+        $person->email_address = 'foo@example.com';
+        $this->assertFalse($repo->sendRegisteredEmail($person));
     }
 }
