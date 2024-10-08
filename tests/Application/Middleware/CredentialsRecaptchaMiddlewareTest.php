@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Middleware;
 
 use BigGive\Identity\Application\Middleware\CredentialsRecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Credentials;
@@ -24,6 +25,18 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
     public function testFailureWithBadCode(): void
     {
         $serializer = $this->getAppInstance()->getContainer()->get(SerializerInterface::class);
+        $this->getContainer()->set(
+            FriendlyCaptchaVerifier::class,
+            new class extends FriendlyCaptchaVerifier {
+                public function __construct()
+                {
+                }
+                public function verify(string $solution): bool
+                {
+                    return false;
+                }
+            }
+        );
 
         $credentialsObject = $this->getTestCredentials();
 
