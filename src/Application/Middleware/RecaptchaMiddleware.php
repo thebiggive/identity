@@ -39,6 +39,7 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
     {
         $captchaCode = $this->getCode($request);
 
+        /** @psalm-suppress RedundantCondition - will clean up redundant code after fixing prod issue */
         if ($this->isUsingFriendlyCaptcha($request)) {
             if (!$this->friendlyCaptchaVerifier->verify($captchaCode)) {
                 $this->unauthorised($this->logger, true, $request);
@@ -96,5 +97,5 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
 
     abstract protected function getCode(ServerRequestInterface $request): ?string;
 
-    abstract protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): bool;
+    abstract protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): true;
 }

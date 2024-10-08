@@ -33,12 +33,8 @@ class PersonRecaptchaMiddleware extends RecaptchaMiddleware
         return $captchaCode;
     }
 
-    protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): bool
+    protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): true
     {
-        $body = (string) $request->getBody();
-
-        // simple solution before potentially moving all requests over to friendly captcha
-        /** @psalm-suppress MixedArrayAccess */
-        return (\json_decode($body, associative: true)['captcha_type'] ?? '') === 'friendly_captcha';
+        return true;
     }
 }
