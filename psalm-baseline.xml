@@ -232,9 +232,6 @@
     </RiskyTruthyFalsyComparison>
   </file>
   <file src="src/Repository/PersonRepository.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$person->toMailerPayload()]]></code>
-    </ArgumentTypeCoercion>
     <MissingConstructor>
       <code><![CDATA[$mailerClient]]></code>
     </MissingConstructor>
@@ -433,21 +430,7 @@
       <code><![CDATA[get]]></code>
     </PossiblyNullReference>
   </file>
-  <file src="tests/Application/Security/PasswordTest.php">
-    <InternalMethod>
-      <code><![CDATA[addToAssertionCount]]></code>
-    </InternalMethod>
-    <RedundantCondition>
-      <code><![CDATA[assertIsString]]></code>
-    </RedundantCondition>
-  </file>
   <file src="tests/Client/MailerTest.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$requestBody]]></code>
-      <code><![CDATA[$requestBody]]></code>
-      <code><![CDATA[$requestBody]]></code>
-      <code><![CDATA[$requestBody]]></code>
-    </ArgumentTypeCoercion>
     <MixedArgument>
       <code><![CDATA[$container->get(SettingsInterface::class)]]></code>
       <code><![CDATA[$container->get(SettingsInterface::class)]]></code>

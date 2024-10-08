@@ -29,14 +29,14 @@ class CorsMiddleware implements MiddlewareInterface
             $corsAllowedOrigin = $givenOrigin;
         }
 
+        $headers = 'Accept, Authorization, Content-Type, Origin, X-Requested-With, ' .
+            'X-Tbg-Auth, x-captcha-code, X-Is-Load-Test';
+
         // Basic approach based on https://www.slimframework.com/docs/v4/cookbook/enable-cors.html
         // - adapted to allow for multiple potential origins per-Identity instance.
         $response = $handler->handle($request)
             ->withHeader('Access-Control-Allow-Origin', $corsAllowedOrigin)
-            ->withHeader(
-                'Access-Control-Allow-Headers',
-                'Accept, Authorization, Content-Type, Origin, X-Requested-With, X-Tbg-Auth, x-captcha-code'
-            )
+            ->withHeader('Access-Control-Allow-Headers', $headers)
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->withAddedHeader('Cache-Control', 'post-check=0, pre-check=0')

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use BigGive\Identity\Application\Security\Password;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
@@ -16,6 +17,8 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * @psalm-import-type RequestBody from Mailer as MailerRequestBody
+ *
  * @psalm-suppress PossiblyUnusedProperty - properties are used in FE after this is serialised.
  *
  * @OA\Schema(
@@ -249,8 +252,17 @@ class Person
         $this->stripe_customer_id = $stripe_customer_id;
     }
 
+    /**
+     * @psalm-return MailerRequestBody
+     */
     public function toMailerPayload(): array
     {
+        if ($this->email_address === null) {
+            throw new \RuntimeException(
+                "Email address is null for {$this->id?->__tostring()}, cannot make mailer payload"
+            );
+        }
+
         $data = [
             'templateKey' => 'donor-registered',
             'recipientEmailAddress' => $this->email_address,
