@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
+use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -78,6 +79,18 @@ class CreateTest extends TestCase
         $person = $this->getTestPerson();
 
         $app = $this->getAppInstance();
+        $this->getContainer()->set(
+            FriendlyCaptchaVerifier::class,
+            new class extends FriendlyCaptchaVerifier {
+                public function __construct()
+                {
+                }
+                public function verify(string $solution): bool
+                {
+                    return false;
+                }
+            }
+        );
 
         $entityManagerProphecy = $this->prophesize(EntityManagerInterface::class);
         $entityManagerProphecy->persist(Argument::type(Person::class))->shouldNotBeCalled();

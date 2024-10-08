@@ -37,8 +37,19 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $captchaCode = $this->getCode($request);
+        if ($this->settings->get('recaptcha')['bypass']) {
+            $this->logger->warning('Recaptcha verification bypassed');
+            return $handler->handle($request);
+        }
 
+        $captchaCode = $this->getCode($request);
+        if ($captchaCode === null) {
+            $this->logger->log(LogLevel::WARNING, 'Security: captcha code not sent');
+            $this->unauthorised($this->logger, true, $request);
+        }
+
+
+        /** @psalm-suppress RedundantCondition - will clean up redundant code after fixing prod issue */
         if ($this->isUsingFriendlyCaptcha($request)) {
             if (!$this->friendlyCaptchaVerifier->verify($captchaCode)) {
                 $this->unauthorised($this->logger, true, $request);
@@ -47,19 +58,9 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        if ($this->settings->get('recaptcha')['bypass']) {
-            $this->logger->warning('Recaptcha verification bypassed');
-            return $handler->handle($request);
-        }
-
         $timesToAttemptCaptchaVerification = 2;
 
         for ($counter = 0; $counter < $timesToAttemptCaptchaVerification; $counter++) {
-            if ($captchaCode === null) {
-                $this->logger->log(LogLevel::WARNING, 'Security: captcha code not sent');
-                $this->unauthorised($this->logger, true, $request);
-            }
-
             $result = $this->captcha->verify(
                 $captchaCode,
                 $request->getAttribute('client-ip') // Set to original IP by previous middleware
@@ -96,5 +97,5 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
 
     abstract protected function getCode(ServerRequestInterface $request): ?string;
 
-    abstract protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): bool;
+    abstract protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): true;
 }
