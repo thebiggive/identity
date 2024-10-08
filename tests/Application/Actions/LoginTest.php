@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions;
 
+use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -145,6 +146,18 @@ class LoginTest extends TestCase
         $person = $this->getTestPerson();
 
         $app = $this->getAppInstance();
+        $this->getContainer()->set(
+            FriendlyCaptchaVerifier::class,
+            new class extends FriendlyCaptchaVerifier {
+                public function __construct()
+                {
+                }
+                public function verify(string $solution): bool
+                {
+                    return false;
+                }
+            }
+        );
 
         $personWithHashNotMatchingRawPassword = $this->prophesize(Person::class);
         $personWithHashNotMatchingRawPassword->getPasswordHash()
