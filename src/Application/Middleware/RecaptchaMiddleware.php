@@ -25,7 +25,6 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
     #[Pure]
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly ReCaptcha $captcha,
         protected SerializerInterface $serializer,
         protected readonly SettingsInterface $settings,
         private FriendlyCaptchaVerifier $friendlyCaptchaVerifier,
@@ -48,54 +47,12 @@ abstract class RecaptchaMiddleware implements MiddlewareInterface
             $this->unauthorised($this->logger, true, $request);
         }
 
-
-        /** @psalm-suppress RedundantCondition - will clean up redundant code after fixing prod issue */
-        if ($this->isUsingFriendlyCaptcha($request)) {
-            if (!$this->friendlyCaptchaVerifier->verify($captchaCode)) {
-                $this->unauthorised($this->logger, true, $request);
-            }
-
-            return $handler->handle($request);
-        }
-
-        $timesToAttemptCaptchaVerification = 2;
-
-        for ($counter = 0; $counter < $timesToAttemptCaptchaVerification; $counter++) {
-            $result = $this->captcha->verify(
-                $captchaCode,
-                $request->getAttribute('client-ip') // Set to original IP by previous middleware
-            );
-
-            if ($result->isSuccess()) {
-                break; // Leave loop and let `$handler` do its thing.
-            }
-
-            $errors = $result->getErrorCodes();
-            $isConnectionError = in_array(ReCaptcha::E_CONNECTION_FAILED, $errors, true);
-
-            // Connection errors bubbled up from cURL are potentially worth a retry – they might not have reached
-            // the reCAPTCHA server. Any other failure is going to fail again because of the restrictions to
-            // prevent replay attacks. https://developers.google.com/recaptcha/docs/verify#token_restrictions
-            $this->logger->log(
-                $isConnectionError ? LogLevel::INFO : LogLevel::WARNING,
-                'Security: captcha failed, attempt: ' . ($counter + 1) . '. Error codes: ' . json_encode($errors),
-            );
-
-            if (!$isConnectionError) {
-                $this->unauthorised($this->logger, true, $request);
-            }
-
-            if ($counter >= ($timesToAttemptCaptchaVerification - 1)) {
-                $this->logger->warning('Warning: captcha verification has now failed after '
-                . $timesToAttemptCaptchaVerification . ' attempts!');
-                $this->unauthorised($this->logger, true, $request);
-            }
+        if (!$this->friendlyCaptchaVerifier->verify($captchaCode)) {
+            $this->unauthorised($this->logger, true, $request);
         }
 
         return $handler->handle($request);
     }
 
     abstract protected function getCode(ServerRequestInterface $request): ?string;
-
-    abstract protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): true;
 }

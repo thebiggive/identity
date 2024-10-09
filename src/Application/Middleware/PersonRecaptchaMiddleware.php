@@ -32,9 +32,4 @@ class PersonRecaptchaMiddleware extends RecaptchaMiddleware
 
         return $captchaCode;
     }
-
-    protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): true
-    {
-        return true;
-    }
 }
