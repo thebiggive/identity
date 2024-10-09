@@ -99,7 +99,7 @@ class Create extends Action
             );
         }
 
-        if ($this->settings->get('recaptcha')['bypass']) {
+        if ($this->settings->get('friendly_captcha')['bypass']) {
             $person->skipCaptchaPresenceValidation();
         }
 
