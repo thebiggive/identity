@@ -21,7 +21,6 @@
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^2.12",
         "firebase/php-jwt": "^6.3",
-        "google/recaptcha": "^1.2",
         "guzzlehttp/guzzle": "^7.5",
         "los/los-rate-limit": "^3.3",
         "middlewares/client-ip": "^2.0",

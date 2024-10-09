@@ -158,10 +158,6 @@ return function (ContainerBuilder $containerBuilder) {
             );
         },
 
-        ReCaptcha::class => static function (ContainerInterface $c): ReCaptcha {
-            return new ReCaptcha($c->get(SettingsInterface::class)->get('recaptcha')['secret_key'], new CurlPost());
-        },
-
         FriendlyCaptchaVerifier::class => static function (ContainerInterface $c): FriendlyCaptchaVerifier {
         /** @var array{api_key: string, site_key: string} $settings */
             $settings = $c->get(SettingsInterface::class)->get('friendly_captcha');

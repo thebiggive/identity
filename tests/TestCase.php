@@ -59,17 +59,6 @@ class TestCase extends PHPUnit_TestCase
 
         $container->set(LoggerInterface::class, new NullLogger());
 
-        $recaptchaProphecy = $this->prophesize(ReCaptcha::class);
-        $recaptchaProphecy->verify('good response', '1.2.3.4')
-            ->willReturn(new \ReCaptcha\Response(true));
-        $recaptchaProphecy->verify('bad response', '1.2.3.4')
-            ->willReturn(new \ReCaptcha\Response(false));
-        // Blank is mocked succeeding so that the deserialise error unit test behaves
-        // as it did before we had captcha verification.
-        $recaptchaProphecy->verify('', '1.2.3.4')
-            ->willReturn(new \ReCaptcha\Response(true));
-        $container->set(ReCaptcha::class, $recaptchaProphecy->reveal());
-
         // For tests, we need to stub out Redis so that rate limiting middleware doesn't
         // crash trying to actually connect to REDIS_HOST "dummy-redis-hostname". (We also
         // don't want tests depending upon *real* Redis.)
