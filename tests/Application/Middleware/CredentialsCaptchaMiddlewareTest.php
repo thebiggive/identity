@@ -20,7 +20,7 @@ use Slim\Routing\Route;
 use Slim\Exception\HttpUnauthorizedException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class CredentialsRecaptchaMiddlewareTest extends TestCase
+class CredentialsCaptchaMiddlewareTest extends TestCase
 {
     public function testFailureWithBadCode(): void
     {
@@ -90,9 +90,8 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
 
         $settingsProphecy = $this->prophesize(SettingsInterface::class);
         $settingsProphecy->get('logger')->willReturn($standardSettings->get('logger'));
-        $settingsProphecy->get('recaptcha')->willReturn(['bypass' => true]);
         $settingsProphecy->get('friendly_captcha')->willReturn(
-            ['api_key' => 'dummy_secret_api_key', 'site_key' => 'dummy_site_key']
+            ['api_key' => 'dummy_secret_api_key', 'site_key' => 'dummy_site_key', 'bypass' => true]
         );
 
         $container->set(SettingsInterface::class, $settingsProphecy->reveal());

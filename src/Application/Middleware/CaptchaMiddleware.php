@@ -36,7 +36,7 @@ abstract class CaptchaMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($this->settings->get('recaptcha')['bypass']) {
+        if ($this->settings->get('friendly_captcha')['bypass']) {
             $this->logger->warning('Recaptcha verification bypassed');
             return $handler->handle($request);
         }

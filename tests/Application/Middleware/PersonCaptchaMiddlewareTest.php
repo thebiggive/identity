@@ -19,7 +19,7 @@ use Slim\Routing\Route;
 use Slim\Exception\HttpUnauthorizedException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class PersonRecaptchaMiddlewareTest extends TestCase
+class PersonCaptchaMiddlewareTest extends TestCase
 {
     use TestPeopleTrait;
 
