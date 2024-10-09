@@ -7,7 +7,7 @@ namespace BigGive\Identity\Application\Middleware;
 use BigGive\Identity\Domain\Credentials;
 use Psr\Http\Message\ServerRequestInterface;
 
-class CredentialsRecaptchaMiddleware extends RecaptchaMiddleware
+class CredentialsCaptchaMiddleware extends CaptchaMiddleware
 {
     protected function getCode(ServerRequestInterface $request): ?string
     {

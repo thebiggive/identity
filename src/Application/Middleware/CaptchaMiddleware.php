@@ -15,7 +15,7 @@ use Psr\Log\LogLevel;
 use ReCaptcha\ReCaptcha;
 use Symfony\Component\Serializer\SerializerInterface;
 
-abstract class RecaptchaMiddleware implements MiddlewareInterface
+abstract class CaptchaMiddleware implements MiddlewareInterface
 {
     use ErrorTrait;
 

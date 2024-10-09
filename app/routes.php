@@ -9,11 +9,11 @@ use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\Status;
-use BigGive\Identity\Application\Middleware\CredentialsRecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
-use BigGive\Identity\Application\Middleware\PersonRecaptchaMiddleware;
-use BigGive\Identity\Application\Middleware\PlainRecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\PersonCaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\PlainCaptchaMiddleware;
 use LosMiddleware\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
 use Psr\Http\Message\RequestInterface;
@@ -31,7 +31,7 @@ return function (App $app) {
 
     $app->group('/v1', function (Group $versionGroup) {
         $versionGroup->post('/people', Person\Create::class)
-            ->add(PersonRecaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+            ->add(PersonCaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
 
         $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
             ->add(PersonPatchAuthMiddleware::class);
@@ -43,13 +43,13 @@ return function (App $app) {
             ->add(PersonGetAuthMiddleware::class);
 
         $versionGroup->post('/auth', Login::class)
-            ->add(CredentialsRecaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+            ->add(CredentialsCaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
 
         $versionGroup->post(
             '/password-reset-token',
             CreatePasswordResetToken::class
         )
-            ->add(PlainRecaptchaMiddleware::class)
+            ->add(PlainCaptchaMiddleware::class)
         ;
 
         $versionGroup->get('/password-reset-token/{base58Secret:[A-Za-z0-9-]{22}}', GetPasswordResetToken::class);

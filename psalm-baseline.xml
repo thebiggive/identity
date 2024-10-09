@@ -167,20 +167,14 @@
       <code><![CDATA[HttpErrorHandler]]></code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="src/Application/Middleware/PersonAuthMiddleware.php">
-    <PossiblyNullArgument>
-      <code><![CDATA[$personId]]></code>
-    </PossiblyNullArgument>
-  </file>
-  <file src="src/Application/Middleware/RecaptchaMiddleware.php">
-    <MixedArgument>
-      <code><![CDATA[$request->getAttribute('client-ip')]]></code>
-    </MixedArgument>
+  <file src="src/Application/Middleware/CaptchaMiddleware.php">
     <MixedArrayAccess>
       <code><![CDATA[$this->settings->get('recaptcha')['bypass']]]></code>
     </MixedArrayAccess>
+  </file>
+  <file src="src/Application/Middleware/PersonAuthMiddleware.php">
     <PossiblyNullArgument>
-      <code><![CDATA[$captchaCode]]></code>
+      <code><![CDATA[$personId]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="src/Client/Mailer.php">
