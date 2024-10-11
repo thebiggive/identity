@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Middleware;
 
-use BigGive\Identity\Application\Middleware\CredentialsRecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
-use BigGive\Identity\Application\Middleware\RecaptchaMiddleware;
+use BigGive\Identity\Application\Middleware\CaptchaMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Credentials;
 use BigGive\Identity\Tests\TestCase;
@@ -20,7 +20,7 @@ use Slim\Routing\Route;
 use Slim\Exception\HttpUnauthorizedException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class CredentialsRecaptchaMiddlewareTest extends TestCase
+class CredentialsCaptchaMiddlewareTest extends TestCase
 {
     public function testFailureWithBadCode(): void
     {
@@ -90,9 +90,8 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
 
         $settingsProphecy = $this->prophesize(SettingsInterface::class);
         $settingsProphecy->get('logger')->willReturn($standardSettings->get('logger'));
-        $settingsProphecy->get('recaptcha')->willReturn(['bypass' => true]);
         $settingsProphecy->get('friendly_captcha')->willReturn(
-            ['api_key' => 'dummy_secret_api_key', 'site_key' => 'dummy_site_key']
+            ['api_key' => 'dummy_secret_api_key', 'site_key' => 'dummy_site_key', 'bypass' => true]
         );
 
         $container->set(SettingsInterface::class, $settingsProphecy->reveal());
@@ -111,8 +110,8 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
             ->withAttribute('client-ip', '1.2.3.4');
         $request->getBody()->write($body);
 
-        $middleware = $container->get(CredentialsRecaptchaMiddleware::class);
-        \assert($middleware instanceof CredentialsRecaptchaMiddleware);
+        $middleware = $container->get(CredentialsCaptchaMiddleware::class);
+        \assert($middleware instanceof CredentialsCaptchaMiddleware);
 
         $response = $middleware->process($request, $this->getSuccessHandler());
 
@@ -142,8 +141,8 @@ class CredentialsRecaptchaMiddlewareTest extends TestCase
         // For the success case we can't fully handle the request without covering a lot of stuff
         // outside the middleware, which is covered in `LoginTest`'s end to end action test already.
         // So we are better creating an isolated middleware object to invoke.
-        $middleware = $container->get(CredentialsRecaptchaMiddleware::class);
-        \assert($middleware instanceof CredentialsRecaptchaMiddleware);
+        $middleware = $container->get(CredentialsCaptchaMiddleware::class);
+        \assert($middleware instanceof CredentialsCaptchaMiddleware);
 
         $response = $middleware->process($request, $this->getSuccessHandler());
 

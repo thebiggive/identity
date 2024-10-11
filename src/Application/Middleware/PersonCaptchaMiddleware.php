@@ -8,7 +8,7 @@ use BigGive\Identity\Domain\Person;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
-class PersonRecaptchaMiddleware extends RecaptchaMiddleware
+class PersonCaptchaMiddleware extends CaptchaMiddleware
 {
     protected function getCode(ServerRequestInterface $request): ?string
     {
@@ -31,10 +31,5 @@ class PersonRecaptchaMiddleware extends RecaptchaMiddleware
         }
 
         return $captchaCode;
-    }
-
-    protected function isUsingFriendlyCaptcha(ServerRequestInterface $request): true
-    {
-        return true;
     }
 }

@@ -9,7 +9,6 @@
       <code><![CDATA[$c->get(Redis::class)]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('doctrine')['connection']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('los_rate_limit')]]></code>
-      <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$cache]]></code>
@@ -25,7 +24,6 @@
     </MixedArgumentTypeCoercion>
     <MixedArrayAccess>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('doctrine')['connection']]]></code>
-      <code><![CDATA[$c->get(SettingsInterface::class)->get('recaptcha')['secret_key']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$c->get(SettingsInterface::class)->get('redis')['host']]]></code>
       <code><![CDATA[$doctrineSettings['cache_dir']]]></code>
@@ -47,7 +45,6 @@
       <code><![CDATA[$settings]]></code>
     </MixedAssignment>
     <MixedMethodCall>
-      <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
       <code><![CDATA[get]]></code>
@@ -111,7 +108,7 @@
   </file>
   <file src="src/Application/Actions/Person/Create.php">
     <MixedArrayAccess>
-      <code><![CDATA[$this->settings->get('recaptcha')['bypass']]]></code>
+      <code><![CDATA[$this->settings->get('friendly_captcha')['bypass']]]></code>
     </MixedArrayAccess>
     <PossiblyUndefinedVariable>
       <code><![CDATA[$body]]></code>
@@ -167,20 +164,14 @@
       <code><![CDATA[HttpErrorHandler]]></code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="src/Application/Middleware/CaptchaMiddleware.php">
+    <MixedArrayAccess>
+      <code><![CDATA[$this->settings->get('friendly_captcha')['bypass']]]></code>
+    </MixedArrayAccess>
+  </file>
   <file src="src/Application/Middleware/PersonAuthMiddleware.php">
     <PossiblyNullArgument>
       <code><![CDATA[$personId]]></code>
-    </PossiblyNullArgument>
-  </file>
-  <file src="src/Application/Middleware/RecaptchaMiddleware.php">
-    <MixedArgument>
-      <code><![CDATA[$request->getAttribute('client-ip')]]></code>
-    </MixedArgument>
-    <MixedArrayAccess>
-      <code><![CDATA[$this->settings->get('recaptcha')['bypass']]]></code>
-    </MixedArrayAccess>
-    <PossiblyNullArgument>
-      <code><![CDATA[$captchaCode]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="src/Client/Mailer.php">
@@ -351,7 +342,7 @@
       <code><![CDATA[$config->getProxyNamespace()]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="tests/Application/Middleware/CredentialsRecaptchaMiddlewareTest.php">
+  <file src="tests/Application/Middleware/CredentialsCaptchaMiddlewareTest.php">
     <MixedArgument>
       <code><![CDATA[$credentialsSerialised]]></code>
       <code><![CDATA[$credentialsSerialised]]></code>
@@ -394,7 +385,7 @@
       <code><![CDATA[get]]></code>
     </PossiblyNullReference>
   </file>
-  <file src="tests/Application/Middleware/PersonRecaptchaMiddlewareTest.php">
+  <file src="tests/Application/Middleware/PersonCaptchaMiddlewareTest.php">
     <MixedArgument>
       <code><![CDATA[$personSerialised]]></code>
       <code><![CDATA[$personSerialised]]></code>

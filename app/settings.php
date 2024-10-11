@@ -77,13 +77,10 @@ return function (ContainerBuilder $containerBuilder) {
                     ],
                     'hash_ips' => true, // Required for Redis storage of IPv6 addresses.
                 ],
-                'recaptcha' => [
-                    'bypass' => $isLoadTest,
-                    'secret_key' => getenv('RECAPTCHA_SECRET_KEY'),
-                ],
                 'friendly_captcha' => [
                     'api_key' => getenv('FRIENDLY_CAPTCHA_SECRET_KEY'),
                     'site_key' => getenv('FRIENDLY_CAPTCHA_SITE_KEY'),
+                    'bypass' => $isLoadTest,
                 ],
                 'redis' => [
                     'host' => getenv('REDIS_HOST'),
