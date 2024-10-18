@@ -27,7 +27,7 @@
         "monolog/monolog": "^2.6",
         "php-di/php-di": "^6.4",
         "slim/psr7": "^1.5",
-        "slim/slim": "^4.10",
+        "slim/slim": "^4.14",
         "stripe/stripe-php": "^15.1",
         "symfony/cache": "^6.1",
         "symfony/console": "^6.3",
