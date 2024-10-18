@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Repository;
 
+use BigGive\Identity\Application\Messenger\PersonUpserted;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\RoutableMessageBus;
 
 /**
  * @template-extends EntityRepository<Person>
@@ -20,7 +22,11 @@ use Doctrine\ORM\QueryBuilder;
 class PersonRepository extends EntityRepository
 {
     public const string EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
+    public LoggerInterface $logger;
     private Mailer $mailerClient;
+
+    public ?RoutableMessageBus $bus = null;
+
 
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
@@ -51,6 +57,13 @@ class PersonRepository extends EntityRepository
 
         try {
             $em->flush();
+            if ($person->getPasswordHash() !== null) {
+                $this->logger->info("will dipatch message about person now");
+                $this->bus->dispatch(new Envelope(new PersonUpserted()));
+                $this->logger->info("did dispatch message about person then");
+            }
+
+            // we can send the update to matchbot here.
         } catch (UniqueConstraintViolationException $exception) {
             $em->detach($person);
             if (str_contains($exception->getMessage(), self::EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME)) {
