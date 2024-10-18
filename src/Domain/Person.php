@@ -170,7 +170,7 @@ class Person
     /**
      * @OA\Property()
      * */
-    public bool $has_password = false;
+    public bool $has_password = false; // <--- confusingly this seems to never be written to
 
     /**
      * @var string|null Hashed password, if a password has been set.
