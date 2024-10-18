@@ -24,6 +24,7 @@ $now = new \DateTimeImmutable();
 
 $commands = [
     new PopulateUsers(
+        $psr11App->get(\Symfony\Component\Messenger\MessageBusInterface::class),
         $personRepository,
     ),
     new DeleteUnusablePersonRecords($connection, $now),

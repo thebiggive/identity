@@ -88,6 +88,7 @@
             "@doctrine:migrate",
             "./identity identity:populate-test-users"
         ],
+        "tmptest": "./identity identity:populate-test-users",
         "doctrine:ensure-prod": "doctrine orm:ensure-production-settings",
         "doctrine:generate-proxies": "doctrine orm:generate-proxies",
         "doctrine:migrate": "doctrine-migrations migrate --no-interaction --allow-no-migration",

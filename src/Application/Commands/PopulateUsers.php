@@ -2,12 +2,15 @@
 
 namespace BigGive\Identity\Application\Commands;
 
+use BigGive\Identity\Application\Messenger\PersonUpserted;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * For use in dev environments only. Adds a preset list of users to the database for use in manual testing.
@@ -15,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'identity:populate-test-users')]
 class PopulateUsers extends Command
 {
-    public function __construct(private PersonRepository $personRepository)
+    public function __construct(private MessageBusInterface $bus, private PersonRepository $personRepository)
     {
         parent::__construct();
     }
@@ -25,6 +28,9 @@ class PopulateUsers extends Command
         if (getenv('APP_ENV') !== 'local') {
             throw new \Exception('Populate users command is for local dev environments only');
         }
+
+        $this->bus->dispatch(new Envelope(new PersonUpserted()));
+        return 0;
 
         $relativePath = 'tests/local-users.php';
         $filename = __DIR__ . '/../../../' . $relativePath . '';
