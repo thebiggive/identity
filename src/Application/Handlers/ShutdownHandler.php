@@ -4,26 +4,19 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Handlers;
 
+use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpInternalServerErrorException;
 use Slim\ResponseEmitter;
 
 class ShutdownHandler
 {
-    private Request $request;
-
-    private HttpErrorHandler $errorHandler;
-
-    private bool $displayErrorDetails;
-
+    #[Pure]
     public function __construct(
-        Request $request,
-        HttpErrorHandler $errorHandler,
-        bool $displayErrorDetails
+        private Request $request,
+        private HttpErrorHandler $errorHandler,
+        private bool $displayErrorDetails
     ) {
-        $this->request = $request;
-        $this->errorHandler = $errorHandler;
-        $this->displayErrorDetails = $displayErrorDetails;
     }
 
     public function __invoke()
@@ -79,20 +72,13 @@ class ShutdownHandler
             }
 
             $exception = new HttpInternalServerErrorException($this->request, $message);
-
-            $logErrors = true;
-            if (str_contains($message, 'Missing boundary in multipart/form-data POST data')) {
-                $logErrors = false;
-                // Don't add alarm noise / extra logs for a known bot scan that can leave Slim
-                // surfacing a PHP warning as an ERROR level log despite returning HTTP 405.
-            }
-
             $response = $this->errorHandler->__invoke(
                 request: $this->request,
                 exception: $exception,
                 displayErrorDetails: $this->displayErrorDetails,
-                logErrors: $logErrors,
-                logErrorDetails: $logErrors,
+                // Don't log via the less flexible built-in Slim fn; HttpErrorHandler does it via LoggerInterface
+                logErrors: false,
+                logErrorDetails: false,
             );
 
             $responseEmitter = new ResponseEmitter();
