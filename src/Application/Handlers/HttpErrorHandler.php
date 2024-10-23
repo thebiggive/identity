@@ -68,7 +68,7 @@ class HttpErrorHandler extends SlimErrorHandler
             $payload = new ActionPayload(
                 $statusCode,
                 null,
-                $this->createInternalError('Original error is not JSON, see info logs'),
+                $this->createInternalError('Original error is not encodable as JSON, see info logs'),
             );
             $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
         }
