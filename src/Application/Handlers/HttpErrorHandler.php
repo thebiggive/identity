@@ -63,8 +63,11 @@ class HttpErrorHandler extends SlimErrorHandler
         $payload = new ActionPayload($statusCode, null, $error);
         try {
             $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
-        } catch (\JsonException $_exception) {
-            $this->logger->warning('Original error is not JSON so cannot be returned verbatim');
+        } catch (\JsonException $exception) {
+            $this->logger->warning(sprintf(
+                'Original error is not JSON so cannot be returned verbatim: %s',
+                $exception->getMessage(),
+            ));
             $payload = new ActionPayload(
                 $statusCode,
                 null,
