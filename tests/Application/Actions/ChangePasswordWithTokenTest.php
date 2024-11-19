@@ -151,7 +151,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $this->expectExceptionMessage(
-            'Your password could not be set. Please ensure you chose one with at least 10 characters.'
+            'Your password could not be set. Please ensure you chose one with at least 12 characters.'
         );
         $app->handle($this->buildRequest([
             'secret' => $secret->toBase58(),
