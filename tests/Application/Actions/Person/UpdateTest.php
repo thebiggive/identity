@@ -357,7 +357,7 @@ class UpdateTest extends TestCase
         $request = $this->buildRequest(static::$testPersonUuid, [
             'first_name' => $person->first_name,
             'last_name' => $person->last_name,
-            'raw_password' => mb_substr($person->raw_password, 0, 9), // 1 below minimum 10 characters
+            'raw_password' => mb_substr($person->raw_password, 0, 11), // 1 below minimum 12 characters
             'email_address' => $person->email_address,
             'captcha_code' => 'good response',
         ]);
@@ -371,9 +371,9 @@ class UpdateTest extends TestCase
         $expectedJSON = json_encode([
             'error' => [
                 'description' =>
-                    'Your password could not be set. Please ensure you chose one with at least 10 characters.',
+                    'Your password could not be set. Please ensure you chose one with at least 12 characters.',
                 'htmlDescription' =>
-                    'Your password could not be set. Please ensure you chose one with at least 10 characters.',
+                    'Your password could not be set. Please ensure you chose one with at least 12 characters.',
                 'type' => 'BAD_REQUEST',
             ],
         ], JSON_THROW_ON_ERROR);

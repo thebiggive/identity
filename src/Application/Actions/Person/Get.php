@@ -15,6 +15,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
+use Stripe\PaymentIntent;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -116,7 +117,11 @@ class Get extends Action
                 ]);
 
                 foreach ($tipPaymentIntentsPending->autoPagingIterator() as $paymentIntent) {
-
+                    $statusesThatMayBeBankFundedLater = [
+                        PaymentIntent::STATUS_REQUIRES_ACTION,
+                        PaymentIntent::STATUS_REQUIRES_CONFIRMATION,
+                        PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD,
+                    ];
                     /**
                      * @psalm-suppress UndefinedMagicPropertyFetch
                      *
@@ -124,13 +129,13 @@ class Get extends Action
                      * require changing test data substantially. Previous Stripe library versions declared types that
                      * allowed this.
                      */
-                    $paymentIntentIsPendingDononFundsTip = (
-                        $paymentIntent->status === 'requires_action' &&
+                    $paymentIntentIsPendingDonorFundsTip = (
+                        in_array($paymentIntent->status, $statusesThatMayBeBankFundedLater, true) &&
                         $paymentIntent->payment_method_types === ['customer_balance'] &&
                         $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
                     );
 
-                    if (!$paymentIntentIsPendingDononFundsTip) {
+                    if (!$paymentIntentIsPendingDonorFundsTip) {
                         continue;
                     }
 

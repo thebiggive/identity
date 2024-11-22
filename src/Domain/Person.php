@@ -35,7 +35,7 @@ class Person
 {
     use TimestampsTrait;
 
-    public const int MIN_PASSWORD_LENGTH = 10;
+    public const int MIN_PASSWORD_LENGTH = 12;
 
     public const array SERIALISED_FOR_UPDATE_ATTRIBUTES = [
         'first_name',
