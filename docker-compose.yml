@@ -12,8 +12,9 @@ services:
             - .:/var/www/html
         depends_on:
             - db
-            - redis
-
+        networks:
+            - identity
+            - matchbot_matchbot # used to send update messages to matchbot on dev machines
     db:
         image: mysql:8.0
         platform: linux/amd64
@@ -23,7 +24,16 @@ services:
         environment:
             MYSQL_DATABASE: identity
             MYSQL_ROOT_PASSWORD: tbgLocal123
-
-    redis:
-        image: redis:7.0
-        platform: linux/amd64
+        networks:
+            - identity
+# sharing matchbot's redis as it carries symfony messages on dev machines
+#    redis:
+#        image: redis:7.0
+#        platform: linux/amd64
+#        networks:
+#            - identity
+networks:
+    identity:
+        external: false
+    matchbot_matchbot:
+        external: true
