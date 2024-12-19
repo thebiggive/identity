@@ -123,6 +123,13 @@ class Get extends Action
                         PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD,
                     ];
 
+                    /**
+                     * @psalm-suppress UndefinedMagicPropertyFetch
+                     *
+                     * We could use the \ArrayAccess interface to metadata to avoid this issue, but that would
+                     * require changing test data substantially. Previous Stripe library versions declared types that
+                     * allowed this.
+                     */
                     $paymentIntentIsDonorFundsTip = (
                         $paymentIntent->payment_method_types === ['customer_balance'] &&
                         $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
@@ -132,21 +139,15 @@ class Get extends Action
                         continue;
                     }
 
-                    /**
-                     * @psalm-suppress UndefinedMagicPropertyFetch
-                     *
-                     * We could use the \ArrayAccess interface to metadata to avoid this issue, but that would
-                     * require changing test data substantially. Previous Stripe library versions declared types that
-                     * allowed this.
-                     */
-                    $paymentIntentIsPendingDonorFundsTip =
-                        $paymentIntentIsDonorFundsTip &&
-                        in_array($paymentIntent->status, $statusesThatMayBeBankFundedLater, true);
+                    $paymentIntentIsPendingDonorFundsTip = in_array(
+                        $paymentIntent->status,
+                        $statusesThatMayBeBankFundedLater,
+                        true,
+                    );
 
                     // Technically we check for recently-ish created because there's not a quick way to see if it was
                     // recently confirmed.
                     $paymentIntentIsRecentlyConfirmedDonorFundsTip =
-                        $paymentIntentIsDonorFundsTip &&
                         $paymentIntent->status === PaymentIntent::STATUS_SUCCEEDED &&
                         $paymentIntent->created > (new \DateTimeImmutable())->modify('-10 days')->getTimestamp();
 
