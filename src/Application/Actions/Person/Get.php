@@ -122,6 +122,16 @@ class Get extends Action
                         PaymentIntent::STATUS_REQUIRES_CONFIRMATION,
                         PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD,
                     ];
+
+                    $paymentIntentIsDonorFundsTip = (
+                        $paymentIntent->payment_method_types === ['customer_balance'] &&
+                        $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
+                    );
+
+                    if (!$paymentIntentIsDonorFundsTip) {
+                        continue;
+                    }
+
                     /**
                      * @psalm-suppress UndefinedMagicPropertyFetch
                      *
@@ -129,22 +139,32 @@ class Get extends Action
                      * require changing test data substantially. Previous Stripe library versions declared types that
                      * allowed this.
                      */
-                    $paymentIntentIsPendingDonorFundsTip = (
-                        in_array($paymentIntent->status, $statusesThatMayBeBankFundedLater, true) &&
-                        $paymentIntent->payment_method_types === ['customer_balance'] &&
-                        $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
-                    );
+                    $paymentIntentIsPendingDonorFundsTip =
+                        $paymentIntentIsDonorFundsTip &&
+                        in_array($paymentIntent->status, $statusesThatMayBeBankFundedLater, true);
 
-                    if (!$paymentIntentIsPendingDonorFundsTip) {
-                        continue;
-                    }
+                    // Technically we check for recently-ish created because there's not a quick way to see if it was
+                    // recently confirmed.
+                    $paymentIntentIsRecentlyConfirmedDonorFundsTip =
+                        $paymentIntentIsDonorFundsTip &&
+                        $paymentIntent->status === PaymentIntent::STATUS_SUCCEEDED &&
+                        $paymentIntent->created > (new \DateTimeImmutable())->modify('-10 days')->getTimestamp();
 
                     $currencyCode = $paymentIntent->currency;
-                    if (!isset($person->pending_tip_balance[$currencyCode])) {
-                        $person->pending_tip_balance[$currencyCode] = 0;
+
+                    if ($paymentIntentIsPendingDonorFundsTip) {
+                        if (!isset($person->pending_tip_balance[$currencyCode])) {
+                            $person->pending_tip_balance[$currencyCode] = 0;
+                        }
+                        $person->pending_tip_balance[$currencyCode] += $paymentIntent->amount;
                     }
 
-                    $person->pending_tip_balance[$currencyCode] += $paymentIntent->amount;
+                    if ($paymentIntentIsRecentlyConfirmedDonorFundsTip) {
+                        if (!isset($person->recently_confirmed_tips_total[$currencyCode])) {
+                            $person->recently_confirmed_tips_total[$currencyCode] = 0;
+                        }
+                        $person->recently_confirmed_tips_total[$currencyCode] += $paymentIntent->amount;
+                    }
                 }
             }
         }
