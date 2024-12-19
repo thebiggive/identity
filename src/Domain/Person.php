@@ -90,6 +90,23 @@ class Person
 
     /**
      * @OA\Property(
+     *     type="object",
+     *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
+     *     available amounts in smallest denomination, e.g. 123 pence.",
+     *     example={
+     *         "eur": 0,
+     *         "gbp": 123,
+     *     }
+     * )
+     * @var null|array<string,int>  Total Succeeded Payment Intents for Big Give
+     *                  (i.e. donor fund top up tips), created in past 10 days, for each currency
+     *                  in smallest unit (cents/pence), keyed on lowercase currency code.
+     *                  Or may be null if no tip balances requested on Get.
+     */
+    public ?array $recently_confirmed_tips_total = null;
+
+    /**
+     * @OA\Property(
      *  property="id",
      *  format="uuid",
      *  example="f7095caf-7180-4ddf-a212-44bacde69066",
