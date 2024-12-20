@@ -157,7 +157,7 @@ class Get extends Action
                 $person->pending_tip_balance[$currencyCode] += $paymentIntent->amount;
             }
 
-            if ($this->isPaymentIntentRecentlyConfirmedDonorFundsTip($paymentIntent)) {
+            if ($this->isPaymentIntentRecentlyConfirmed($paymentIntent)) {
                 if (!isset($person->recently_confirmed_tips_total[$currencyCode])) {
                     $person->recently_confirmed_tips_total[$currencyCode] = 0;
                 }
@@ -171,7 +171,7 @@ class Get extends Action
     /**
      * @param PaymentIntent $paymentIntent
      */
-    private function isPaymentIntentRecentlyConfirmedDonorFundsTip($paymentIntent): bool
+    private function isPaymentIntentRecentlyConfirmed($paymentIntent): bool
     {
         // Technically we check for recently-ish created because there's not a quick way to see if it was
         // recently confirmed.
