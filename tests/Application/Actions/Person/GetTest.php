@@ -62,7 +62,7 @@ class GetTest extends TestCase
         $this->assertIsObject($payload->cash_balance);
         $this->assertEquals((object) [
             'eur' => 123,
-            'gbp' => 55500,
+            'gbp' => 55_500,
         ], $payload->cash_balance);
     }
 
@@ -187,6 +187,55 @@ class GetTest extends TestCase
         $this->assertEquals((object) [
             'gbp' => 1_000_00, // £1,000 tip (per mock response derived from local tests)
         ], $payload->pending_tip_balance);
+    }
+
+    public function testSuccessWithRecentlyConfirmedTipAndSomeRemainingBalance(): void
+    {
+        $person = $this->getInitialisedPerson(true);
+
+        $app = $this->getAppInstance();
+        $container = $this->getContainer();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->find(self::$testPersonUuid)
+            ->shouldBeCalledOnce()
+            ->willReturn($person);
+
+        $container->set(PersonRepository::class, $personRepoProphecy->reveal());
+        $container->set(
+            Stripe::class,
+            $this->getStripeClientWithMock(
+                mockName: 'customer_usable_credit',
+                // List of payment intents for the test customer will be 1x £200 customer_balance
+                // funded donation (tip) with metadata.campaignName = 'Big Give General Donations'.
+                piMockName: 'pi_list_one_recently_confirmed_customer_balance_tip',
+            )
+        );
+
+        $response = $app->handle($this->buildRequest(
+            personId: static::$testPersonUuid,
+            withTipBalance: true,
+        ));
+        $payloadJSON = (string) $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($payloadJSON);
+
+        /** @var object{cash_balance: mixed, pending_tip_balance: mixed, recently_confirmed_tips_total: mixed} */
+        $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
+
+        $this->assertObjectHasProperty('cash_balance', $payload);
+        $this->assertIsObject($payload->cash_balance);
+        $this->assertEquals((object) [
+            'eur' => 123,
+            'gbp' => 55_500,
+        ], $payload->cash_balance);
+        $this->assertObjectHasProperty('pending_tip_balance', $payload);
+        $this->assertNull($payload->pending_tip_balance);
+        $this->assertObjectHasProperty('recently_confirmed_tips_total', $payload);
+        $this->assertEquals((object) [
+            'gbp' => 20_000,
+        ], $payload->recently_confirmed_tips_total);
     }
 
     public function testSuccessWithNonAutomaticallyReconciledStripeBalances(): void
@@ -342,8 +391,11 @@ class GetTest extends TestCase
 
     private function getMock(string $mockName): string
     {
-        return file_get_contents(
+        $rawContents = file_get_contents(
             dirname(__DIR__, 3) . '/MockStripeResponses/' . $mockName . '.json'
         );
+
+        // Replace created '-1' with 1 day ago. For testing recently confirmed tips.
+        return str_replace('"created": -1', '"created": ' . strtotime('-1 day'), $rawContents);
     }
 }

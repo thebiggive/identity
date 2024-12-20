@@ -35,6 +35,7 @@ class GetPersonTest extends IntegrationTest
                 "id",
                 "last_name",
                 "pending_tip_balance",
+                "recently_confirmed_tips_total",
                 "stripe_customer_id",
             ],
             array_keys($decodedBody)
