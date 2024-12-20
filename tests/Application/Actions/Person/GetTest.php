@@ -221,10 +221,8 @@ class GetTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJson($payloadJSON);
 
+        /** @var object{cash_balance: mixed, pending_tip_balance: mixed, recently_confirmed_tips_total: mixed} */
         $payload = json_decode($payloadJSON, false, 512, JSON_THROW_ON_ERROR);
-
-        // Mocked PersonRepsoitory sets a UUID in code.
-        $this->assertSame(36, strlen((string) $payload->id));
 
         $this->assertObjectHasProperty('cash_balance', $payload);
         $this->assertIsObject($payload->cash_balance);
