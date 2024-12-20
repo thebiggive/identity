@@ -59,6 +59,12 @@ class Get extends Action
      */
     public const string FUND_TIPS_CAMPAIGN_NAME = 'Big Give General Donations';
 
+    public const array STATUSES_THAT_MAY_BE_PENDING_BANK_TRANSFER = [
+        PaymentIntent::STATUS_REQUIRES_ACTION,
+        PaymentIntent::STATUS_REQUIRES_CONFIRMATION,
+        PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD,
+    ];
+
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
@@ -124,68 +130,82 @@ class Get extends Action
         );
     }
 
+    /**
+     * Check for the sum of all relevant payment intents and set those on person object to be returned to client
+     */
     private function setTipBalances(Person $person): void
     {
-        // If the pending tips balance was requested (e.g. by the transfer funds form),
-        // check for the sum of all relevant payment intents.
         if (!$this->stripeClient->paymentIntents) {
             throw new \LogicException('Stripe paymentIntents service not available in current mode');
         }
-
-        $statusesThatMayBeBankFundedLater = [
-            PaymentIntent::STATUS_REQUIRES_ACTION,
-            PaymentIntent::STATUS_REQUIRES_CONFIRMATION,
-            PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD,
-        ];
 
         $paymentIntents = $this->stripeClient->paymentIntents->all([
             'customer' => $person->stripe_customer_id,
         ]);
 
         foreach ($paymentIntents->autoPagingIterator() as $paymentIntent) {
-            /**
-             * @psalm-suppress UndefinedMagicPropertyFetch
-             *
-             * We could use the \ArrayAccess interface to metadata to avoid this issue, but that would
-             * require changing test data substantially. Previous Stripe library versions declared types that
-             * allowed this.
-             */
-            $paymentIntentIsDonorFundsTip = (
-                $paymentIntent->payment_method_types === ['customer_balance'] &&
-                $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
-            );
-
-            if (!$paymentIntentIsDonorFundsTip) {
+            if (! $this->isPaymentIntentDonorFundsTip($paymentIntent)) {
                 continue;
             }
 
-            $paymentIntentIsPendingDonorFundsTip = in_array(
-                $paymentIntent->status,
-                $statusesThatMayBeBankFundedLater,
-                true,
-            );
-
-            // Technically we check for recently-ish created because there's not a quick way to see if it was
-            // recently confirmed.
-            $paymentIntentIsRecentlyConfirmedDonorFundsTip =
-                $paymentIntent->status === PaymentIntent::STATUS_SUCCEEDED &&
-                $paymentIntent->created > (new \DateTimeImmutable())->modify('-10 days')->getTimestamp();
-
             $currencyCode = $paymentIntent->currency;
 
-            if ($paymentIntentIsPendingDonorFundsTip) {
+            if ($this->isPaymentIntentPendingBankTransfer($paymentIntent)) {
                 if (!isset($person->pending_tip_balance[$currencyCode])) {
                     $person->pending_tip_balance[$currencyCode] = 0;
                 }
                 $person->pending_tip_balance[$currencyCode] += $paymentIntent->amount;
             }
 
-            if ($paymentIntentIsRecentlyConfirmedDonorFundsTip) {
+            if ($this->isPaymentIntentRecentlyConfirmed($paymentIntent)) {
                 if (!isset($person->recently_confirmed_tips_total[$currencyCode])) {
                     $person->recently_confirmed_tips_total[$currencyCode] = 0;
                 }
                 $person->recently_confirmed_tips_total[$currencyCode] += $paymentIntent->amount;
             }
         }
+    }
+
+
+    // Param for this and following methods is docblock only as in test the param is actually stdClass.
+    /**
+     * @param PaymentIntent $paymentIntent
+     */
+    private function isPaymentIntentRecentlyConfirmed($paymentIntent): bool
+    {
+        // Technically we check for recently-ish created because there's not a quick way to see if it was
+        // recently confirmed.
+        return $paymentIntent->status === PaymentIntent::STATUS_SUCCEEDED &&
+            $paymentIntent->created > (new \DateTimeImmutable())->modify('-10 days')->getTimestamp();
+    }
+
+    /**
+     * @param PaymentIntent $paymentIntent
+     */
+    private function isPaymentIntentPendingBankTransfer($paymentIntent): bool
+    {
+        return in_array(
+            $paymentIntent->status,
+            self::STATUSES_THAT_MAY_BE_PENDING_BANK_TRANSFER,
+            true,
+        );
+    }
+
+    /**
+     * @param PaymentIntent $paymentIntent
+     */
+    private function isPaymentIntentDonorFundsTip($paymentIntent): bool
+    {
+        /**
+         * @psalm-suppress UndefinedMagicPropertyFetch
+         *
+         * We could use the \ArrayAccess interface to metadata to avoid this issue, but that would
+         * require changing test data substantially. Previous Stripe library versions declared types that
+         * allowed this.
+         */
+        return (
+            $paymentIntent->payment_method_types === ['customer_balance'] &&
+            $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
+        );
     }
 }
