@@ -3,7 +3,6 @@
 namespace BigGive\Identity\Application\Actions;
 
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
-use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -16,6 +15,7 @@ use Symfony\Component\Uid\Uuid;
  * @OA\Get(
  *     path="/v1/password-reset-token/{secret}",
  *     summary="Get details of a secret password reset token",
+ *     operationId="password_reset_token_get",
  *     @OA\PathParameter(
  *         name="secret",
  *         description="Secret token issued to allow the password reset. Use this to check if a token

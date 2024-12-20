@@ -24,7 +24,7 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 return function (App $app) {
     $app->get('/ping', Status::class);
 
-    // Provides real IP for reCAPTCHA
+    // Provides real IP for logging etc.
     $ipMiddleware = getenv('APP_ENV') === 'local'
         ? new ClientIp()
         : (new ClientIp())->proxy([], ['X-Forwarded-For']);

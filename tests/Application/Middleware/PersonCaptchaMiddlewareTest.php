@@ -6,12 +6,8 @@ namespace BigGive\Identity\Tests\Application\Middleware;
 
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Middleware\PersonCaptchaMiddleware;
-use BigGive\Identity\Application\Settings\SettingsInterface;
-use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestPeopleTrait;
-use Psr\Log\LoggerInterface;
-use ReCaptcha\ReCaptcha;
 use Slim\CallableResolver;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Response;

@@ -12,7 +12,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use ReCaptcha\ReCaptcha;
 use Symfony\Component\Serializer\SerializerInterface;
 
 abstract class CaptchaMiddleware implements MiddlewareInterface
@@ -37,7 +36,7 @@ abstract class CaptchaMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->settings->get('friendly_captcha')['bypass']) {
-            $this->logger->warning('Recaptcha verification bypassed');
+            $this->logger->warning('Captcha verification bypassed');
             return $handler->handle($request);
         }
 

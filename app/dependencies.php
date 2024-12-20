@@ -25,8 +25,6 @@ use Monolog\Processor\UidProcessor;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use ReCaptcha\ReCaptcha;
-use ReCaptcha\RequestMethod\CurlPost;
 use Slim\Psr7\Factory\ResponseFactory;
 use Stripe\Util\ApiVersion;
 use Symfony\Bridge\Doctrine\Types\UuidType;
