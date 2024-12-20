@@ -13,7 +13,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use ReCaptcha\ReCaptcha;
 use Redis;
 use Slim\App;
 use Slim\Factory\AppFactory;

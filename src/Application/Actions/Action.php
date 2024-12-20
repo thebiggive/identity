@@ -27,6 +27,12 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
  *     in="header",
  *     name="x-tbg-auth",
  * ),
+ * @OA\SecurityScheme(
+ *      securityScheme="captcha",
+ *      type="apiKey",
+ *      in="header",
+ *      name="x-captcha-code",
+ *  ),
  *
  * Swagger Hub doesn't (yet?) support `"bearerFormat": "JWT"`.
  */

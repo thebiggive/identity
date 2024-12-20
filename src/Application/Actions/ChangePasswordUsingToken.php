@@ -17,14 +17,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * @OA\Post(
  *     path="/v1/change-forgotten-password",
  *     summary="Change a forgotten password using a password reset token",
+ *     operationId="password_reset_complete",
  *     @OA\RequestBody(
  *         description="",
  *         required=true,
  *         @OA\JsonContent(
  *              @OA\Property(property="secret", type="string", example="EivZrmdxk4YJXQC37Q6Cnu"),
  *              @OA\Property(property="new_password", type="string", example="Open sesame"),
- *   )
- * ),
+ *         )
+ *     ),
  *     @OA\Response(
  *         response=200,
  *         description="Password changed",

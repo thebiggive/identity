@@ -19,13 +19,18 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  *  @OA\Post(
  *     path="/v1/password-reset-token",
- *      @OA\RequestBody(
+ *     summary="Create a password reset token",
+ *     operationId="password_reset_token_create",
+ *     security={
+ *         {"captcha": {}}
+ *     },
+ *     @OA\RequestBody(
  *         description="",
  *         required=true,
  *         @OA\JsonContent(
  *              @OA\Property(property="email_address", type="string", example="fred@example.com"),
  *        )
- *      ),
+ *     ),
  *     @OA\Response(
  *         response=200,
  *         description="Token created and emailed to user, if they exist, which the server does
@@ -41,7 +46,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *     )
  *   )
  * )
- */ class CreatePasswordResetToken extends Action
+ */
+class CreatePasswordResetToken extends Action
 {
     public function __construct(
         LoggerInterface $logger,

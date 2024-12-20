@@ -6,13 +6,9 @@ namespace BigGive\Identity\Tests\Application\Middleware;
 
 use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
-use BigGive\Identity\Application\Middleware\CaptchaMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Domain\Credentials;
 use BigGive\Identity\Tests\TestCase;
-use DI\Container;
-use Psr\Log\LoggerInterface;
-use ReCaptcha\ReCaptcha;
 use Slim\CallableResolver;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Response;
