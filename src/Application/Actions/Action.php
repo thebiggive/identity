@@ -13,11 +13,10 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
- * @OA\Info(title="Big Give Identity service", version="0.0.7"),
+ * @OA\Info(title="Big Give Identity service", version="1.0.0"),
  * @OA\Server(
  *     description="Staging",
  *     url="https://identity-staging.thebiggivetest.org.uk",

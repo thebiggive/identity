@@ -106,67 +106,7 @@ class Get extends Action
             }
 
             if ($includeTipBalances) {
-                // If the pending tips balance was requested (e.g. by the transfer funds form),
-                // check for the sum of all relevant payment intents.
-                if (!$this->stripeClient->paymentIntents) {
-                    throw new \LogicException('Stripe paymentIntents service not available in current mode');
-                }
-
-                $tipPaymentIntentsPending = $this->stripeClient->paymentIntents->all([
-                    'customer' => $person->stripe_customer_id,
-                ]);
-
-                foreach ($tipPaymentIntentsPending->autoPagingIterator() as $paymentIntent) {
-                    $statusesThatMayBeBankFundedLater = [
-                        PaymentIntent::STATUS_REQUIRES_ACTION,
-                        PaymentIntent::STATUS_REQUIRES_CONFIRMATION,
-                        PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD,
-                    ];
-
-                    /**
-                     * @psalm-suppress UndefinedMagicPropertyFetch
-                     *
-                     * We could use the \ArrayAccess interface to metadata to avoid this issue, but that would
-                     * require changing test data substantially. Previous Stripe library versions declared types that
-                     * allowed this.
-                     */
-                    $paymentIntentIsDonorFundsTip = (
-                        $paymentIntent->payment_method_types === ['customer_balance'] &&
-                        $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
-                    );
-
-                    if (!$paymentIntentIsDonorFundsTip) {
-                        continue;
-                    }
-
-                    $paymentIntentIsPendingDonorFundsTip = in_array(
-                        $paymentIntent->status,
-                        $statusesThatMayBeBankFundedLater,
-                        true,
-                    );
-
-                    // Technically we check for recently-ish created because there's not a quick way to see if it was
-                    // recently confirmed.
-                    $paymentIntentIsRecentlyConfirmedDonorFundsTip =
-                        $paymentIntent->status === PaymentIntent::STATUS_SUCCEEDED &&
-                        $paymentIntent->created > (new \DateTimeImmutable())->modify('-10 days')->getTimestamp();
-
-                    $currencyCode = $paymentIntent->currency;
-
-                    if ($paymentIntentIsPendingDonorFundsTip) {
-                        if (!isset($person->pending_tip_balance[$currencyCode])) {
-                            $person->pending_tip_balance[$currencyCode] = 0;
-                        }
-                        $person->pending_tip_balance[$currencyCode] += $paymentIntent->amount;
-                    }
-
-                    if ($paymentIntentIsRecentlyConfirmedDonorFundsTip) {
-                        if (!isset($person->recently_confirmed_tips_total[$currencyCode])) {
-                            $person->recently_confirmed_tips_total[$currencyCode] = 0;
-                        }
-                        $person->recently_confirmed_tips_total[$currencyCode] += $paymentIntent->amount;
-                    }
-                }
+                $this->setTipBalances($person);
             }
         }
 
@@ -182,5 +122,70 @@ class Get extends Action
             200,
             ['content-type' => 'application/json']
         );
+    }
+
+    private function setTipBalances(Person $person): void
+    {
+        // If the pending tips balance was requested (e.g. by the transfer funds form),
+        // check for the sum of all relevant payment intents.
+        if (!$this->stripeClient->paymentIntents) {
+            throw new \LogicException('Stripe paymentIntents service not available in current mode');
+        }
+
+        $statusesThatMayBeBankFundedLater = [
+            PaymentIntent::STATUS_REQUIRES_ACTION,
+            PaymentIntent::STATUS_REQUIRES_CONFIRMATION,
+            PaymentIntent::STATUS_REQUIRES_PAYMENT_METHOD,
+        ];
+
+        $paymentIntents = $this->stripeClient->paymentIntents->all([
+            'customer' => $person->stripe_customer_id,
+        ]);
+
+        foreach ($paymentIntents->autoPagingIterator() as $paymentIntent) {
+            /**
+             * @psalm-suppress UndefinedMagicPropertyFetch
+             *
+             * We could use the \ArrayAccess interface to metadata to avoid this issue, but that would
+             * require changing test data substantially. Previous Stripe library versions declared types that
+             * allowed this.
+             */
+            $paymentIntentIsDonorFundsTip = (
+                $paymentIntent->payment_method_types === ['customer_balance'] &&
+                $paymentIntent->metadata->campaignName === self::FUND_TIPS_CAMPAIGN_NAME
+            );
+
+            if (!$paymentIntentIsDonorFundsTip) {
+                continue;
+            }
+
+            $paymentIntentIsPendingDonorFundsTip = in_array(
+                $paymentIntent->status,
+                $statusesThatMayBeBankFundedLater,
+                true,
+            );
+
+            // Technically we check for recently-ish created because there's not a quick way to see if it was
+            // recently confirmed.
+            $paymentIntentIsRecentlyConfirmedDonorFundsTip =
+                $paymentIntent->status === PaymentIntent::STATUS_SUCCEEDED &&
+                $paymentIntent->created > (new \DateTimeImmutable())->modify('-10 days')->getTimestamp();
+
+            $currencyCode = $paymentIntent->currency;
+
+            if ($paymentIntentIsPendingDonorFundsTip) {
+                if (!isset($person->pending_tip_balance[$currencyCode])) {
+                    $person->pending_tip_balance[$currencyCode] = 0;
+                }
+                $person->pending_tip_balance[$currencyCode] += $paymentIntent->amount;
+            }
+
+            if ($paymentIntentIsRecentlyConfirmedDonorFundsTip) {
+                if (!isset($person->recently_confirmed_tips_total[$currencyCode])) {
+                    $person->recently_confirmed_tips_total[$currencyCode] = 0;
+                }
+                $person->recently_confirmed_tips_total[$currencyCode] += $paymentIntent->amount;
+            }
+        }
     }
 }
