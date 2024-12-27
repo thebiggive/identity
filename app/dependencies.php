@@ -271,7 +271,7 @@ return function (ContainerBuilder $containerBuilder) {
 
             $sendMiddleware = new SendMessageMiddleware(new SendersLocator(
                 [
-                    PersonUpserted::class => [TransportInterface::class],
+                    \Messages\Person::class => [TransportInterface::class],
                 ],
                 $c,
             ));
