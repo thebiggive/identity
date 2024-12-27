@@ -11,6 +11,7 @@ use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
@@ -83,14 +84,13 @@ return function (ContainerBuilder $containerBuilder) {
                 Type::addType('uuid', UuidType::class);
             }
 
-            /** @psalm-suppress DeprecatedMethod */
-            return EntityManager::create(
-                $c->get(SettingsInterface::class)->get('doctrine')['connection'],
+            return new EntityManager(
+                DriverManager::getConnection($c->get(SettingsInterface::class)->get('doctrine')['connection']),
                 $c->get(ORM\Configuration::class),
             );
         },
 
-        LoggerInterface::class => function (ContainerInterface $c) {
+        LoggerInterface::class => function (ContainerInterface $c): LoggerInterface {
             $settings = $c->get(SettingsInterface::class);
 
             $loggerSettings = $settings->get('logger');
@@ -259,8 +259,13 @@ return function (ContainerBuilder $containerBuilder) {
                 new AmazonSqsTransportFactory(),
                 new RedisTransportFactory(),
             ]);
+
+            $settings = $c->get(SettingsInterface::class);
+            \assert($settings instanceof SettingsInterface);
+            /** @var array{outbound_dsn: string} $messengerSettings */
+            $messengerSettings = $settings->get('messenger');
             return $transportFactory->createTransport(
-                $c->get(SettingsInterface::class)->get('messenger')['outbound_dsn'],
+                $messengerSettings['outbound_dsn'],
                 [],
                 new PhpSerializer(),
             );
@@ -268,6 +273,7 @@ return function (ContainerBuilder $containerBuilder) {
 
         MessageBusInterface::class => static function (ContainerInterface $c): MessageBusInterface {
             $logger = $c->get(LoggerInterface::class);
+            \assert($logger instanceof LoggerInterface);
 
             $sendMiddleware = new SendMessageMiddleware(new SendersLocator(
                 [
@@ -286,6 +292,7 @@ return function (ContainerBuilder $containerBuilder) {
         RoutableMessageBus::class => static function (ContainerInterface $c): RoutableMessageBus {
             $busContainer = new DI\Container();
             $bus = $c->get(MessageBusInterface::class);
+            \assert($bus instanceof MessageBusInterface);
 
             return new RoutableMessageBus($busContainer, $bus);
         },

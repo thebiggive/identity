@@ -10,6 +10,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use DI\ContainerBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\RoutableMessageBus;
 
 return static function (ContainerBuilder $containerBuilder) {
@@ -18,11 +19,16 @@ return static function (ContainerBuilder $containerBuilder) {
             /** @var PersonRepository $repo */
             $repo = $c->get(EntityManagerInterface::class)->getRepository(Person::class);
 
-            /** @var Mailer $mailerClient */
             $mailerClient = $c->get(Mailer::class);
+            \assert($mailerClient instanceof Mailer);
+            $bus = $c->get(RoutableMessageBus::class);
+            \assert($bus instanceof RoutableMessageBus);
+            $logger = $c->get(LoggerInterface::class);
+            \assert($logger instanceof LoggerInterface);
+
+            $repo->setBus($bus);
+            $repo->setLogger($logger);
             $repo->setMailerClient($mailerClient);
-            $repo->bus = $c->get(RoutableMessageBus::class);
-            $repo->logger = $c->get(\Psr\Log\LoggerInterface::class);
 
             return $repo;
         },

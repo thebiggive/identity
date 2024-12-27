@@ -9,6 +9,7 @@ use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Rfc4122\UuidV4;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Uid\Uuid;
@@ -299,16 +300,23 @@ class Person
      */
     public function toMatchBotSummaryMessage(): \Messages\Person
     {
-        return new \Messages\Person(
-            id: $this->id,
-            first_name: $this->first_name,
-            last_name: $this->last_name,
-            email_address: $this->email_address,
-            stripe_customer_id: $this->stripe_customer_id,
-            home_address_line_1: $this->home_address_line_1,
-            home_postcode: $this->home_postcode,
-            home_country_code: $this->home_country_code,
-        );
+        \assert($this->id !== null, 'Person ID must be set to sync to MatchBot');
+        \assert($this->first_name !== null, 'First name must be set to sync to MatchBot');
+        \assert($this->last_name !== null, 'Last name must be set to sync to MatchBot');
+        \assert($this->email_address !== null, 'Email address must be set to sync to MatchBot');
+        \assert($this->stripe_customer_id !== null, 'Stripe customer ID must be set to sync to MatchBot');
+
+        $message = new \Messages\Person();
+        $message->id = UuidV4::fromString($this->id->toRfc4122());
+        $message->first_name = $this->first_name;
+        $message->last_name = $this->last_name;
+        $message->email_address = $this->email_address;
+        $message->stripe_customer_id = $this->stripe_customer_id;
+        $message->home_address_line_1 = $this->home_address_line_1;
+        $message->home_postcode = $this->home_postcode;
+        $message->home_country_code = $this->home_country_code;
+
+        return $message;
     }
 
     /**

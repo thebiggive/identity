@@ -22,9 +22,11 @@ class PersonRepository extends EntityRepository
 {
     public const string EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
 
-    public LoggerInterface $logger;
+    // Non-baselined properties nullable for now to swerve MissingConstructor warnings upon use. Best eventual
+    // fix is probably to avoid getRepository() entirely so we can use conventional DI.
+    private ?LoggerInterface $logger = null;
     private Mailer $mailerClient;
-    public RoutableMessageBus $bus;
+    private ?RoutableMessageBus $bus = null;
 
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
@@ -58,6 +60,10 @@ class PersonRepository extends EntityRepository
 
             if ($person->getPasswordHash() !== null) {
                 $personMessage = $person->toMatchBotSummaryMessage();
+
+                // DI setup in repositories.php sets these in all production code where we have the repo.
+                \assert($this->bus !== null);
+                \assert($this->logger !== null);
                 $this->logger->info(sprintf("Will dispatch message about person %s", $personMessage->id));
                 $this->bus->dispatch(new Envelope($personMessage));
             }
@@ -89,6 +95,16 @@ class PersonRepository extends EntityRepository
     public function setMailerClient(Mailer $mailerClient): void
     {
         $this->mailerClient = $mailerClient;
+    }
+
+    public function setBus(RoutableMessageBus $bus): void
+    {
+        $this->bus = $bus;
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     public function sendRegisteredEmail(Person $person): bool

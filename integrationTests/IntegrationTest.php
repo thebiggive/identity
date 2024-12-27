@@ -2,12 +2,20 @@
 
 namespace BigGive\Identity\IntegrationTests;
 
+use BigGive\Identity\Client\Stripe;
+use DI\Container;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Slim\App;
+use Stripe\Service\CustomerService;
 
 abstract class IntegrationTest extends TestCase
 {
+    use ProphecyTrait;
+
     public static ?ContainerInterface $integrationTestContainer = null;
     public static ?App $app = null;
 
@@ -21,11 +29,25 @@ abstract class IntegrationTest extends TestCase
         self::$app = $app;
     }
 
+    /**
+     * Stub Stripe `customers` service calls (for now) and set logger to NullLogger.
+     */
+    public function stubStripeAndLogger(Container $container): void
+    {
+        $this->stubOutStripeCustomers($container);
+        $container->set(LoggerInterface::class, new NullLogger());
+    }
+
     protected function getContainer(): ContainerInterface
     {
         if (self::$integrationTestContainer === null) {
             throw new \Exception("Test container not set");
         }
+
+        $container = self::$integrationTestContainer;
+        $this->assertInstanceOf(Container::class, $container);
+        $this->stubStripeAndLogger($container);
+
         return self::$integrationTestContainer;
     }
 
@@ -48,5 +70,13 @@ abstract class IntegrationTest extends TestCase
         $this->assertInstanceOf($name, $service);
 
         return $service;
+    }
+
+    private function stubOutStripeCustomers(Container $container): void
+    {
+        $stripeCustomers = $this->createStub(CustomerService::class);
+        $stripeProphecy = $this->prophesize(Stripe::class);
+        $stripeProphecy->customers = $stripeCustomers;
+        $container->set(Stripe::class, $stripeProphecy->reveal());
     }
 }
