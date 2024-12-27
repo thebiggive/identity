@@ -9,10 +9,12 @@ use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\RoutableMessageBus;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @template-extends EntityRepository<Person>
@@ -20,7 +22,11 @@ use Doctrine\ORM\QueryBuilder;
 class PersonRepository extends EntityRepository
 {
     public const string EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
+
+    public LoggerInterface $logger;
     private Mailer $mailerClient;
+    public RoutableMessageBus $bus;
+    public SerializerInterface $serializer;
 
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
@@ -51,6 +57,12 @@ class PersonRepository extends EntityRepository
 
         try {
             $em->flush();
+
+            if ($person->getPasswordHash() !== null) {
+                $personMessage = $person->toMatchBotSummaryMessage();
+                $this->logger->info(sprintf("Will dispatch message about person %s", $personMessage->id));
+                $this->bus->dispatch(new Envelope($personMessage));
+            }
         } catch (UniqueConstraintViolationException $exception) {
             $em->detach($person);
             if (str_contains($exception->getMessage(), self::EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME)) {

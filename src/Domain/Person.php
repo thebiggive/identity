@@ -186,7 +186,7 @@ class Person
 
     /**
      * @OA\Property()
-     * */
+     */
     public bool $has_password = false;
 
     /**
@@ -291,6 +291,24 @@ class Person
         ];
 
         return $data;
+    }
+
+    /**
+     * Message with properties to sync via queue to MatchBot on password set or details update. Only
+     * people with passwords are pushed this way.
+     */
+    public function toMatchBotSummaryMessage(): \Messages\Person
+    {
+        return new \Messages\Person(
+            id: $this->id,
+            first_name: $this->first_name,
+            last_name: $this->last_name,
+            email_address: $this->email_address,
+            stripe_customer_id: $this->stripe_customer_id,
+            home_address_line_1: $this->home_address_line_1,
+            home_postcode: $this->home_postcode,
+            home_country_code: $this->home_country_code,
+        );
     }
 
     /**
