@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Messenger\PersonUpserted;
 use BigGive\Identity\Application\Middleware\AlwaysPassFriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Settings\SettingsInterface;
@@ -31,6 +32,17 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Messenger\Bridge\AmazonSqs\Middleware\AddFifoStampMiddleware;
+use Symfony\Component\Messenger\Bridge\AmazonSqs\Transport\AmazonSqsTransportFactory;
+use Symfony\Component\Messenger\Bridge\Redis\Transport\RedisTransportFactory;
+use Symfony\Component\Messenger\MessageBus;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Middleware\SendMessageMiddleware;
+use Symfony\Component\Messenger\RoutableMessageBus;
+use Symfony\Component\Messenger\Transport\Sender\SendersLocator;
+use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
+use Symfony\Component\Messenger\Transport\TransportFactory;
+use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
@@ -240,6 +252,42 @@ return function (ContainerBuilder $containerBuilder) {
             return Validation::createValidatorBuilder()
                 ->enableAttributeMapping()
                 ->getValidator();
+        },
+
+        TransportInterface::class => static function (ContainerInterface $c): TransportInterface {
+            $transportFactory = new TransportFactory([
+                new AmazonSqsTransportFactory(),
+                new RedisTransportFactory(),
+            ]);
+            return $transportFactory->createTransport(
+                $c->get(SettingsInterface::class)->get('messenger')['outbound_dsn'],
+                [],
+                new PhpSerializer(),
+            );
+        },
+
+        MessageBusInterface::class => static function (ContainerInterface $c): MessageBusInterface {
+            $logger = $c->get(LoggerInterface::class);
+
+            $sendMiddleware = new SendMessageMiddleware(new SendersLocator(
+                [
+                    PersonUpserted::class => [TransportInterface::class],
+                ],
+                $c,
+            ));
+            $sendMiddleware->setLogger($logger);
+
+            return new MessageBus([
+                new AddFifoStampMiddleware(),
+                $sendMiddleware,
+            ]);
+        },
+
+        RoutableMessageBus::class => static function (ContainerInterface $c): RoutableMessageBus {
+            $busContainer = new DI\Container();
+            $bus = $c->get(MessageBusInterface::class);
+
+            return new RoutableMessageBus($busContainer, $bus);
         },
     ]);
 };

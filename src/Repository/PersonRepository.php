@@ -14,7 +14,6 @@ use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\RoutableMessageBus;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @template-extends EntityRepository<Person>
@@ -26,7 +25,6 @@ class PersonRepository extends EntityRepository
     public LoggerInterface $logger;
     private Mailer $mailerClient;
     public RoutableMessageBus $bus;
-    public SerializerInterface $serializer;
 
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
