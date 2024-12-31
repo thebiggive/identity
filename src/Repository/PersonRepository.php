@@ -9,10 +9,11 @@ use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\RoutableMessageBus;
 
 /**
  * @template-extends EntityRepository<Person>
@@ -20,7 +21,12 @@ use Doctrine\ORM\QueryBuilder;
 class PersonRepository extends EntityRepository
 {
     public const string EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME = 'email_if_password';
+
+    // Non-baselined properties nullable for now to swerve MissingConstructor warnings upon use. Best eventual
+    // fix is probably to avoid getRepository() entirely so we can use conventional DI.
+    private ?LoggerInterface $logger = null;
     private Mailer $mailerClient;
+    private ?RoutableMessageBus $bus = null;
 
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
@@ -51,6 +57,16 @@ class PersonRepository extends EntityRepository
 
         try {
             $em->flush();
+
+            if ($person->getPasswordHash() !== null) {
+                $personMessage = $person->toMatchBotSummaryMessage();
+
+                // DI setup in repositories.php sets these in all production code where we have the repo.
+                \assert($this->bus !== null);
+                \assert($this->logger !== null);
+                $this->logger->info(sprintf("Will dispatch message about person %s", $personMessage->id));
+                $this->bus->dispatch(new Envelope($personMessage));
+            }
         } catch (UniqueConstraintViolationException $exception) {
             $em->detach($person);
             if (str_contains($exception->getMessage(), self::EMAIL_IF_PASSWORD_UNIQUE_INDEX_NAME)) {
@@ -79,6 +95,16 @@ class PersonRepository extends EntityRepository
     public function setMailerClient(Mailer $mailerClient): void
     {
         $this->mailerClient = $mailerClient;
+    }
+
+    public function setBus(RoutableMessageBus $bus): void
+    {
+        $this->bus = $bus;
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     public function sendRegisteredEmail(Person $person): bool

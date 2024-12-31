@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Messenger\PersonUpserted;
 use BigGive\Identity\Application\Middleware\AlwaysPassFriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Settings\SettingsInterface;
@@ -10,6 +11,7 @@ use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
@@ -31,6 +33,17 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Messenger\Bridge\AmazonSqs\Middleware\AddFifoStampMiddleware;
+use Symfony\Component\Messenger\Bridge\AmazonSqs\Transport\AmazonSqsTransportFactory;
+use Symfony\Component\Messenger\Bridge\Redis\Transport\RedisTransportFactory;
+use Symfony\Component\Messenger\MessageBus;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Middleware\SendMessageMiddleware;
+use Symfony\Component\Messenger\RoutableMessageBus;
+use Symfony\Component\Messenger\Transport\Sender\SendersLocator;
+use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
+use Symfony\Component\Messenger\Transport\TransportFactory;
+use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
@@ -71,14 +84,13 @@ return function (ContainerBuilder $containerBuilder) {
                 Type::addType('uuid', UuidType::class);
             }
 
-            /** @psalm-suppress DeprecatedMethod */
-            return EntityManager::create(
-                $c->get(SettingsInterface::class)->get('doctrine')['connection'],
+            return new EntityManager(
+                DriverManager::getConnection($c->get(SettingsInterface::class)->get('doctrine')['connection']),
                 $c->get(ORM\Configuration::class),
             );
         },
 
-        LoggerInterface::class => function (ContainerInterface $c) {
+        LoggerInterface::class => function (ContainerInterface $c): LoggerInterface {
             $settings = $c->get(SettingsInterface::class);
 
             $loggerSettings = $settings->get('logger');
@@ -240,6 +252,49 @@ return function (ContainerBuilder $containerBuilder) {
             return Validation::createValidatorBuilder()
                 ->enableAttributeMapping()
                 ->getValidator();
+        },
+
+        TransportInterface::class => static function (ContainerInterface $c): TransportInterface {
+            $transportFactory = new TransportFactory([
+                new AmazonSqsTransportFactory(),
+                new RedisTransportFactory(),
+            ]);
+
+            $settings = $c->get(SettingsInterface::class);
+            \assert($settings instanceof SettingsInterface);
+            /** @var array{outbound_dsn: string} $messengerSettings */
+            $messengerSettings = $settings->get('messenger');
+            return $transportFactory->createTransport(
+                $messengerSettings['outbound_dsn'],
+                [],
+                new PhpSerializer(),
+            );
+        },
+
+        MessageBusInterface::class => static function (ContainerInterface $c): MessageBusInterface {
+            $logger = $c->get(LoggerInterface::class);
+            \assert($logger instanceof LoggerInterface);
+
+            $sendMiddleware = new SendMessageMiddleware(new SendersLocator(
+                [
+                    \Messages\Person::class => [TransportInterface::class],
+                ],
+                $c,
+            ));
+            $sendMiddleware->setLogger($logger);
+
+            return new MessageBus([
+                new AddFifoStampMiddleware(),
+                $sendMiddleware,
+            ]);
+        },
+
+        RoutableMessageBus::class => static function (ContainerInterface $c): RoutableMessageBus {
+            $busContainer = new DI\Container();
+            $bus = $c->get(MessageBusInterface::class);
+            \assert($bus instanceof MessageBusInterface);
+
+            return new RoutableMessageBus($busContainer, $bus);
         },
     ]);
 };

@@ -49,7 +49,9 @@ class GetPersonTest extends IntegrationTest
         $email = "someemail" . Uuid::v4() . "@example.com";
         $person->email_address = $email;
         $person->first_name = "Fred";
+        $person->last_name = "Bloggs";
         $person->raw_password = 'password';
+        $person->stripe_customer_id = 'cus_1234567890';
 
         $this->getService(PersonRepository::class)->persist($person);
 

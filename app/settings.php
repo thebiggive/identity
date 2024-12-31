@@ -91,6 +91,10 @@ return function (ContainerBuilder $containerBuilder) {
                 'accountManagement' => [
                     'baseUri' => getenv('ACCOUNT_MANAGEMENT_BASE_URI'),
                 ],
+                'messenger' => [
+                    // Outbound uses SQS in deployed AWS environments and Redis locally.
+                    'outbound_dsn' => getenv('MESSENGER_OUTBOUND_TRANSPORT_DSN'),
+                ],
             ]);
         }
     ]);
