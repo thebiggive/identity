@@ -14,7 +14,7 @@ final class Version20250103110506 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'CREATE KeyValue table for persisted globals';
     }
 
     public function up(Schema $schema): void
