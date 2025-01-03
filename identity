@@ -3,11 +3,13 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Commands\CopyExistingPersonRecordsToMatchbot;
 use BigGive\Identity\Application\Commands\DeleteUnusablePersonRecords;
 use BigGive\Identity\Application\Commands\PopulateUsers;
 use BigGive\Identity\Repository\PersonRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 
 $psr11App = require __DIR__ . '/bootstrap.php';
 
@@ -22,11 +24,13 @@ $connection = $psr11App->get(\Doctrine\DBAL\Connection::class);
 
 $now = new \DateTimeImmutable();
 
+/** @var Command[] $commands */
 $commands = [
     new PopulateUsers(
         $personRepository,
     ),
     new DeleteUnusablePersonRecords($connection, $now),
+    $psr11App->get(CopyExistingPersonRecordsToMatchbot::class),
 ];
 
 foreach ($commands as $command) {

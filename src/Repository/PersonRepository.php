@@ -28,6 +28,33 @@ class PersonRepository extends EntityRepository
     private Mailer $mailerClient;
     private ?RoutableMessageBus $bus = null;
 
+    /**
+     * @psalm-suppress MixedInferredReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
+     *
+     * @return list<Person>
+     */
+    public function findOldestPersonRecordsRequiringSyncToMatchbot(\DateTimeImmutable $alreadyDoneUpTo): array
+    {
+        // I'm assuming persons updated after the hard-coded date below won't need to be synced via this
+        // process as their records will have been synced at the time of update
+
+        $query = $this->getEntityManager()->createQuery(<<<'DQL'
+                SELECT p from BigGive\Identity\Domain\Person p
+                WHERE p.password IS NOT NULL 
+                AND p.updated_at >= :alreadyDoneUpTO
+                AND p.updated_at < '2025-01-10'
+                ORDER BY p.updated_at ASC
+DQL
+        );
+
+        $query->setParameter('alreadyDoneUpTO', $alreadyDoneUpTo);
+        $query->setMaxResults(1_000);
+
+        return $query->getResult();
+    }
+
     public function findPasswordEnabledPersonByEmailAddress(string $emailAddress): ?Person
     {
         $qb = new QueryBuilder($this->getEntityManager());
