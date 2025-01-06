@@ -3,6 +3,7 @@
 namespace BigGive\Identity\IntegrationTests;
 
 use BigGive\Identity\Client\Stripe;
+use BigGive\Identity\Repository\PersonRepository;
 use DI\Container;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -18,6 +19,22 @@ abstract class IntegrationTest extends TestCase
 
     public static ?ContainerInterface $integrationTestContainer = null;
     public static ?App $app = null;
+
+    /**
+     * Keeping a copy of the original state of the person repo in memory to allow restoring after test is finished
+     * to avoid interference with later tests
+     */
+    private PersonRepository $originalPersonRepository;
+
+    public function setUp(): void
+    {
+        $this->originalPersonRepository = $this->getService(PersonRepository::class);
+    }
+
+    public function tearDown(): void
+    {
+        $this->getWriteableContainer()->set(PersonRepository::class, $this->originalPersonRepository);
+    }
 
     public static function setContainer(ContainerInterface $container): void
     {
