@@ -4,6 +4,7 @@ namespace BigGive\Identity\IntegrationTests;
 
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
+use DI\Container;
 use Doctrine\ORM\EntityManagerInterface;
 use MatchBot\Application\Messenger\CharityUpdated;
 use MatchBot\Application\Messenger\Handler\CharityUpdatedHandler;
@@ -26,7 +27,7 @@ class PersonRepositoryTest extends IntegrationTest
 
     public function testItPersistsAndFindsPerson(): void
     {
-        $sut = $this->getService(PersonRepository::class);
+        $sut = clone $this->getService(PersonRepository::class);
         $em = $this->getService(EntityManagerInterface::class);
 
         $uuid = Uuid::v4();
