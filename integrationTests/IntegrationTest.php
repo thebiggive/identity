@@ -51,6 +51,13 @@ abstract class IntegrationTest extends TestCase
         return self::$integrationTestContainer;
     }
 
+    public function getWriteableContainer(): Container
+    {
+        $container = $this->getContainer();
+        \assert($container instanceof Container);
+        return $container;
+    }
+
     protected function getApp(): App
     {
         if (self::$app === null) {

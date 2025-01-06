@@ -4,6 +4,7 @@ namespace BigGive\Identity\IntegrationTests;
 
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
+use DI\Container;
 use Doctrine\ORM\EntityManagerInterface;
 use MatchBot\Application\Messenger\CharityUpdated;
 use MatchBot\Application\Messenger\Handler\CharityUpdatedHandler;
@@ -15,6 +16,22 @@ use Symfony\Component\Uid\Uuid;
 
 class PersonRepositoryTest extends IntegrationTest
 {
+    /**
+     * Keeping a copy of the original state of the person repo in memory to allow restoring after test is finished
+     * to avoid interference with later tests
+     */
+    private PersonRepository $originalPersonRepository;
+
+    public function setUp(): void
+    {
+        $this->originalPersonRepository = $this->getService(PersonRepository::class);
+    }
+
+    public function tearDown(): void
+    {
+        $this->getWriteableContainer()->set(PersonRepository::class, $this->originalPersonRepository);
+    }
+
     public function testItDoesNotFindPersonWhoDoesNotExist(): void
     {
         $sut = $this->getService(PersonRepository::class);
@@ -26,7 +43,7 @@ class PersonRepositoryTest extends IntegrationTest
 
     public function testItPersistsAndFindsPerson(): void
     {
-        $sut = $this->getService(PersonRepository::class);
+        $sut = clone $this->getService(PersonRepository::class);
         $em = $this->getService(EntityManagerInterface::class);
 
         $uuid = Uuid::v4();
