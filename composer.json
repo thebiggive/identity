@@ -101,6 +101,6 @@
         "lint:fix": "phpcbf --standard=phpcs.xml -s .",
         "start": "php -S localhost:8080 -t public",
         "test": "XDEBUG_MODE=coverage phpunit",
-        "integration-test": "XDEBUG_MODE=coverage phpunit --config=phpunit-integration.xml --order-by=random"
+        "integration-test": "XDEBUG_MODE=coverage phpunit --config=phpunit-integration.xml --order-by=random --random-order-seed=1736159309"
     }
 }
