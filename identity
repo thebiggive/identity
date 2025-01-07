@@ -30,7 +30,6 @@ $commands = [
         $personRepository,
     ),
     new DeleteUnusablePersonRecords($connection, $now),
-    $psr11App->get(CopyExistingPersonRecordsToMatchbot::class),
 ];
 
 foreach ($commands as $command) {
