@@ -9,6 +9,7 @@ use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Rfc4122\UuidV4;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Uid\Uuid;
@@ -87,6 +88,23 @@ class Person
      *                  Or may be null if no tip balances requested on Get.
      */
     public ?array $pending_tip_balance = null;
+
+    /**
+     * @OA\Property(
+     *     type="object",
+     *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
+     *     available amounts in smallest denomination, e.g. 123 pence.",
+     *     example={
+     *         "eur": 0,
+     *         "gbp": 123,
+     *     }
+     * )
+     * @var null|array<string,int>  Total Succeeded Payment Intents for Big Give
+     *                  (i.e. donor fund top up tips), created in past 10 days, for each currency
+     *                  in smallest unit (cents/pence), keyed on lowercase currency code.
+     *                  Or may be null if no tip balances requested on Get.
+     */
+    public ?array $recently_confirmed_tips_total = null;
 
     /**
      * @OA\Property(
@@ -169,7 +187,7 @@ class Person
 
     /**
      * @OA\Property()
-     * */
+     */
     public bool $has_password = false;
 
     /**
@@ -274,6 +292,31 @@ class Person
         ];
 
         return $data;
+    }
+
+    /**
+     * Message with properties to sync via queue to MatchBot on password set or details update. Only
+     * people with passwords are pushed this way.
+     */
+    public function toMatchBotSummaryMessage(): \Messages\Person
+    {
+        \assert($this->id !== null, 'Person ID must be set to sync to MatchBot');
+        \assert($this->first_name !== null, 'First name must be set to sync to MatchBot');
+        \assert($this->last_name !== null, 'Last name must be set to sync to MatchBot');
+        \assert($this->email_address !== null, 'Email address must be set to sync to MatchBot');
+        \assert($this->stripe_customer_id !== null, 'Stripe customer ID must be set to sync to MatchBot');
+
+        $message = new \Messages\Person();
+        $message->id = UuidV4::fromString($this->id->toRfc4122());
+        $message->first_name = $this->first_name;
+        $message->last_name = $this->last_name;
+        $message->email_address = $this->email_address;
+        $message->stripe_customer_id = $this->stripe_customer_id;
+        $message->home_address_line_1 = $this->home_address_line_1;
+        $message->home_postcode = $this->home_postcode;
+        $message->home_country_code = $this->home_country_code;
+
+        return $message;
     }
 
     /**

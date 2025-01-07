@@ -6,6 +6,9 @@ use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use GuzzleHttp\Psr7\ServerRequest;
+use Prophecy\Argument;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\RoutableMessageBus;
 use Symfony\Component\Uid\Uuid;
 
 class GetPersonTest extends IntegrationTest
@@ -35,6 +38,7 @@ class GetPersonTest extends IntegrationTest
                 "id",
                 "last_name",
                 "pending_tip_balance",
+                "recently_confirmed_tips_total",
                 "stripe_customer_id",
             ],
             array_keys($decodedBody)
@@ -43,17 +47,34 @@ class GetPersonTest extends IntegrationTest
 
     private function addPersonToToDB(): Uuid
     {
+        $this->allowMessageToBeSentToBus();
+
         $person = new Person();
         // use a unique email address every time to avoid conflict with data already in DB.
         $email = "someemail" . Uuid::v4() . "@example.com";
         $person->email_address = $email;
         $person->first_name = "Fred";
+        $person->last_name = "Bloggs";
         $person->raw_password = 'password';
+        $person->stripe_customer_id = 'cus_1234567890';
 
         $this->getService(PersonRepository::class)->persist($person);
 
         $uuid = $person->getId();
         \assert($uuid !== null);
         return $uuid;
+    }
+
+    public function allowMessageToBeSentToBus(): void
+    {
+        $container = $this->getWriteableContainer();
+        $personRepository = $container->get(PersonRepository::class);
+        \assert($personRepository instanceof PersonRepository);
+        $clonedPersonRepository = clone $personRepository;
+        $container->set(PersonRepository::class, $clonedPersonRepository);
+
+        $busProphecy = $this->prophesize(RoutableMessageBus::class);
+        $busProphecy->dispatch(Argument::type(Envelope::class))->willReturnArgument();
+        $clonedPersonRepository->setBus($busProphecy->reveal());
     }
 }

@@ -31,7 +31,7 @@ use TypeError;
  *     summary="Create a new Person record",
  *     operationId="person_create",
  *     @OA\RequestBody(
- *         description="All details needed to register a Person",
+ *         description="All details needed to register a Person, including valid captcha_code",
  *         required=true,
  *         @OA\JsonContent(ref="#/components/schemas/Person")
  *     ),
