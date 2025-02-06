@@ -28,7 +28,6 @@ final class Version20250106114223 extends AbstractMigration
             WHERE `key` = 'PersonRecordsSentToMatchBotTo' LIMIT 1; 
             SQL
         );
-
     }
 
     public function down(Schema $schema): void
