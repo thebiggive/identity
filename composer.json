@@ -17,6 +17,7 @@
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
+        "cweagans/composer-patches": "^1.7",
         "doctrine/annotations": "^2.0",
         "doctrine/migrations": "^3.5",
         "doctrine/orm": "^2.12",
@@ -60,7 +61,8 @@
         "process-timeout": 0,
         "sort-packages": true,
         "allow-plugins": {
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "cweagans/composer-patches": true
         },
         "platform": {
             "php": "8.3.1"
@@ -102,5 +104,12 @@
         "start": "php -S localhost:8080 -t public",
         "test": "XDEBUG_MODE=coverage phpunit",
         "integration-test": "XDEBUG_MODE=coverage phpunit --config=phpunit-integration.xml --order-by=random"
+    },
+    "extra": {
+        "patches": {
+            "doctrine/dbal": {
+                "Doctrine migrations functional index workaround": "dbal-funcational-index.patch"
+            }
+        }
     }
 }
