@@ -65,6 +65,8 @@ jobs:
 
       - run: composer run integration-test
 
+      - run: vendor/bin/doctrine-migrations diff --allow-empty-diff # check that this works
+
       - store_artifacts:
           path: docs
 
