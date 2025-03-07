@@ -108,7 +108,7 @@
     "extra": {
         "patches": {
             "doctrine/dbal": {
-                "Doctrine migrations functional index workaround": "dbal-funcational-index.patch"
+                "Doctrine migrations functional index workaround": "dbal-functional-index.patch"
             }
         }
     }

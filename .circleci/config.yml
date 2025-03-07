@@ -63,9 +63,10 @@ jobs:
 
       - run: composer run doctrine:migrate
 
-      - run: composer run integration-test
+      # Ensures schema is in sync and implicitly that future migration diffs should work.
+      - run: composer run doctrine:validate
 
-      - run: vendor/bin/doctrine-migrations diff --allow-empty-diff # check that this works
+      - run: composer run integration-test
 
       - store_artifacts:
           path: docs
