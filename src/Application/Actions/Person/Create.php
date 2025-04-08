@@ -15,6 +15,7 @@ use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use Random\Randomizer;
 use Slim\Exception\HttpBadRequestException;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Service\CustomerService;
@@ -85,6 +86,8 @@ class Create extends Action
                 Person::class,
                 'json'
             );
+
+            $person->setRandomEmailVerificationCode(new \DateTimeImmutable());
         } catch (UnexpectedValueException | TypeError $exception) {
             // UnexpectedValueException is the Serializer one, not the global one
             $this->logger->info(sprintf('%s non-serialisable payload was: %s', __CLASS__, $body));
@@ -143,6 +146,10 @@ class Create extends Action
 
         $token = Token::create((string) $person->getId(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);
+
+        // @todo ID-47: Send matchbot a message with the person's stripe customer ID and email verification code.
+        //              required so that the code can be included in any donation-thanks emails sent out to this
+        //              person for them to use when setting their password after donating.
 
         return new TextResponse(
             $this->serializer->serialize(

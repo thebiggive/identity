@@ -6,6 +6,9 @@ namespace BigGive\Identity\Tests\Domain;
 
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Tests\TestCase;
+use Monolog\DateTimeImmutable;
+use Random\Engine\Mt19937;
+use Random\Randomizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -73,5 +76,18 @@ class PersonTest extends TestCase
         $person->stripe_customer_id = 'cus_1234567890';
 
         return $person;
+    }
+
+    public function testItGeneratesEmailVerificationCode(): void
+    {
+        $person = new Person();
+        $time = new \DateTimeImmutable('2025-01-01 00:00:00');
+
+        $randomizer = new Randomizer(new Mt19937(1));
+        $person->setRandomEmailVerificationCode($time, $randomizer);
+
+        $this->assertFalse($person->emailAddressVerified);
+        $this->assertSame($time, $person->emailAddressVerificationCodeGeneratedAt);
+        $this->assertEquals('541077', $person->emailAddressVerificationCode);
     }
 }

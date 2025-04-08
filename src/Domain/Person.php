@@ -10,6 +10,7 @@ use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Rfc4122\UuidV4;
+use Random\Randomizer;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Uid\Uuid;
@@ -52,6 +53,9 @@ class Person
      * These properties should be excluded from serialisation, as the front-end does not use them.
      */
     public const array NON_SERIALISED_ATTRIBUTES = [
+        'emailAddressVerified',
+        'emailAddressVerificationCode',
+        'emailAddressVerificationCodeGeneratedAt',
         'created_at',
         'updated_at',
         "captcha_code", // sent FROM frontend, doesn't ever need to be sent to frontend.
@@ -229,6 +233,26 @@ class Person
     #[ORM\Column(type: 'string', nullable: true)]
     public ?string $stripe_customer_id = null;
 
+
+    /**
+     * Has the person who set the password proved that they have read-access to the
+     * {@see $email_address} given?
+     *
+     * Historically we didn't require this, but will for new accounts in future and may create
+     * an optional verification process that holders of old accounts can use.
+     */
+    #[ORM\Column]
+    public bool $emailAddressVerified = false;
+
+    /**
+     * Random string that will be sent to donor so they can prove to us that they have access to the email.
+     */
+    #[ORM\Column(nullable: true)]
+    public ?string $emailAddressVerificationCode = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?\DateTimeImmutable $emailAddressVerificationCodeGeneratedAt = null;
+
     public function __construct()
     {
     }
@@ -292,6 +316,16 @@ class Person
         ];
 
         return $data;
+    }
+
+    public function setRandomEmailVerificationCode(\DateTimeImmutable $at, ?Randomizer $randomizer = null): void
+    {
+        $randomizer ??= new Randomizer();
+        $code = $randomizer->getBytesFromString('0123456789', 6);
+        \assert(is_string($code));
+
+        $this->emailAddressVerificationCode = $code;
+        $this->emailAddressVerificationCodeGeneratedAt = $at;
     }
 
     /**
