@@ -35,15 +35,15 @@ Depending on your Docker version you may need to replace `docker-compose` with `
 
 To start the app and its dependency (`db`) locally:
 ```shell
-docker-compose up -d app # (see note above about docker-compose command)
+docker-compose up -d # (see note above about docker-compose command)
 ```
 
 ### First run
 
 To get PHP dependencies and an initial data in structure in place, you'll need to run these once:
 
-    docker-compose exec app composer install
-    docker-compose exec app composer doctrine:delete-and-recreate
+    docker-compose exec identity-app composer install
+    docker-compose exec identity-app composer doctrine:delete-and-recreate
 
 If dependencies change you may occasionally need to re-run the `composer install`.
 
@@ -60,7 +60,7 @@ allow us to write expressive code using features that PHP doesn't natively provi
 
 Existing errors are grandfathered in to a baseline and do not cause failures. To check for new issues, run:
 
-    docker-compose exec app composer run sa:check
+    docker-compose exec identity-app composer run sa:check
 
 Psalm config can be found in [psalm.xml](./psalm.xml).
 
@@ -68,14 +68,14 @@ Psalm config can be found in [psalm.xml](./psalm.xml).
 
 Once you have the app running, you can test with:
 
-    docker-compose exec app composer run test
+    docker-compose exec identity-app composer run test
 
 When run with a coverage driver (e.g. Xdebug enabled by using `thebiggive/php:dev-8.1`),
 this will save coverage data to `./coverage.xml`.
 
 Linting is run with
 
-    docker-compose exec app composer run lint:check
+    docker-compose exec identity-app composer run lint:check
 
 To understand how these commands are run in CI, see [the CircleCI config file](./.circleci/config.yml).
 
@@ -85,7 +85,7 @@ Actions are annotated with [swagger-php](https://github.com/zircote/swagger-php)
 
 Generate OpenAPI documentation corresponding to your local codebase with:
 
-    docker-compose exec app composer run docs
+    docker-compose exec identity-app composer run docs
 
 Once the app is more complete, we will copy/paste and publish generated docs to their
 [live home on SwaggerHub](https://app.swaggerhub.com/apis/Noel/TBG-Identity/)
@@ -138,7 +138,7 @@ Generally this structure follows normal conventions for a modern PHP app:
 * PHPUnit tests live in [`tests`](./tests), at a path matching that of the class they cover in `src`
 * Slim configuration logic and routing live in [`app`](./app)
 
-### Configuration in `app`
+### Configuration in `identity-app`
 
 * [`dependencies.php`](./app/dependencies.php): this sets up dependency
   injection (DI) for the whole app. This determines how every class gets most stuff it needs to run. DI is super
