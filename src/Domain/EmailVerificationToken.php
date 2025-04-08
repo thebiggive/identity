@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity()]
+#[ORM\Index(columns: ['email_address'])]
 class EmailVerificationToken
 {
     /**
