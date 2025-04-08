@@ -6,6 +6,7 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
+use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Client;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
@@ -81,6 +82,7 @@ class Update extends Action
         private readonly SerializerInterface $serializer,
         private readonly Client\Stripe $stripeClient,
         private readonly ValidatorInterface $validator,
+        private readonly EmailVerificationService $emailVerificationService,
     ) {
         parent::__construct($logger);
     }
@@ -217,6 +219,10 @@ class Update extends Action
             if (!$this->personRepository->sendRegisteredEmail($person)) {
                 throw new \Exception('Failed to send registration success email');
             }
+        }
+
+        if ($person->email_address !== null && !$personHadPassword && !$personHasPasswordNow) {
+            $this->emailVerificationService->storeTokenForEmail($person->email_address);
         }
 
         return new TextResponse(
