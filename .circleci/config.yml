@@ -64,7 +64,7 @@ jobs:
       - run: composer run doctrine:migrate
 
       # Ensures schema is in sync and implicitly that future migration diffs should work.
-      - run: composer run doctrine:validate
+      - run: composer run doctrine:validate -v
 
       - run: composer run integration-test
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -20,6 +21,24 @@ use Symfony\Component\Uid\Uuid;
 class UpdateTest extends TestCase
 {
     use TestPeopleTrait;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->getContainer()->set(
+            EmailVerificationService::class,
+            $this->createStub(EmailVerificationService::class)
+        );
+    }
+
+    public function tearDown(): void
+    {
+        parent::setUp();
+        $this->getContainer()->set(
+            EmailVerificationService::class,
+            null
+        );
+    }
 
     /**
      * Includes confirming that setting a Stripe Customer ID too is ignored.
