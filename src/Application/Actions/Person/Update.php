@@ -87,26 +87,6 @@ class Update extends Action
         parent::__construct($logger);
     }
 
-    public function violationsToPlainText(ConstraintViolationListInterface $violations): string
-    {
-        $violationDetails = [];
-        foreach ($violations as $violation) {
-            $violationDetails[] = $this->summariseConstraintViolation($violation);
-        }
-
-        return implode('; ', $violationDetails);
-    }
-
-    public function violationsToHtml(ConstraintViolationListInterface $violations): string
-    {
-        $violationDetails = [];
-        foreach ($violations as $violation) {
-            $violationDetails[] = $this->summariseConstraintViolationAsHtmlSnippet($violation);
-        }
-
-        return implode('; ', $violationDetails);
-    }
-
     /**
      * @param array $args
      * @return Response

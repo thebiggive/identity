@@ -37,6 +37,13 @@ return function (App $app) {
         $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
             ->add(PersonPatchAuthMiddleware::class);
 
+        // no special auth needed for this, as the route is all about authentication auth is handled by the
+        // controller itself.
+        $versionGroup->post(
+            '/people/setFirstPassword',
+            Person\SetFirstPassword::class
+        );
+
         $versionGroup->group('/people/{personId:[a-z0-9-]{36}}', function (Group $personGetGroup) {
             $personGetGroup->get('', Person\Get::class);
             $personGetGroup->get('/funding_instructions', GetDonationFundsTransferInstructions::class);

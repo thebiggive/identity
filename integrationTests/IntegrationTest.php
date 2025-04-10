@@ -17,6 +17,7 @@ use Stripe\Service\CustomerService;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\RoutableMessageBus;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints\NotCompromisedPasswordValidator;
 
 abstract class IntegrationTest extends TestCase
 {
@@ -114,11 +115,12 @@ abstract class IntegrationTest extends TestCase
      */
     protected function addPersonToToDB(string $emailAddress): Uuid
     {
-        $person = new Person();
+        $person = new Person(
+            notCompromisedPasswordValidator: $this->createStub(NotCompromisedPasswordValidator::class)
+        );
         $person->email_address = $emailAddress;
         $person->first_name = "Fred";
         $person->last_name = "Bloggs";
-        $person->raw_password = 'password';
         $person->stripe_customer_id = 'cus_1234567890';
 
         $this->getService(PersonRepository::class)->persist($person);

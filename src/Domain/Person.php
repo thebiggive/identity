@@ -6,6 +6,7 @@ namespace BigGive\Identity\Domain;
 
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
+use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
@@ -53,6 +54,7 @@ class Person
      * These properties should be excluded from serialisation, as the front-end does not use them.
      */
     public const array NON_SERIALISED_ATTRIBUTES = [
+        'notCompromisedPasswordValidator',
         'email_address_verified',
         'created_at',
         'updated_at',
@@ -188,6 +190,9 @@ class Person
     public ?string $completion_jwt = null;
 
     /**
+     * Note this is defined here as part of the HTTP API, but is never actually set to true on the PHP object.
+     * {@see HasPasswordNormalizer}
+     *
      * @OA\Property()
      */
     public bool $has_password = false;
@@ -242,8 +247,12 @@ class Person
     #[ORM\Column]
     public bool $email_address_verified = false;
 
-    public function __construct()
+    /** Always null in prod for now as can't be saved in DB, set to double in tests. */
+    private ?Assert\NotCompromisedPasswordValidator $notCompromisedPasswordValidator = null;
+
+    public function __construct(?Assert\NotCompromisedPasswordValidator $notCompromisedPasswordValidator = null)
     {
+        $this->notCompromisedPasswordValidator = $notCompromisedPasswordValidator;
     }
 
     public function getId(): ?Uuid
@@ -374,12 +383,12 @@ class Person
             return;
         }
 
-        // passing the optional http client param just so its clear we will connect to HTTP here.
-        $httpClient = HttpClient::create();
-        $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
-        $notCompromisedValidator->initialize($context);
+        $notCompromisedPasswordValidator =
+            $this->notCompromisedPasswordValidator ?? $this->makeNotCompromisedValidator();
 
-        $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword(skipOnError: true));
+        $notCompromisedPasswordValidator->initialize($context);
+
+        $notCompromisedPasswordValidator->validate($this->raw_password, new NotCompromisedPassword(skipOnError: true));
     }
 
     public function addCompletionJWT(string $completionJWT): void
@@ -390,5 +399,12 @@ class Person
     public function skipCaptchaPresenceValidation(): void
     {
         $this->skipCaptchaCheck = true;
+    }
+
+    public function makeNotCompromisedValidator(): Assert\NotCompromisedPasswordValidator
+    {
+        $httpClient = HttpClient::create();
+        $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
+        return $notCompromisedValidator;
     }
 }
