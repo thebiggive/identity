@@ -67,7 +67,7 @@ class GetEmailVerificationToken extends Action
             throw new HttpNotFoundException($request);
         }
 
-        return new JsonREsponse([
+        return new JsonResponse([
             'token' => [
                 'valid' => true,
                 'email_address' => $person->email_address,

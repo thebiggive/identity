@@ -38,7 +38,7 @@ $container->set(RateLimitMiddleware::class, new class (
     }
 });
 
-$container->set(TransportInterface::class, new InmemoryTransport());
+$container->set(TransportInterface::class, new InMemoryTransport());
 
 // Register routes
 $routes = require __DIR__ . '/../app/routes.php';
