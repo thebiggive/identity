@@ -11,18 +11,14 @@ use Symfony\Component\Messenger\RoutableMessageBus;
 
 class EmailVerificationService
 {
-    /** @psalm-suppress UnusedProperty - to be used when work done in Messages repo */
-    private ?RoutableMessageBus $bus;
-
     /**
      * @psalm-suppress PossiblyUnusedMethod - used by DI container.
      */
     public function __construct(
         private EntityManagerInterface $entityManager,
-        ?RoutableMessageBus $bus,
+        private RoutableMessageBus $bus,
         private \DateTimeImmutable $now,
     ) {
-        $this->bus = $bus;
     }
 
     /**
@@ -46,10 +42,10 @@ class EmailVerificationService
          * person for them to use when setting their password after donating.
          */
 
-//        $this->bus->dispatch(new Envelope(new \Messages\EmailVerificationToken(
-//            randomCode: $token->random_code,
-//            emailAddress: $token->email_address,
-//            createdAt: $token->created_at))
-//        );
+        $this->bus->dispatch(new Envelope(new \Messages\EmailVerificationToken(
+            randomCode: $token->random_code,
+            emailAddress: $token->email_address,
+            createdAt: $token->created_at
+        )));
     }
 }

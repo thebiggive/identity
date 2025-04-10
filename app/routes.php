@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Actions\ChangePasswordUsingToken;
 use BigGive\Identity\Application\Actions\CreatePasswordResetToken;
+use BigGive\Identity\Application\Actions\EmailVerificationToken\GetEmailVerificationToken;
 use BigGive\Identity\Application\Actions\GetDonationFundsTransferInstructions;
 use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
@@ -56,6 +57,11 @@ return function (App $app) {
 
         $versionGroup->post('/change-forgotten-password', ChangePasswordUsingToken::class)
         ;
+
+        $versionGroup->get(
+            '/emailVerificationToken/{secret:[0-9]{6}}/{personId:[a-z0-9-]{36}}',
+            GetEmailVerificationToken::class
+        );
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
