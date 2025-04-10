@@ -109,10 +109,12 @@ abstract class IntegrationTest extends TestCase
         $container->set(Stripe::class, $stripeProphecy->reveal());
     }
 
+    /**
+     * @param string $emailAddress - use a unique email address every time to avoid conflict with data already in DB.
+     */
     protected function addPersonToToDB(string $emailAddress): Uuid
     {
         $person = new Person();
-        // use a unique email address every time to avoid conflict with data already in DB.
         $person->email_address = $emailAddress;
         $person->first_name = "Fred";
         $person->last_name = "Bloggs";
