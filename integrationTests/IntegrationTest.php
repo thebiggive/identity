@@ -3,15 +3,20 @@
 namespace BigGive\Identity\IntegrationTests;
 
 use BigGive\Identity\Client\Stripe;
+use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use DI\Container;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Slim\App;
 use Stripe\Service\CustomerService;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\RoutableMessageBus;
+use Symfony\Component\Uid\Uuid;
 
 abstract class IntegrationTest extends TestCase
 {
@@ -102,5 +107,22 @@ abstract class IntegrationTest extends TestCase
         $stripeProphecy = $this->prophesize(Stripe::class);
         $stripeProphecy->customers = $stripeCustomers;
         $container->set(Stripe::class, $stripeProphecy->reveal());
+    }
+
+    protected function addPersonToToDB(string $emailAddress): Uuid
+    {
+        $person = new Person();
+        // use a unique email address every time to avoid conflict with data already in DB.
+        $person->email_address = $emailAddress;
+        $person->first_name = "Fred";
+        $person->last_name = "Bloggs";
+        $person->raw_password = 'password';
+        $person->stripe_customer_id = 'cus_1234567890';
+
+        $this->getService(PersonRepository::class)->persist($person);
+
+        $uuid = $person->getId();
+        \assert($uuid !== null);
+        return $uuid;
     }
 }

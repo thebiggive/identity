@@ -15,7 +15,7 @@ class GetPersonTest extends IntegrationTest
 {
     public function testItReturnsSpecificFieldsFromPersonToHttpGet(): void
     {
-        $uuid = $this->addPersonToToDB()->toRfc4122();
+        $uuid = $this->addPersonToToDB("someemail" . Uuid::v4() . "@example.com")->toRfc4122();
 
         $response = $this->getApp()->handle(new ServerRequest(
             method: 'GET',
@@ -43,38 +43,5 @@ class GetPersonTest extends IntegrationTest
             ],
             array_keys($decodedBody)
         );
-    }
-
-    private function addPersonToToDB(): Uuid
-    {
-        $this->allowMessageToBeSentToBus();
-
-        $person = new Person();
-        // use a unique email address every time to avoid conflict with data already in DB.
-        $email = "someemail" . Uuid::v4() . "@example.com";
-        $person->email_address = $email;
-        $person->first_name = "Fred";
-        $person->last_name = "Bloggs";
-        $person->raw_password = 'password';
-        $person->stripe_customer_id = 'cus_1234567890';
-
-        $this->getService(PersonRepository::class)->persist($person);
-
-        $uuid = $person->getId();
-        \assert($uuid !== null);
-        return $uuid;
-    }
-
-    public function allowMessageToBeSentToBus(): void
-    {
-        $container = $this->getWriteableContainer();
-        $personRepository = $container->get(PersonRepository::class);
-        \assert($personRepository instanceof PersonRepository);
-        $clonedPersonRepository = clone $personRepository;
-        $container->set(PersonRepository::class, $clonedPersonRepository);
-
-        $busProphecy = $this->prophesize(RoutableMessageBus::class);
-        $busProphecy->dispatch(Argument::type(Envelope::class))->willReturnArgument();
-        $clonedPersonRepository->setBus($busProphecy->reveal());
     }
 }

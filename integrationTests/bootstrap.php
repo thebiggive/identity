@@ -9,6 +9,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Factory\AppFactory;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
+use Symfony\Component\Messenger\Transport\TransportInterface;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -35,6 +37,8 @@ $container->set(RateLimitMiddleware::class, new class (
         return $handler->handle($request);
     }
 });
+
+$container->set(TransportInterface::class, new InmemoryTransport());
 
 // Register routes
 $routes = require __DIR__ . '/../app/routes.php';
