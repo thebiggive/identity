@@ -193,6 +193,8 @@ class Person
      * Note this is defined here as part of the HTTP API, but is never actually set to true on the PHP object.
      * {@see HasPasswordNormalizer}
      *
+     * @deprecated because I keep forgetting not to use it from within PHP.
+     *
      * @OA\Property()
      */
     public bool $has_password = false;

@@ -46,7 +46,7 @@ class GetEmailVerificationToken extends Action
             throw new HttpNotFoundException($request);
         }
 
-        if ($person->has_password) {
+        if ($person->raw_password !== null) {
             throw new HttpNotFoundException($request);
         }
 
