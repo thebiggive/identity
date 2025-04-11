@@ -100,7 +100,7 @@ class SetFirstPassword extends Action
         // Assuming the secret above is correct we know that the person using this has access to the email address.
         // Setting email_address_verified may unlock some functionality for them in the future, e.g.
         // seeing donations made while not logged in, and perhaps regular giving.
-        $person->email_address_verified = true;
+        $person->email_address_verified = $this->now;
 
         // code below duplicates from the Person\Update route but will be removed from there soon when
         // we require all new passworded accounts to have verified email addresses. However may duplicate with

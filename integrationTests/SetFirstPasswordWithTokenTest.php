@@ -51,7 +51,7 @@ class SetFirstPasswordWithTokenTest extends IntegrationTest
         \assert($updatedPerson instanceof Person);
 
         Password::verify('p@55w0rd____', $updatedPerson);
-        $this->assertTrue($updatedPerson->email_address_verified, 'Person should have verified email address');
+        $this->assertNotNull($updatedPerson->email_address_verified, 'Person should have verified email address');
     }
 
     public function testCanNotSetPasswordWithWrongCode(): void

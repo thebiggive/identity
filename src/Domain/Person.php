@@ -244,8 +244,8 @@ class Person
      * Historically we didn't require this, but will for new accounts in future and may create
      * an optional verification process that holders of old accounts can use.
      */
-    #[ORM\Column]
-    public bool $email_address_verified = false;
+    #[ORM\Column(nullable: true, type: 'datetime')]
+    public ?\DateTimeImmutable $email_address_verified = null;
 
     /** Always null in prod for now as can't be saved in DB, set to double in tests. */
     private ?Assert\NotCompromisedPasswordValidator $notCompromisedPasswordValidator = null;
