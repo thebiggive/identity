@@ -7,15 +7,12 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use DI\Container;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Slim\App;
 use Stripe\Service\CustomerService;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\RoutableMessageBus;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\NotCompromisedPasswordValidator;
 
