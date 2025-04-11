@@ -46,6 +46,10 @@ class GetEmailVerificationToken extends Action
             throw new HttpNotFoundException($request);
         }
 
+        if ($person->has_password) {
+            throw new HttpNotFoundException($request);
+        }
+
         $oldestAllowedTokenCreationDate = $this->now->modify('-8 hours');
 
         $token = $this->emailVerificationTokenRepository->findToken(
