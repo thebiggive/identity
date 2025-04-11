@@ -6,13 +6,23 @@ use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use DI\Container;
+use LosMiddleware\RateLimit\RateLimitMiddleware;
+use LosMiddleware\RateLimit\RateLimitOptions;
+use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Slim\App;
+use Slim\Factory\AppFactory;
 use Stripe\Service\CustomerService;
+use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
+use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\NotCompromisedPasswordValidator;
 
@@ -23,20 +33,9 @@ abstract class IntegrationTest extends TestCase
     public static ?ContainerInterface $integrationTestContainer = null;
     public static ?App $app = null;
 
-    /**
-     * Keeping a copy of the original state of the person repo in memory to allow restoring after test is finished
-     * to avoid interference with later tests
-     */
-    private PersonRepository $originalPersonRepository;
-
     public function setUp(): void
     {
-        $this->originalPersonRepository = $this->getService(PersonRepository::class);
-    }
-
-    public function tearDown(): void
-    {
-        $this->getWriteableContainer()->set(PersonRepository::class, $this->originalPersonRepository);
+        self::rebuildApp();
     }
 
     public static function setContainer(ContainerInterface $container): void
@@ -125,5 +124,39 @@ abstract class IntegrationTest extends TestCase
         $uuid = $person->getId();
         \assert($uuid !== null);
         return $uuid;
+    }
+
+    /**
+     * We rebuild the app before each test case to keep tests independent - each test has its own test double config.
+     */
+    public static function rebuildApp(): void
+    {
+        $container = require __DIR__ . '/../bootstrap.php';
+        IntegrationTest::setContainer($container);
+
+// Instantiate the app
+        AppFactory::setContainer($container);
+        $app = AppFactory::create();
+
+        /** @psalm-suppress MixedArgument */
+        $container->set(RateLimitMiddleware::class, new class (
+            $container->get(Psr16Cache::class),
+            $container->get(ProblemDetailsResponseFactory::class),
+            new RateLimitOptions(),
+        ) extends RateLimitMiddleware {
+            public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+            {
+                // skip rate limiting for tests.
+                return $handler->handle($request);
+            }
+        });
+
+        $container->set(TransportInterface::class, new InMemoryTransport());
+
+// Register routes
+        $routes = require __DIR__ . '/../app/routes.php';
+        $routes($app);
+
+        IntegrationTest::setApp($app);
     }
 }

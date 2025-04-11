@@ -4,8 +4,10 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\EmailVerificationToken;
+use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -29,9 +31,15 @@ class SetFirstPassword extends Action
         private readonly ValidatorInterface $validator,
         private PersonRepository $personRepository,
         private EmailVerificationTokenRepository $emailVerificationTokenRepository,
+        private Mailer $mailerClient,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
+    }
+
+    public function sendRegisteredEmail(Person $person): void
+    {
+        $this->mailerClient->sendEmail($person->toMailerPayload());
     }
 
     protected function action(Request $request, array $args): Response
@@ -108,6 +116,7 @@ class SetFirstPassword extends Action
         // that doesn't relate to an existing account.
         try {
             $this->personRepository->persist($person);
+            $this->sendRegisteredEmail($person);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
             $this->logger->warning(sprintf(
                 '%s failed to persist Person: %s',
