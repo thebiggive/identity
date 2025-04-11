@@ -30,8 +30,8 @@ abstract class IntegrationTest extends TestCase
 {
     use ProphecyTrait;
 
-    public ?ContainerInterface $container = null;
-    public ?App $app = null;
+    private ?ContainerInterface $container = null;
+    private ?App $app = null;
 
     public function setUp(): void
     {
