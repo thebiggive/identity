@@ -80,7 +80,7 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
                 ) VALUES
                 (
                     :id, 'first', 'last', '$this->randomEmail', '$createdAt', '$createdAt',
-                 $password, 0
+                 $password, null
                 )
             SQL,
             ['id' => $this->personId->toBinary()]
