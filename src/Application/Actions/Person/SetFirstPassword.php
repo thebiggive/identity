@@ -50,9 +50,9 @@ class SetFirstPassword extends Action
             );
         }
 
-        $uuid = (string) $requestBody["personUuid"];
-        $secret = (string) $requestBody["secret"];
-        $newPassword = (string) $requestBody["password"];
+        $uuid = (string) ($requestBody["personUuid"] ?? throw new HttpBadRequestException($request));
+        $secret = (string) ($requestBody["secret"] ?? throw new HttpBadRequestException($request));
+        $newPassword = (string) ($requestBody["password"] ?? throw new HttpBadRequestException($request));
 
         $person = $this->personRepository->find($uuid);
         if ($person === null || $person->email_address === null) {
