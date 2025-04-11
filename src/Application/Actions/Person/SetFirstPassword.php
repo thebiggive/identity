@@ -6,13 +6,14 @@ use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\EmailVerificationToken;
+use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
-use DI\NotFoundException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -24,8 +25,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class SetFirstPassword extends Action
 {
     public function __construct(
+        private \DateTimeImmutable $now,
         private readonly ValidatorInterface $validator,
         private PersonRepository $personRepository,
+        private EmailVerificationTokenRepository $emailVerificationTokenRepository,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -48,14 +51,30 @@ class SetFirstPassword extends Action
         }
 
         $uuid = (string) $requestBody["personUuid"];
-        $_secret = (string) $requestBody["secret"];
+        $secret = (string) $requestBody["secret"];
         $newPassword = (string) $requestBody["password"];
 
-        // @todo - reuse logic to check the secret from GetEmailVerificationToken class
-
         $person = $this->personRepository->find($uuid);
-        if ($person == null) {
-            throw new NotFoundException();
+        if ($person === null || $person->email_address === null) {
+            throw new HttpBadRequestException($request);
+        }
+
+        // We allow slightly older tokens here than in GetEmailVerificationToken to account for time spent looking
+        // at the token before using it.
+        $oldestAllowedTokenCreationDate =
+            $this->now->modify('-8 hours')
+            ->modify('-5 minutes');
+
+        $token = $this->emailVerificationTokenRepository->findToken(
+            email_address: $person->email_address,
+            tokenSecret: $secret,
+            createdSince: $oldestAllowedTokenCreationDate
+        );
+
+        if ($token === null) {
+            // important that this is the same response as if the person was not found - we don't want to make
+            // it easy to know whether the person record exists if the client doesn't know the token.
+            throw new HttpBadRequestException($request);
         }
 
         $personHadPassword = $person->getPasswordHash() !== null;

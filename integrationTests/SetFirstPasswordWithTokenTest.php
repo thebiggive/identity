@@ -9,6 +9,7 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\ServerRequest;
+use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Uid\Uuid;
 
 class SetFirstPasswordWithTokenTest extends IntegrationTest
@@ -55,6 +56,15 @@ class SetFirstPasswordWithTokenTest extends IntegrationTest
 
     public function testCanNotSetPasswordWithWrongCode(): void
     {
-        $this->markTestIncomplete();
+        $this->expectException(HttpBadRequestException::class);
+        $this->getApp()->handle(new ServerRequest(
+            method: 'POST',
+            uri: "/v1/people/setFirstPassword",
+            body: json_encode([
+                'personUuid' => $this->personUUID,
+                'secret' => '123456',
+                'password' => 'p@55w0rd____',
+            ], JSON_THROW_ON_ERROR),
+        ));
     }
 }

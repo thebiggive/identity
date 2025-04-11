@@ -4,6 +4,7 @@ namespace BigGive\Identity\Application\Actions\EmailVerificationToken;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Domain\EmailVerificationToken;
+use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\Migrations\Configuration\Migration\JsonFile;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,16 +17,12 @@ use Slim\Exception\HttpNotFoundException;
 
 class GetEmailVerificationToken extends Action
 {
-    /** @var EntityRepository<EmailVerificationToken>  */
-    private EntityRepository $emailVerificationTokenRepository;
-
     public function __construct(
         private \DateTimeImmutable $now,
         private PersonRepository $personRepository,
-        EntityManagerInterface $entityManager,
+        private EmailVerificationTokenRepository $emailVerificationTokenRepository,
         LoggerInterface $logger
     ) {
-        $this->emailVerificationTokenRepository = $entityManager->getRepository(EmailVerificationToken::class);
         parent::__construct($logger);
     }
 
@@ -43,34 +40,28 @@ class GetEmailVerificationToken extends Action
         }
 
         $person = $this->personRepository->find($this->resolveArg($args, $request, 'personId'));
+        $email_address = $person?->email_address;
 
-        if (!$person) {
+        if (!$person || $email_address === null) {
             throw new HttpNotFoundException($request);
         }
 
-        $tokens = $this->emailVerificationTokenRepository->findBy(
-            [
-                'email_address' => $person->email_address,
-                'random_code' => $tokenSecretSupplied,
-            ]
-        );
         $oldestAllowedTokenCreationDate = $this->now->modify('-8 hours');
 
-        $matchingToken = null;
-        foreach ($tokens as $token) {
-            if ($token->created_at > $oldestAllowedTokenCreationDate) {
-                $matchingToken = $token;
-            }
-        }
+        $token = $this->emailVerificationTokenRepository->findToken(
+            email_address: $email_address,
+            tokenSecret: $tokenSecretSupplied,
+            createdSince: $oldestAllowedTokenCreationDate
+        );
 
-        if (!$matchingToken) {
+        if (!$token) {
             throw new HttpNotFoundException($request);
         }
 
         return new JsonResponse([
             'token' => [
                 'valid' => true,
-                'email_address' => $person->email_address,
+                'email_address' => $email_address,
                 'first_name' => $person->first_name,
                 'last_name' => $person->last_name,
             ]
