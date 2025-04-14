@@ -63,8 +63,7 @@ class Create extends Action
                 'params' => [
                     'secretCode' => $token->random_code
                 ],
-            ]
-        );
+            ]);
 
         return new JsonResponse([], 201);
     }

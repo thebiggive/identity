@@ -44,6 +44,9 @@ class EmailVerificationToken
         $this->created_at = $created_at;
     }
 
+    /**
+     * @throws \Assert\AssertionFailedException if email address is malformed
+     */
     public static function createForEmailAddress(
         string $emailAddress,
         \DateTimeImmutable $at,

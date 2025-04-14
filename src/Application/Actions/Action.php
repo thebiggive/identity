@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions;
 
-use BigGive\Identity\Application\Actions\Person\Update;
 use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
+use BigGive\Identity\Domain\Person;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use TypeError;
 
 /**
  * @OA\Info(title="Big Give Identity service", version="1.0.0"),
@@ -82,6 +85,38 @@ abstract class Action
         }
 
         return implode('; ', $violationDetails);
+    }
+
+    /**
+     * @param Request $request
+     * @return array{person: Person, error: null}|array{error: Response, person: null}
+     */
+    public function deserializePerson(Request $request, SerializerInterface $serializer): array
+    {
+        $body = ((string) $request->getBody());
+
+        try {
+            $person = $serializer->deserialize(
+                $body,
+                Person::class,
+                'json'
+            );
+        } catch (UnexpectedValueException | TypeError $exception) {
+            // UnexpectedValueException is the Serializer one, not the global one
+            $this->logger->info(sprintf('%s non-serialisable payload was: %s', __CLASS__, $body));
+
+            $message = 'Person Create data deserialise error';
+            $exceptionType = get_class($exception);
+
+            $validationError = $this->validationError(
+                "$message: $exceptionType - {$exception->getMessage()}",
+                $message,
+                empty($body), // Suspected bot / junk traffic sometimes sends blank payload.
+            );
+            return ['error' => $validationError, 'person' => null];
+        }
+
+        return ['person' => $person, 'error' => null];
     }
 
     /**
