@@ -9,6 +9,7 @@ use BigGive\Identity\Application\Actions\GetDonationFundsTransferInstructions;
 use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
+use BigGive\Identity\Application\Actions\EmailVerificationToken;
 use BigGive\Identity\Application\Actions\Status;
 use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
@@ -69,6 +70,9 @@ return function (App $app) {
             '/emailVerificationToken/{secret:[0-9]{6}}/{personId:[a-z0-9-]{36}}',
             GetEmailVerificationToken::class
         );
+
+        $versionGroup->post('/emailVerificationToken/', EmailVerificationToken\Create::class)
+            ->add(PlainCaptchaMiddleware::class);
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);

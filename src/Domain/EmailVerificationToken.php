@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
+use Assert\Assertion;
 use BigGive\Identity\Application\Security\Password;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Rfc4122\UuidV4;
@@ -51,6 +52,8 @@ class EmailVerificationToken
         $randomizer ??= new Randomizer();
         $code = $randomizer->getBytesFromString('0123456789', 6);
         \assert(is_string($code));
+
+        Assertion::email($emailAddress);
 
         return new self(email_address: $emailAddress, created_at: $at, randomCode: $code);
     }
