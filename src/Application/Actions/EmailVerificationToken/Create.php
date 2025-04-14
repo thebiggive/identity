@@ -4,6 +4,7 @@ namespace BigGive\Identity\Application\Actions\EmailVerificationToken;
 
 use Assert\AssertionFailedException;
 use BigGive\Identity\Application\Actions\Action;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\EmailVerificationToken;
 use Doctrine\ORM\EntityManagerInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -17,6 +18,7 @@ class Create extends Action
     public function __construct(
         private \DateTimeImmutable $now,
         private EntityManagerInterface $em,
+        private Mailer $mailer,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -54,6 +56,15 @@ class Create extends Action
 
         $this->em->persist($token);
         $this->em->flush();
+
+        $this->mailer->sendEmail([
+            'templateKey' => 'new-account-email-verification',
+            'recipientEmailAddress' => $emailAddress,
+                'params' => [
+                    'secretCode' => $token->random_code
+                ],
+            ]
+        );
 
         return new JsonResponse([], 201);
     }
