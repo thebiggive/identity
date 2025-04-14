@@ -4,11 +4,14 @@ namespace BigGive\Identity\IntegrationTests;
 
 use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Application\Security\Password;
+use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\EmailVerificationToken;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\ServerRequest;
+use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Uid\Uuid;
 
@@ -17,6 +20,9 @@ class SetFirstPasswordWithTokenTest extends IntegrationTest
     private string $emailAddress;
     private string $personUUID;
     private EmailVerificationToken $token;
+
+    /** @var ObjectProphecy<Mailer>  */
+    private ObjectProphecy $mailerProphecy;
 
     public function setUp(): void
     {
@@ -27,12 +33,17 @@ class SetFirstPasswordWithTokenTest extends IntegrationTest
 
         $this->getService(EmailVerificationService::class)->storeTokenForEmail($this->emailAddress);
 
+        $this->mailerProphecy = $this->prophesize(Mailer::class);
+        $this->getWriteableContainer()->set(Mailer::class, $this->mailerProphecy->reveal());
+
         $this->token = $this->getService(EntityManagerInterface::class)->getRepository(EmailVerificationToken::class)
             ->findOneBy(['email_address' => $this->emailAddress]) ?? throw new \Exception("token not found");
     }
 
     public function testCanSetPassword(): void
     {
+        $this->mailerProphecy->sendEmail(Argument::any())->shouldBeCalled();
+
         $response = $this->getApp()->handle(new ServerRequest(
             method: 'POST',
             uri: "/v1/people/setFirstPassword",

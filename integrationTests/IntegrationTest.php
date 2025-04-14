@@ -6,13 +6,23 @@ use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use DI\Container;
+use LosMiddleware\RateLimit\RateLimitMiddleware;
+use LosMiddleware\RateLimit\RateLimitOptions;
+use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Slim\App;
+use Slim\Factory\AppFactory;
 use Stripe\Service\CustomerService;
+use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
+use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\NotCompromisedPasswordValidator;
 
@@ -20,58 +30,37 @@ abstract class IntegrationTest extends TestCase
 {
     use ProphecyTrait;
 
-    public static ?ContainerInterface $integrationTestContainer = null;
-    public static ?App $app = null;
-
-    /**
-     * Keeping a copy of the original state of the person repo in memory to allow restoring after test is finished
-     * to avoid interference with later tests
-     */
-    private PersonRepository $originalPersonRepository;
+    private ?ContainerInterface $container = null;
+    private ?App $app = null;
 
     public function setUp(): void
     {
-        $this->originalPersonRepository = $this->getService(PersonRepository::class);
-    }
-
-    public function tearDown(): void
-    {
-        $this->getWriteableContainer()->set(PersonRepository::class, $this->originalPersonRepository);
-    }
-
-    public static function setContainer(ContainerInterface $container): void
-    {
-        self::$integrationTestContainer = $container;
-    }
-
-    public static function setApp(App $app): void
-    {
-        self::$app = $app;
+        $this->rebuildApp();
     }
 
     /**
      * Stub Stripe `customers` service calls (for now) and set logger to NullLogger.
      */
-    public function stubStripeAndLogger(Container $container): void
+    private function stubStripeAndLogger(Container $container): void
     {
         $this->stubOutStripeCustomers($container);
         $container->set(LoggerInterface::class, new NullLogger());
     }
 
-    protected function getContainer(): ContainerInterface
+    private function getContainer(): ContainerInterface
     {
-        if (self::$integrationTestContainer === null) {
+        if ($this->container === null) {
             throw new \Exception("Test container not set");
         }
 
-        $container = self::$integrationTestContainer;
+        $container = $this->container;
         $this->assertInstanceOf(Container::class, $container);
         $this->stubStripeAndLogger($container);
 
-        return self::$integrationTestContainer;
+        return $this->container;
     }
 
-    public function getWriteableContainer(): Container
+    protected function getWriteableContainer(): Container
     {
         $container = $this->getContainer();
         \assert($container instanceof Container);
@@ -80,10 +69,10 @@ abstract class IntegrationTest extends TestCase
 
     protected function getApp(): App
     {
-        if (self::$app === null) {
+        if ($this->app === null) {
             throw new \Exception("Test app not set");
         }
-        return self::$app;
+        return $this->app;
     }
 
     /**
@@ -91,7 +80,7 @@ abstract class IntegrationTest extends TestCase
      * @param class-string<T> $name
      * @return T
      */
-    public function getService(string $name): mixed
+    protected function getService(string $name): mixed
     {
         $service = $this->getContainer()->get($name);
         $this->assertInstanceOf($name, $service);
@@ -125,5 +114,37 @@ abstract class IntegrationTest extends TestCase
         $uuid = $person->getId();
         \assert($uuid !== null);
         return $uuid;
+    }
+
+    /**
+     * We rebuild the app before each test case to keep tests independent - each test has its own test double config.
+     */
+    private function rebuildApp(): void
+    {
+        $container = require __DIR__ . '/../bootstrap.php';
+        $this->container = $container;
+
+        AppFactory::setContainer($container);
+        $this->app = AppFactory::create();
+
+        /** @psalm-suppress MixedArgument */
+        $container->set(RateLimitMiddleware::class, new class (
+            $container->get(Psr16Cache::class),
+            $container->get(ProblemDetailsResponseFactory::class),
+            new RateLimitOptions(),
+        ) extends RateLimitMiddleware {
+            public function process(
+                ServerRequestInterface $request,
+                RequestHandlerInterface $handler
+            ): ResponseInterface {
+                // skip rate limiting for tests.
+                return $handler->handle($request);
+            }
+        });
+
+        $container->set(TransportInterface::class, new InMemoryTransport());
+
+        $routes = require __DIR__ . '/../app/routes.php';
+        $routes($this->app);
     }
 }
