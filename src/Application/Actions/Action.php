@@ -88,38 +88,6 @@ abstract class Action
     }
 
     /**
-     * @param Request $request
-     * @return array{person: Person, error: null}|array{error: Response, person: null}
-     */
-    public function deserializePerson(Request $request, SerializerInterface $serializer): array
-    {
-        $body = ((string) $request->getBody());
-
-        try {
-            $person = $serializer->deserialize(
-                $body,
-                Person::class,
-                'json'
-            );
-        } catch (UnexpectedValueException | TypeError $exception) {
-            // UnexpectedValueException is the Serializer one, not the global one
-            $this->logger->info(sprintf('%s non-serialisable payload was: %s', __CLASS__, $body));
-
-            $message = 'Person Create data deserialise error';
-            $exceptionType = get_class($exception);
-
-            $validationError = $this->validationError(
-                "$message: $exceptionType - {$exception->getMessage()}",
-                $message,
-                empty($body), // Suspected bot / junk traffic sometimes sends blank payload.
-            );
-            return ['error' => $validationError, 'person' => null];
-        }
-
-        return ['person' => $person, 'error' => null];
-    }
-
-    /**
      * @return mixed
      * @throws HttpBadRequestException
      */
