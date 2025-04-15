@@ -4,6 +4,7 @@ namespace BigGive\Identity\Application\Security;
 
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\EmailVerificationToken;
+use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
@@ -17,6 +18,7 @@ class EmailVerificationService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private RoutableMessageBus $bus,
+        private PersonRepository $personRepository,
         private \DateTimeImmutable $now,
     ) {
     }
@@ -31,6 +33,12 @@ class EmailVerificationService
      */
     public function storeTokenForEmail(string $emailAddress): void
     {
+        if ($this->personRepository->hasPasswordEnabledPersonMatchingEmailAddress($emailAddress)) {
+            // no point making a token to set a password when there's already a password set for this account, and
+            // we wouldn't allow a second one.
+            return;
+        }
+
         $token = EmailVerificationToken::createForEmailAddress(emailAddress: $emailAddress, at: $this->now);
         $this->entityManager->persist($token);
         $this->entityManager->flush();
