@@ -17,6 +17,7 @@
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
+        "beberlei/assert": "^3.3",
         "cweagans/composer-patches": "^1.7",
         "doctrine/annotations": "^2.0",
         "doctrine/migrations": "^3.5",

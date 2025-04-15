@@ -25,7 +25,7 @@ class CreateTest extends TestCase
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), Argument::type('bool'))
             ->shouldBeCalledTimes(2) // Currently once for stable UUID, once w/ Stripe Customer ID.
             ->will(/**
              * @param array<Person> $args

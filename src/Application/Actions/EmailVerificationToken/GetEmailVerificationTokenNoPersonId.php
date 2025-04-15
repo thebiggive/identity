@@ -13,13 +13,13 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 
-class GetEmailVerificationToken extends Action
+class GetEmailVerificationTokenNoPersonId extends Action
 {
     public function __construct(
         private \DateTimeImmutable $now,
-        private PersonRepository $personRepository,
         private EmailVerificationTokenRepository $emailVerificationTokenRepository,
         LoggerInterface $logger
     ) {
@@ -34,26 +34,29 @@ class GetEmailVerificationToken extends Action
      */
     protected function action(Request $request, array $args): Response
     {
-        $tokenSecretSupplied = $this->resolveArg($args, $request, 'secret');
-        if (! is_string($tokenSecretSupplied)) {
-            throw new HttpNotFoundException($request);
+        try {
+            $requestBody = json_decode(
+                (string)$request->getBody(),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+            \assert(is_array($requestBody));
+        } catch (\JsonException $exception) {
+            return $this->validationError(
+                $exception->getMessage(),
+            );
         }
 
-        $person = $this->personRepository->find($this->resolveArg($args, $request, 'personId'));
-        $email_address = $person?->email_address;
+        $emailAddress = (string) ($requestBody["emailAddress"] ?? throw new HttpBadRequestException($request));
+        $tokenSecretSupplied = (string) ($requestBody["secret"] ?? throw new HttpBadRequestException($request));
 
-        if (!$person || $email_address === null) {
-            throw new HttpNotFoundException($request);
-        }
-
-        if ($person->raw_password !== null) {
-            throw new HttpNotFoundException($request);
-        }
-
-        $oldestAllowedTokenCreationDate = $this->now->modify('-8 hours');
+        // allow relatively low time for token expiry in this use case, as user is required to keep a browser session
+        // open and viewing same page while waiting for the email anyway.
+        $oldestAllowedTokenCreationDate = $this->now->modify('-2 hours');
 
         $token = $this->emailVerificationTokenRepository->findToken(
-            email_address: $email_address,
+            email_address: $emailAddress,
             tokenSecret: $tokenSecretSupplied,
             createdSince: $oldestAllowedTokenCreationDate
         );
@@ -65,9 +68,9 @@ class GetEmailVerificationToken extends Action
         return new JsonResponse([
             'token' => [
                 'valid' => true,
-                'email_address' => $email_address,
-                'first_name' => $person->first_name,
-                'last_name' => $person->last_name,
+                'email_address' => $emailAddress,
+                'first_name' => null,
+                'last_name' => null,
             ]
         ]);
     }

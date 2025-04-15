@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 use BigGive\Identity\Application\Actions\ChangePasswordUsingToken;
 use BigGive\Identity\Application\Actions\CreatePasswordResetToken;
-use BigGive\Identity\Application\Actions\EmailVerificationToken\GetEmailVerificationToken;
+use BigGive\Identity\Application\Actions\EmailVerificationToken\GetEmailVerificationTokenWithPersonId;
 use BigGive\Identity\Application\Actions\GetDonationFundsTransferInstructions;
 use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
+use BigGive\Identity\Application\Actions\EmailVerificationToken;
 use BigGive\Identity\Application\Actions\Status;
 use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
@@ -67,8 +68,17 @@ return function (App $app) {
 
         $versionGroup->get(
             '/emailVerificationToken/{secret:[0-9]{6}}/{personId:[a-z0-9-]{36}}',
-            GetEmailVerificationToken::class
+            GetEmailVerificationTokenWithPersonId::class
         );
+
+        // no side effects but using POST rather than get to allow passing email address and secret in request body.
+        $versionGroup->post(
+            '/emailVerificationToken/check-is-valid-no-person-id',
+            EmailVerificationToken\GetEmailVerificationTokenNoPersonId::class
+        );
+
+        $versionGroup->post('/emailVerificationToken/', EmailVerificationToken\Create::class)
+            ->add(PlainCaptchaMiddleware::class);
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);

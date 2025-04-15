@@ -162,6 +162,8 @@ class Update extends Action
             );
         }
 
+        // @todo ID-47: Remove ability to set password this way - in future password should only be set as part of
+        //              Create, SetFirstPassword, or ChangePasswordUsingToken actions.
         $personHasPasswordNow = $person->getPasswordHash() !== null;
         $customerDetails = [
             'email' => $person->email_address,

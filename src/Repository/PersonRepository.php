@@ -47,8 +47,10 @@ class PersonRepository extends EntityRepository
      *
      * It also sets the password hash and EM-flushes the entity as side effects.
      *
+     * @param bool $sendToMatchBot Whether to attempt sending data to matchbot if applicable.
+     *
      */
-    public function persist(Person $person): void
+    public function persist(Person $person, bool $sendToMatchBot = true): void
     {
         $person->hashPassword();
 
@@ -58,7 +60,7 @@ class PersonRepository extends EntityRepository
         try {
             $em->flush();
 
-            if ($person->getPasswordHash() !== null) {
+            if ($person->getPasswordHash() !== null && $sendToMatchBot) {
                 $personMessage = $person->toMatchBotSummaryMessage();
 
                 // DI setup in repositories.php sets these in all production code where we have the repo.
