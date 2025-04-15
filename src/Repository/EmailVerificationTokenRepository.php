@@ -20,7 +20,13 @@ class EmailVerificationTokenRepository
         $emailVerificationToken = $this->em->createQuery(
             dql: <<<'DQL'
                 SELECT t FROM BigGive\Identity\Domain\EmailVerificationToken t
+                LEFT JOIN BigGive\Identity\Domain\Person p WITH (
+                    -- If there is already a password for this email address then this token is effectivley used should
+                    -- be considered expired.
+                    t.email_address = p.email_address and p.password IS NOT NULL
+                )
                 WHERE t.email_address = :email
+                AND p is null
                 AND t.created_at > :created_since
                 AND t.random_code = :secret
                 ORDER BY t.created_at DESC
