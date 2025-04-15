@@ -40,6 +40,20 @@ class PersonRepository extends EntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
+    public function hasPasswordEnabledPersonMatchingEmailAddress(string $emailAddress): bool
+    {
+        $qb = new QueryBuilder($this->getEntityManager());
+        $result = $qb->select('1')
+            ->from(Person::class, 'p')
+            ->where('p.email_address = :emailAddress')
+            ->andWhere('p.password IS NOT NULL')
+            ->setParameter('emailAddress', $emailAddress)->getQuery()->getOneOrNullResult();
+
+        \assert(is_int($result) || is_null($result));
+
+        return $result !== null;
+    }
+
     /**
      * This has its own thin repo method largely so we can mock it in tests and simulate
      * side effects like setting a binary UUID, without having tests depend upon a real
