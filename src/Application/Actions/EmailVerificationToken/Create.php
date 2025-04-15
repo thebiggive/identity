@@ -6,6 +6,8 @@ use Assert\AssertionFailedException;
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\EmailVerificationToken;
+use BigGive\Identity\Domain\Person;
+use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -19,6 +21,7 @@ class Create extends Action
         private \DateTimeImmutable $now,
         private EntityManagerInterface $em,
         private Mailer $mailer,
+        private PersonRepository $personRepository,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -44,7 +47,9 @@ class Create extends Action
             );
         }
 
-        $emailAddress = (string) ($requestBody["emailAddress"] ?? throw new HttpBadRequestException($request));
+        $emailAddress = (string)($requestBody["emailAddress"] ?? throw new HttpBadRequestException($request));
+
+        $existingAccount = $this->personRepository->findPasswordEnabledPersonByEmailAddress($emailAddress);
 
         try {
             $token = EmailVerificationToken::createForEmailAddress($emailAddress, $this->now);
@@ -54,17 +59,38 @@ class Create extends Action
             );
         }
 
-        $this->em->persist($token);
+        if ($existingAccount) {
+            $this->sendEmailThatAccountAlreadyRegistered($emailAddress, $existingAccount);
+        } else {
+            $this->persistAndSendToken($token, $emailAddress);
+        }
+
         $this->em->flush();
+
+        return new JsonResponse([], 201);
+    }
+
+    private function persistAndSendToken(EmailVerificationToken $token, string $emailAddress): void
+    {
+        $this->em->persist($token);
 
         $this->mailer->sendEmail([
             'templateKey' => 'new-account-email-verification',
             'recipientEmailAddress' => $emailAddress,
-                'params' => [
-                    'secretCode' => $token->random_code
-                ],
-            ]);
+            'params' => [
+                'secretCode' => $token->random_code
+            ],
+        ]);
+    }
 
-        return new JsonResponse([], 201);
+    private function sendEmailThatAccountAlreadyRegistered(string $emailAddress, Person $existingAccount): void
+    {
+        $this->mailer->sendEmail([
+            'templateKey' => 'new-account-email-already-registered',
+            'recipientEmailAddress' => $emailAddress,
+            'params' => [
+                'firstName' => $existingAccount->getFirstName(),
+            ],
+        ]);
     }
 }
