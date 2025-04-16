@@ -58,7 +58,7 @@ class GetPersonTest extends IntegrationTest
         $person->raw_password = 'password';
         $person->stripe_customer_id = 'cus_1234567890';
 
-        $this->getService(PersonRepository::class)->persist($person);
+        $this->getService(PersonRepository::class)->persist($person, false);
 
         $uuid = $person->getId();
         \assert($uuid !== null);

@@ -61,7 +61,7 @@ class PersonRepositoryTest extends IntegrationTest
             ->shouldBeCalledOnce();
         $sut->setBus($busProphecy->reveal());
 
-        $sut->persist($person);
+        $sut->persist($person, false);
         $em->clear();
 
         $found = $sut->findPasswordEnabledPersonByEmailAddress($email);

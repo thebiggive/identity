@@ -51,7 +51,7 @@ class PopulateUsers extends Command
             $person->home_address_line_1 = "home address line 1";
             $person->home_postcode = "PSTCD";
 
-            $this->personRepository->persist($person);
+            $this->personRepository->persist($person, false);
 
             $output->writeln("Added {$person->first_name} {$person->last_name} <{$person->email_address}> to DB");
         }

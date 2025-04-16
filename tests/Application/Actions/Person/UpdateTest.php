@@ -43,7 +43,7 @@ class UpdateTest extends TestCase
             return $actual instanceof Person && $actual->stripe_customer_id === static::$testPersonStripeCustomerId;
         });
 
-        $personRepoProphecy->persist($personToken)
+        $personRepoProphecy->persist($personToken, false)
             ->shouldBeCalledOnce()
             ->will(/**
              * @param array<Person> $args
@@ -125,7 +125,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find($newUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person2);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldBeCalledTimes(2)
             ->will(new SucceedThenThrowWithDuplicateEmailPromise(true));
         $personRepoProphecy->sendRegisteredEmail(Argument::type(Person::class))
@@ -203,7 +203,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldBeCalledOnce()
             ->will(/**
              * @param array<Person> $args
@@ -251,7 +251,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($personWithPostPersistData);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldBeCalledOnce();
 
         // We don't use the returned properties so they're omitted for now, but in reality
@@ -313,7 +313,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($personFromORM);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
@@ -349,7 +349,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($this->getInitialisedPerson(false));
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
@@ -392,7 +392,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldNotBeCalled();
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $stripeCustomersProphecy = $this->prophesize(CustomerService::class);
@@ -422,7 +422,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($this->getInitialisedPerson(false));
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
