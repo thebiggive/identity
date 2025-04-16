@@ -17,6 +17,7 @@
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
+        "beberlei/assert": "^3.3",
         "cweagans/composer-patches": "^1.7",
         "doctrine/annotations": "^2.0",
         "doctrine/migrations": "^3.5",
@@ -40,7 +41,7 @@
         "symfony/serializer": "^6.1",
         "symfony/uid": "^6.1",
         "symfony/validator": "^6.1",
-        "thebiggive/messages": "^3.2.0",
+        "thebiggive/messages": "^3.3.1",
         "zircote/swagger-php": "^4.4.7"
     },
     "require-dev": {

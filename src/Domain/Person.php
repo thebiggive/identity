@@ -6,10 +6,12 @@ namespace BigGive\Identity\Domain;
 
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
+use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Rfc4122\UuidV4;
+use Random\Randomizer;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Uid\Uuid;
@@ -52,6 +54,8 @@ class Person
      * These properties should be excluded from serialisation, as the front-end does not use them.
      */
     public const array NON_SERIALISED_ATTRIBUTES = [
+        'notCompromisedPasswordValidator',
+        'email_address_verified',
         'created_at',
         'updated_at',
         "captcha_code", // sent FROM frontend, doesn't ever need to be sent to frontend.
@@ -186,6 +190,11 @@ class Person
     public ?string $completion_jwt = null;
 
     /**
+     * Note this is defined here as part of the HTTP API, but is never actually set to true on the PHP object.
+     * {@see HasPasswordNormalizer}
+     *
+     * @deprecated because I keep forgetting not to use it from within PHP.
+     *
      * @OA\Property()
      */
     public bool $has_password = false;
@@ -229,8 +238,23 @@ class Person
     #[ORM\Column(type: 'string', nullable: true)]
     public ?string $stripe_customer_id = null;
 
-    public function __construct()
+
+    /**
+     * Has the person who set the password proved that they have read-access to the
+     * {@see $email_address} given?
+     *
+     * Historically we didn't require this, but will for new accounts in future and may create
+     * an optional verification process that holders of old accounts can use.
+     */
+    #[ORM\Column(nullable: true, type: 'datetime_immutable')]
+    public ?\DateTimeImmutable $email_address_verified = null;
+
+    /** Always null in prod for now as can't be saved in DB, set to double in tests. */
+    private ?Assert\NotCompromisedPasswordValidator $notCompromisedPasswordValidator = null;
+
+    public function __construct(?Assert\NotCompromisedPasswordValidator $notCompromisedPasswordValidator = null)
     {
+        $this->notCompromisedPasswordValidator = $notCompromisedPasswordValidator;
     }
 
     public function getId(): ?Uuid
@@ -361,12 +385,12 @@ class Person
             return;
         }
 
-        // passing the optional http client param just so its clear we will connect to HTTP here.
-        $httpClient = HttpClient::create();
-        $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
-        $notCompromisedValidator->initialize($context);
+        $notCompromisedPasswordValidator =
+            $this->notCompromisedPasswordValidator ?? $this->makeNotCompromisedValidator();
 
-        $notCompromisedValidator->validate($this->raw_password, new NotCompromisedPassword(skipOnError: true));
+        $notCompromisedPasswordValidator->initialize($context);
+
+        $notCompromisedPasswordValidator->validate($this->raw_password, new NotCompromisedPassword(skipOnError: true));
     }
 
     public function addCompletionJWT(string $completionJWT): void
@@ -377,5 +401,12 @@ class Person
     public function skipCaptchaPresenceValidation(): void
     {
         $this->skipCaptchaCheck = true;
+    }
+
+    public function makeNotCompromisedValidator(): Assert\NotCompromisedPasswordValidator
+    {
+        $httpClient = HttpClient::create();
+        $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
+        return $notCompromisedValidator;
     }
 }

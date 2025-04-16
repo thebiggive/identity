@@ -6,6 +6,7 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
+use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Client;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
@@ -81,28 +82,9 @@ class Update extends Action
         private readonly SerializerInterface $serializer,
         private readonly Client\Stripe $stripeClient,
         private readonly ValidatorInterface $validator,
+        private readonly EmailVerificationService $emailVerificationService,
     ) {
         parent::__construct($logger);
-    }
-
-    public function violationsToPlainText(ConstraintViolationListInterface $violations): string
-    {
-        $violationDetails = [];
-        foreach ($violations as $violation) {
-            $violationDetails[] = $this->summariseConstraintViolation($violation);
-        }
-
-        return implode('; ', $violationDetails);
-    }
-
-    public function violationsToHtml(ConstraintViolationListInterface $violations): string
-    {
-        $violationDetails = [];
-        foreach ($violations as $violation) {
-            $violationDetails[] = $this->summariseConstraintViolationAsHtmlSnippet($violation);
-        }
-
-        return implode('; ', $violationDetails);
     }
 
     /**
@@ -180,6 +162,8 @@ class Update extends Action
             );
         }
 
+        // @todo ID-47: Remove ability to set password this way - in future password should only be set as part of
+        //              Create, SetFirstPassword, or ChangePasswordUsingToken actions.
         $personHasPasswordNow = $person->getPasswordHash() !== null;
         $customerDetails = [
             'email' => $person->email_address,
@@ -217,6 +201,10 @@ class Update extends Action
             if (!$this->personRepository->sendRegisteredEmail($person)) {
                 throw new \Exception('Failed to send registration success email');
             }
+        }
+
+        if ($person->email_address !== null && !$personHadPassword && !$personHasPasswordNow) {
+            $this->emailVerificationService->storeTokenForEmail($person->email_address);
         }
 
         return new TextResponse(

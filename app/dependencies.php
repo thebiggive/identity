@@ -278,6 +278,7 @@ return function (ContainerBuilder $containerBuilder) {
             $sendMiddleware = new SendMessageMiddleware(new SendersLocator(
                 [
                     \Messages\Person::class => [TransportInterface::class],
+                    \Messages\EmailVerificationToken::class => [TransportInterface::class],
                 ],
                 $c,
             ));

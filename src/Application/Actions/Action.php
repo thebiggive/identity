@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions;
 
 use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
+use BigGive\Identity\Domain\Person;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\ConstraintViolationInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use TypeError;
 
 /**
  * @OA\Info(title="Big Give Identity service", version="1.0.0"),
@@ -61,6 +66,26 @@ abstract class Action
      * @throws HttpBadRequestException
      */
     abstract protected function action(Request $request, array $args): Response;
+
+    public function violationsToHtml(ConstraintViolationListInterface $violations): string
+    {
+        $violationDetails = [];
+        foreach ($violations as $violation) {
+            $violationDetails[] = $this->summariseConstraintViolationAsHtmlSnippet($violation);
+        }
+
+        return implode('; ', $violationDetails);
+    }
+
+    public function violationsToPlainText(ConstraintViolationListInterface $violations): string
+    {
+        $violationDetails = [];
+        foreach ($violations as $violation) {
+            $violationDetails[] = $this->summariseConstraintViolation($violation);
+        }
+
+        return implode('; ', $violationDetails);
+    }
 
     /**
      * @return mixed
