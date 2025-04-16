@@ -122,7 +122,7 @@ class Create extends Action
             );
         }
 
-        $this->personRepository->persist($person);
+        $this->personRepository->persist($person, true);
 
         try {
             $customer = $this->stripeClient->customers->create([
@@ -139,7 +139,7 @@ class Create extends Action
         }
 
         $person->setStripeCustomerId($customer->id);
-        $this->personRepository->persist($person);
+        $this->personRepository->persist($person, false);
 
         $token = Token::create((string) $person->getId(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);

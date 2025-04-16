@@ -164,7 +164,7 @@ class Update extends Action
         \assert(is_string($person->stripe_customer_id));
 
         try {
-            $this->personRepository->persist($person);
+            $this->personRepository->persist($person, false);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
             $this->logger->warning(sprintf(
                 '%s failed to persist Person: %s',
