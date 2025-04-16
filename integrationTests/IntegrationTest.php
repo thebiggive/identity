@@ -10,6 +10,7 @@ use LosMiddleware\RateLimit\RateLimitMiddleware;
 use LosMiddleware\RateLimit\RateLimitOptions;
 use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -21,6 +22,8 @@ use Slim\App;
 use Slim\Factory\AppFactory;
 use Stripe\Service\CustomerService;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\RoutableMessageBus;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Uid\Uuid;
@@ -109,7 +112,7 @@ abstract class IntegrationTest extends TestCase
         $person->last_name = "Bloggs";
         $person->stripe_customer_id = 'cus_1234567890';
 
-        $this->getService(PersonRepository::class)->persist($person);
+        $this->getService(PersonRepository::class)->persist($person, false);
 
         $uuid = $person->getId();
         \assert($uuid !== null);
