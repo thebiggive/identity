@@ -210,7 +210,7 @@ class Create extends Action
             // But we have to persist the person before obtaining a stripe ID because persistance is where we generate
             // their UUID that we need to pass to stripe. So persist, set stripe customer ID, then persist again to
             // send to MB.
-            $this->personRepository->persist($person, sendToMatchBot: false);
+            $this->personRepository->persist($person, true);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
             $this->logger->warning(sprintf(
                 '%s failed to persist Person: %s',
@@ -245,7 +245,7 @@ class Create extends Action
         }
 
         $person->setStripeCustomerId($customer->id);
-        $this->personRepository->persist($person, sendToMatchBot: true);
+        $this->personRepository->persist($person, false);
 
         $token = Token::create((string)$person->getId(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);

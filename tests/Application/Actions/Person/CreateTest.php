@@ -119,7 +119,7 @@ class CreateTest extends TestCase
         $app = $this->getAppInstance();
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());

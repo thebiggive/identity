@@ -61,10 +61,11 @@ class PersonRepository extends EntityRepository
      *
      * It also sets the password hash and EM-flushes the entity as side effects.
      *
-     * @param bool $sendToMatchBot Whether to attempt sending data to matchbot if applicable.
-     *
+     * @param bool $skipMatchbotSync - don't attempt to send person record to matchbot, even if password is set.
+     * We can't send them if they don't have a stripe ID yet. @todo consider moving the sync operation out of the
+     * persist to avoid this issue.
      */
-    public function persist(Person $person, bool $sendToMatchBot = true): void
+    public function persist(Person $person, bool $skipMatchbotSync): void
     {
         $person->hashPassword();
 
@@ -74,7 +75,7 @@ class PersonRepository extends EntityRepository
         try {
             $em->flush();
 
-            if ($person->getPasswordHash() !== null && $sendToMatchBot) {
+            if ($person->getPasswordHash() !== null && ! $skipMatchbotSync) {
                 $personMessage = $person->toMatchBotSummaryMessage();
 
                 // DI setup in repositories.php sets these in all production code where we have the repo.

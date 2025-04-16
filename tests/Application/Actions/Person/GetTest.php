@@ -34,7 +34,7 @@ class GetTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
@@ -76,7 +76,7 @@ class GetTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
@@ -114,7 +114,7 @@ class GetTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
@@ -153,7 +153,7 @@ class GetTest extends TestCase
         $personRepoProphecy->find(self::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $container->set(PersonRepository::class, $personRepoProphecy->reveal());
@@ -248,7 +248,7 @@ class GetTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
@@ -293,7 +293,7 @@ class GetTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($person);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $container = $this->getContainer();
@@ -328,7 +328,7 @@ class GetTest extends TestCase
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldNotBeCalled();
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldNotBeCalled();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());

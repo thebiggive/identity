@@ -115,7 +115,7 @@ class SetFirstPassword extends Action
         // another route we will create similar to this that creates a new account in a single step using a token
         // that doesn't relate to an existing account.
         try {
-            $this->personRepository->persist($person);
+            $this->personRepository->persist($person, false);
             $this->sendRegisteredEmail($person);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
             $this->logger->warning(sprintf(
