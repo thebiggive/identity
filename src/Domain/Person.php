@@ -234,7 +234,7 @@ class Person
      * @OA\Property(
      *  property="raw_password",
      *  description="Plain text password; required to enable future logins. Only pass string for specific
-     *  password-setting operations, any value passed will bxe ignored in other cases. Never sent in responses.",
+     *  password-setting operations, any value passed will be ignored in other cases. Never sent in responses.",
      *  format="password",
      *  example="mySecurePassword123",
      * )
