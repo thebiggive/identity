@@ -86,7 +86,7 @@ class Create extends Action
         Request $request
     ): void {
         // (extra two minutes to allow for user think time on registration page)
-        $oldestAllowedTokenCreationDate = $this->now->modify('-2 hours')->modify('+2 minutes');
+        $oldestAllowedTokenCreationDate = $this->now->modify('-2 hours')->modify('-2 minutes');
 
         $token = $this->emailVerificationTokenRepository->findToken(
             email_address: $email_address,
