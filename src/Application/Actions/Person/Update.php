@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions\Person;
 
+use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Application\Security\EmailVerificationService;
@@ -100,8 +101,8 @@ class Update extends Action
             throw new HttpNotFoundException($request, 'Person not found');
         }
 
-        // `has_password` is only set when the Normalizer's run.
-        $personHadPassword = $person->getPasswordHash() !== null;
+        // `has_password` on the person object is only set when the Normalizer's run.
+        $hasPassword = $person->getPasswordHash() !== null;
 
         try {
             $this->serializer->deserialize(
@@ -114,6 +115,9 @@ class Update extends Action
                     UidNormalizer::NORMALIZATION_FORMAT_CANONICAL => UidNormalizer::NORMALIZATION_FORMAT_RFC4122,
                 ],
             );
+
+            // don't deserialize raw password as we have other way to handle password changes.
+            Assertion::null($person->raw_password);
         } catch (UnexpectedValueException | TypeError $exception) {
             // UnexpectedValueException is the Serializer one, not the global one
             $this->logger->info(sprintf('%s non-serialisable payload was: %s', __CLASS__, $body));
@@ -145,26 +149,8 @@ class Update extends Action
         // We should persist Stripe's Customer ID on initial Person create.
         \assert(is_string($person->stripe_customer_id));
 
-        try {
-            $this->personRepository->persist($person);
-        } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
-            $this->logger->warning(sprintf(
-                '%s failed to persist Person: %s',
-                __CLASS__,
-                $duplicateException->getMessage(),
-            ));
+        $this->personRepository->persist($person);
 
-            return $this->validationError(
-                logMessage: "Update not valid: {$duplicateException->getMessage()}",
-                publicMessage: 'Your password could not be set. There is already a password set for ' .
-                'your email address.',
-                errorType: ActionError::DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD,
-            );
-        }
-
-        // @todo ID-47: Remove ability to set password this way - in future password should only be set as part of
-        //              Create, SetFirstPassword, or ChangePasswordUsingToken actions.
-        $personHasPasswordNow = $person->getPasswordHash() !== null;
         $customerDetails = [
             'email' => $person->email_address,
             'name' => sprintf('%s %s', $person->first_name, $person->last_name),
@@ -187,23 +173,7 @@ class Update extends Action
         }
         $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
 
-        if (!$personHadPassword && $personHasPasswordNow) {
-            // 'hasPasswordSince' in metadata exists, as of April 2023, primarily to:
-            // * allow for more targeted automatic detachment of payment methods, which happens regularly through
-            //   a task in MatchBot; and
-            // * to let the team see at a glance in the Stripe dashboard which donors (if created since April '23
-            // have set a password.
-            $customerDetails['metadata']['hasPasswordSince'] = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
-            $customerDetails['metadata']['emailAddress'] = $person->email_address;
-            $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
-
-            // If the person didn't have a password before, but now does, send them a welcome email.
-            if (!$this->personRepository->sendRegisteredEmail($person)) {
-                throw new \Exception('Failed to send registration success email');
-            }
-        }
-
-        if ($person->email_address !== null && !$personHadPassword && !$personHasPasswordNow) {
+        if ($person->email_address !== null && !$hasPassword) {
             $this->emailVerificationService->storeTokenForEmail($person->email_address);
         }
 
