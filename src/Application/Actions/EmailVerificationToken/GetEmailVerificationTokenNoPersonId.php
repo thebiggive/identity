@@ -51,9 +51,7 @@ class GetEmailVerificationTokenNoPersonId extends Action
         $emailAddress = (string) ($requestBody["emailAddress"] ?? throw new HttpBadRequestException($request));
         $tokenSecretSupplied = (string) ($requestBody["secret"] ?? throw new HttpBadRequestException($request));
 
-        // allow relatively low time for token expiry in this use case, as user is required to keep a browser session
-        // open and viewing same page while waiting for the email anyway.
-        $oldestAllowedTokenCreationDate = $this->now->modify('-2 hours');
+        $oldestAllowedTokenCreationDate = EmailVerificationToken::oldestCreationDateForViewingToken($this->now);
 
         $token = $this->emailVerificationTokenRepository->findToken(
             email_address: $emailAddress,

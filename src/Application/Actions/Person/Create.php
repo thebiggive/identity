@@ -12,6 +12,7 @@ use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
+use BigGive\Identity\Domain\EmailVerificationToken;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
@@ -85,8 +86,7 @@ class Create extends Action
         string $tokenSecretSupplied,
         Request $request
     ): void {
-        // (extra two minutes to allow for user think time on registration page)
-        $oldestAllowedTokenCreationDate = $this->now->modify('-2 hours')->modify('-2 minutes');
+        $oldestAllowedTokenCreationDate = EmailVerificationToken::oldestCreationDateForSettingPassword($this->now);
 
         $token = $this->emailVerificationTokenRepository->findToken(
             email_address: $email_address,
