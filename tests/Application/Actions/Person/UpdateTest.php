@@ -51,7 +51,7 @@ class UpdateTest extends TestCase
         $personRepoProphecy->find(static::$testPersonUuid)
             ->shouldBeCalledOnce()
             ->willReturn($personWithPostPersistData);
-        $personRepoProphecy->persist(Argument::type(Person::class))
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
             ->shouldBeCalledOnce();
 
         // We don't use the returned properties so they're omitted for now, but in reality
