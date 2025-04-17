@@ -186,7 +186,7 @@ class Create extends Action
             $person->skipCaptchaPresenceValidation();
         }
 
-        $violations = $this->validator->validate($person, null, ['new']);
+        $violations = $this->validator->validate($person, null, [Person::VALIDATION_NEW]);
 
         if (count($violations) > 0) {
             $message = 'Validation error: ';

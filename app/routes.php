@@ -83,7 +83,6 @@ return function (App $app) {
             ->add(PlainCaptchaMiddleware::class);
         $versionGroup->post('/emailVerificationToken', EmailVerificationToken\Create::class)
             ->add(PlainCaptchaMiddleware::class);
-
     })
         ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
