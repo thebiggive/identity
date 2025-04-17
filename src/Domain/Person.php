@@ -47,7 +47,6 @@ class Person
         'home_address_line_1',
         'home_postcode',
         'home_country_code',
-        'raw_password',
     ];
 
     /**
@@ -60,6 +59,7 @@ class Person
         'updated_at',
         "captcha_code", // sent FROM frontend, doesn't ever need to be sent to frontend.
         "skipCaptchaCheck",
+        "raw_password", // special rules around password handling, so set the property manually when required.
     ];
 
     /**
@@ -185,7 +185,7 @@ class Person
     public ?string $home_country_code = null;
 
     /**
-     * JSON Web Token that lets somebody set a password to make the account reusable.
+     * JSON Web Token that lets somebody update account details (name, & email) during donation.
      */
     public ?string $completion_jwt = null;
 
@@ -220,6 +220,10 @@ class Person
     public ?string $captcha_code = null;
 
     /**
+     * Always ensure the user has proved they have access to their email address (
+     * and set {@see self::$email_address_verified} to show you've done that) when setting a password here or allowing
+     * a deserialized Person with a password to be persisted
+     *
      * @OA\Property(
      *  property="raw_password",
      *  description="Plain text password; required to enable future logins",

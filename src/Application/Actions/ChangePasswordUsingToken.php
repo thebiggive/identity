@@ -47,6 +47,7 @@ class ChangePasswordUsingToken extends Action
         private readonly PersonRepository $personRepository,
         private readonly PasswordResetTokenRepository $tokenRepository,
         private readonly ValidatorInterface $validator,
+        private readonly \DateTimeImmutable $now,
     ) {
         parent::__construct($logger);
     }
@@ -86,6 +87,7 @@ class ChangePasswordUsingToken extends Action
         }
 
         $token->consume(new \DateTimeImmutable());
+        $person->email_address_verified = $this->now;
         $this->personRepository->persistForPasswordChange($person);
         $this->tokenRepository->persist($token);
 
