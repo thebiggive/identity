@@ -60,4 +60,15 @@ class EmailVerificationToken
 
         return new self(email_address: $emailAddress, created_at: $at, randomCode: $code);
     }
+
+    public static function oldestCreationDateForViewingToken(\DateTimeImmutable $at): \DateTimeImmutable
+    {
+        return $at->modify('-2 hours');
+    }
+
+    public static function oldestCreationDateForSettingPassword(\DateTimeImmutable $at): \DateTimeImmutable
+    {
+        // (extra two minutes older to allow for user think time on registration page)
+        return self::oldestCreationDateForViewingToken($at)->modify('-2 minutes');
+    }
 }
