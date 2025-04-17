@@ -80,6 +80,12 @@ class Person
     ];
 
     /**
+     * Long numbers are almost certainly mistakes, could be sensitive e.g. payment card no,
+     * even if spaces between digits. Same regex used in \MatchBot\Domain\DonorName
+     */
+    public const string SIX_DIGITS_REGEX = '/\d\s?\d\s?\d\s?\d\s?\d\s?\d/';
+
+    /**
      * @OA\Property(
      *     type="object",
      *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
@@ -150,6 +156,7 @@ class Person
      * @var string The person's first name.
      */
     #[Assert\NotBlank(groups: ['complete'])]
+    #[Assert\Regex(pattern: self::SIX_DIGITS_REGEX, match: false)]
     #[ORM\Column(type: 'string', nullable: true)]
     public ?string $first_name = null;
 
@@ -163,6 +170,7 @@ class Person
      */
     #[Assert\NotBlank(groups: ['complete'])]
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Regex(pattern: self::SIX_DIGITS_REGEX, match: false)]
     public ?string $last_name = null;
 
     /**
