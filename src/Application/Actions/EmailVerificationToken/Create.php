@@ -10,11 +10,44 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Laminas\Diactoros\Response\JsonResponse;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 
+/**
+ *  @OA\Post(
+ *     path="/v1/emailVerificationToken",
+ *     summary="Create a an email address verification token in advance of creating a donor account",
+ *     operationId="email_verification_token_create",
+ *     security={
+ *         {"captcha": {}}
+ *     },
+ *     @OA\RequestBody(
+ *         description="",
+ *         required=true,
+ *         @OA\JsonContent(
+ *              @OA\Property(property="email_address", type="string", example="fred@example.com"),
+ *        )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Token created and emailed to user, if they are NOT already registered exist, which the server
+ *          does not confirm or deny via http. If they are already registered then they are sent a message to remind
+ *          them of that.",
+ *         @OA\JsonContent(),
+ *        ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Email address is invalid, e.g. doesn't create @ sign. The absence of this
+ * error doesn't mean the email is registered with us or exists, just that the format looks OK..",
+ *         @OA\JsonContent(),
+ *        )
+ *     )
+ *   )
+ * )
+ */
 class Create extends Action
 {
     public function __construct(

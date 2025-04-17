@@ -11,6 +11,7 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -23,6 +24,32 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * the secret email verification token code {@see EmailVerificationToken}, and the UUID of the account.
  *
  * They will get both encoded in a link when they make a donation.
+ *
+ * @OA\Post(
+ *     path="/v1/people/setFirstPassword",
+ *     summary="Set a password for a previously anonymous person account",
+ *     @OA\RequestBody(
+ *         description="",
+ *         required=true,
+ *         @OA\JsonContent(
+ *              @OA\Property(property="personUuid", type="string", example="7bb10832-1acd-11f0-8cc1-836914a6fa41"),
+ *              @OA\Property(property="secret", type="string", example="654321"),
+ *              @OA\Property(property="password", type="string", example="correct horse battery staple"),
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Password changed",
+ *         @OA\JsonContent(),
+ *     ),
+ *      @OA\Response(
+ *         response=400,
+ *         description="Returned if the new password is bad (e.g. too short), or it the secret token is
+ * invalid or expired",
+ *         @OA\JsonContent(),
+ *     ),
+ * ),
+ * @link https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk
  */
 class SetFirstPassword extends Action
 {

@@ -20,6 +20,9 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * // phpcs:disable -- PHPCS disabled because afaik there's no way to write descriptions for OA properties without
+ *                     something like making long lines as here or putting stars in the descriptions
+ *
  * @psalm-import-type RequestBody from Mailer as MailerRequestBody
  *
  * @psalm-suppress PossiblyUnusedProperty - properties are used in FE after this is serialised.
@@ -27,7 +30,21 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @OA\Schema(
  *  description="Person – initially anonymous. To be login-ready, first_name,
  *  last_name, email_address and password are required.",
+ *
+ *   @OA\Property(
+ *   property="secretNumber",
+ *   description="Secret six digit number required when creating the user with a password or setting password for first time to prove access to email",
+ *   type="string",
+ *   nullable=true,
+ *   ),
+ *
+ *   @OA\Property(
+ *   property="has_password",
+ *   description="Whether or not the person has ever set a password. Person records without passwords set are auto-deleted unless a paassword is set shortly after",
+ *   type="bool",
+ *   ),
  * )
+ * // phpcs:enable
  * @see Credentials
  */
 #[ORM\Table(name: 'Person')]
@@ -61,6 +78,12 @@ class Person
         "skipCaptchaCheck",
         "raw_password", // special rules around password handling, so set the property manually when required.
     ];
+
+    /**
+     * Long numbers are almost certainly mistakes, could be sensitive e.g. payment card no,
+     * even if spaces between digits. Same regex used in \MatchBot\Domain\DonorName
+     */
+    public const string SIX_DIGITS_REGEX = '/\d\s?\d\s?\d\s?\d\s?\d\s?\d/';
 
     /**
      * @OA\Property(
@@ -133,6 +156,7 @@ class Person
      * @var string The person's first name.
      */
     #[Assert\NotBlank(groups: ['complete'])]
+    #[Assert\Regex(pattern: self::SIX_DIGITS_REGEX, match: false)]
     #[ORM\Column(type: 'string', nullable: true)]
     public ?string $first_name = null;
 
@@ -146,6 +170,7 @@ class Person
      */
     #[Assert\NotBlank(groups: ['complete'])]
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Regex(pattern: self::SIX_DIGITS_REGEX, match: false)]
     public ?string $last_name = null;
 
     /**
@@ -190,16 +215,6 @@ class Person
     public ?string $completion_jwt = null;
 
     /**
-     * Note this is defined here as part of the HTTP API, but is never actually set to true on the PHP object.
-     * {@see HasPasswordNormalizer}
-     *
-     * @deprecated because I keep forgetting not to use it from within PHP.
-     *
-     * @OA\Property()
-     */
-    public bool $has_password = false;
-
-    /**
      * @var string|null Hashed password, if a password has been set.
      */
     #[ORM\Column(type: 'string', nullable: true)]
@@ -226,8 +241,8 @@ class Person
      *
      * @OA\Property(
      *  property="raw_password",
-     *  description="Plain text password; required to enable future logins",
-     *  type="string",
+     *  description="Plain text password; required to enable future logins. Only pass string for specific
+     *  password-setting operations, any value passed will be ignored in other cases. Never sent in responses.",
      *  format="password",
      *  example="mySecurePassword123",
      * )
