@@ -12,6 +12,7 @@ use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
+use BigGive\Identity\Domain\EmailVerificationToken;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
@@ -80,6 +81,24 @@ class Create extends Action
         parent::__construct($logger);
     }
 
+    public function assertValidEmailVerificationTokenSupplied(
+        string $email_address,
+        string $tokenSecretSupplied,
+        Request $request
+    ): void {
+        $oldestAllowedTokenCreationDate = EmailVerificationToken::oldestCreationDateForSettingPassword($this->now);
+
+        $token = $this->emailVerificationTokenRepository->findToken(
+            email_address: $email_address,
+            tokenSecret: $tokenSecretSupplied,
+            createdSince: $oldestAllowedTokenCreationDate
+        );
+
+        if ($token === null) {
+            throw new HttpBadRequestException($request, 'Email verification token error');
+        }
+    }
+
     /**
      * @param Request $request
      * @return array{person: Person, error: null}|array{error: Response, person: null}
@@ -142,29 +161,25 @@ class Create extends Action
 
         \assert($person !== null);
 
-        $hasPassword = $person->raw_password !== null;
         $email_address = $person->email_address;
-        if ($hasPassword) {
+
+        $rawPassword = (string) ($requestBody['raw_password'] ?? null);
+
+        if ($rawPassword !== '') {
+            $hasPassword = true;
             Assertion::allNotEmpty([$email_address, $person->first_name, $person->last_name]);
             \assert($email_address !== null); // Psalm can't understand previous line.
 
-            // before setting a password we must check there is a valid email auth token.
-            // @todo id-47, remove this check when option to always supplied from FE in all envs
-            if ($tokenSecretSupplied !== '') {
-                $oldestAllowedTokenCreationDate = $this->now->modify('-2 hours')->modify('+2 minutes');
-
-                $token = $this->emailVerificationTokenRepository->findToken(
-                    email_address: $email_address,
-                    tokenSecret: $tokenSecretSupplied,
-                    createdSince: $oldestAllowedTokenCreationDate
-                );
-
-                if ($token === null) {
-                    throw new HttpBadRequestException($request, 'Email verification token error');
-                }
-
-                $person->email_address_verified = $this->now;
-            }
+            $this->assertValidEmailVerificationTokenSupplied(
+                email_address: $email_address,
+                tokenSecretSupplied: $tokenSecretSupplied,
+                request: $request
+            );
+            $person->email_address_verified = $this->now;
+            $person->raw_password = $rawPassword;
+        } else {
+            $hasPassword = false;
+            Assertion::null($person->raw_password);
         }
 
         if ($this->settings->get('friendly_captcha')['bypass']) {
