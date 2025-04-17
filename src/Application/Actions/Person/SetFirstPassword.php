@@ -119,7 +119,7 @@ class SetFirstPassword extends Action
 
         $person->raw_password = $newPassword;
 
-        $violations = $this->validator->validate($person, null, ['complete']);
+        $violations = $this->validator->validate($person, null, [Person::VALIDATION_COMPLETE]);
         if (count($violations) > 0) {
             $message = $this->violationsToPlainText($violations);
             $htmlMessage = $this->violationsToHtml($violations);

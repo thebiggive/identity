@@ -79,7 +79,9 @@ return function (App $app) {
 
         // trailing slash below added by mistake, ? added later to make it optional.
         // todo make FE stop sending the slash and then remove here.
-        $versionGroup->post('/emailVerificationToken/?', EmailVerificationToken\Create::class)
+        $versionGroup->post('/emailVerificationToken/', EmailVerificationToken\Create::class)
+            ->add(PlainCaptchaMiddleware::class);
+        $versionGroup->post('/emailVerificationToken', EmailVerificationToken\Create::class)
             ->add(PlainCaptchaMiddleware::class);
     })
         ->add($ipMiddleware)
