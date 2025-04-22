@@ -9,6 +9,7 @@ use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
+use BigGive\Identity\Monolog\Processor\AwsTraceIdProcessor;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -23,6 +24,7 @@ use LosMiddleware\RateLimit\RateLimitOptions;
 use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Monolog\Processor\MemoryPeakUsageProcessor;
 use Monolog\Processor\UidProcessor;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
@@ -96,8 +98,9 @@ return function (ContainerBuilder $containerBuilder) {
             $loggerSettings = $settings->get('logger');
             $logger = new Logger($loggerSettings['name']);
 
-            $processor = new UidProcessor();
-            $logger->pushProcessor($processor);
+            $logger->pushProcessor(new AwsTraceIdProcessor());
+            $logger->pushProcessor(new MemoryPeakUsageProcessor());
+            $logger->pushProcessor(new UidProcessor());
 
             $handler = new StreamHandler($loggerSettings['path'], $loggerSettings['level']);
             $logger->pushHandler($handler);
