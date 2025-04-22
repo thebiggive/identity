@@ -72,6 +72,7 @@ trait TestPeopleTrait
     {
         return [
             'email' => null,
+            'name' => 'Loraine James',
             'metadata' => [
                 'environment' => 'test',
                 'personId' => static::$testPersonUuid,

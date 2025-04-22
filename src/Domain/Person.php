@@ -415,7 +415,7 @@ class Person
         return $notCompromisedValidator;
     }
 
-    public function getStripeCustomerParams(\DateTimeImmutable $passwordAddedAt = null): array
+    public function getStripeCustomerParams(): array
     {
         Assertion::eq(
             $this->first_name === null,
@@ -424,12 +424,13 @@ class Person
         );
 
         $nameSet = $this->first_name !== null && $this->last_name !== null;
+        $hasPasswordSince = $this->email_address_verified;
 
         $metadata = [
             'environment' => getenv('APP_ENV'),
             'personId' => (string) $this->getId(),
-            ...($passwordAddedAt === null ? [] : [
-                'hasPasswordSince' => $passwordAddedAt->format('Y-m-d H:i:s'),
+            ...($hasPasswordSince === null ? [] : [
+                'hasPasswordSince' => $hasPasswordSince->format('Y-m-d H:i:s'),
                 'emailAddress' => $this->email_address,
             ])
         ];

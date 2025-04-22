@@ -67,9 +67,14 @@ class PersonTest extends TestCase
 
     public function testToStripeCustomerWithPasswordJustSet(): void
     {
-        $person = $this->getPersonWithKeyFieldsSet();
         $now = new \DateTimeImmutable('now');
-        $message = $person->getStripeCustomerParams(passwordAddedAt: $now);
+
+        $person = $this->getPersonWithKeyFieldsSet();
+        // For new people, the point of verification of the email address is when they have a usable
+        // passworded account, so we send Stripe that timestamp.
+        $person->email_address_verified = $now;
+
+        $message = $person->getStripeCustomerParams();
 
         $this->assertEquals([
             'email' => $person->email_address,
@@ -86,7 +91,7 @@ class PersonTest extends TestCase
     public function testToStripeCustomerWithoutPassword(): void
     {
         $person = $this->getPersonWithKeyFieldsSet();
-        $message = $person->getStripeCustomerParams(passwordAddedAt: null);
+        $message = $person->getStripeCustomerParams();
 
         $this->assertEquals([
             'email' => $person->email_address,

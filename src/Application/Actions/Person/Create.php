@@ -227,9 +227,7 @@ class Create extends Action
         }
 
         try {
-            $customer = $this->stripeClient->customers->create(
-                $person->getStripeCustomerParams(passwordAddedAt: $hasPassword ? $this->now : null)
-            );
+            $customer = $this->stripeClient->customers->create($person->getStripeCustomerParams());
         } catch (ApiErrorException $exception) {
             $logMessage = sprintf('%s Stripe API error: %s', __CLASS__, $exception->getMessage());
             $this->logger->error($logMessage);
