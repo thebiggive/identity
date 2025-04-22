@@ -86,6 +86,16 @@ class Person
     public const string SIX_DIGITS_REGEX = '/\d\s?\d\s?\d\s?\d\s?\d\s?\d/';
 
     /**
+     * Validation for 'complete' records, i.e. with password set.
+     */
+    public const string VALIDATION_COMPLETE = 'complete';
+
+    /**
+     * Validation for new records which can start off essentially empty if created in advance of a donation.
+     */
+    public const string VALIDATION_NEW = 'new';
+
+    /**
      * @OA\Property(
      *     type="object",
      *     description="Properties are lowercase currency codes, e.g. 'gbp'. Values are
@@ -155,8 +165,13 @@ class Person
      * )
      * @var string The person's first name.
      */
-    #[Assert\NotBlank(groups: ['complete'])]
-    #[Assert\Regex(pattern: self::SIX_DIGITS_REGEX, match: false)]
+    #[Assert\NotBlank(groups: [self::VALIDATION_COMPLETE])]
+    #[Assert\Regex(
+        pattern: self::SIX_DIGITS_REGEX,
+        match: false,
+        groups: [self::VALIDATION_COMPLETE, self::VALIDATION_NEW]
+    )
+    ]
     #[ORM\Column(type: 'string', nullable: true)]
     public ?string $first_name = null;
 
@@ -168,9 +183,14 @@ class Person
      * )
      * @var string The person's last name / surname.
      */
-    #[Assert\NotBlank(groups: ['complete'])]
+    #[Assert\NotBlank(groups: [self::VALIDATION_COMPLETE])]
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Assert\Regex(pattern: self::SIX_DIGITS_REGEX, match: false)]
+    #[Assert\Regex(
+        pattern: self::SIX_DIGITS_REGEX,
+        match: false,
+        groups: [self::VALIDATION_COMPLETE, self::VALIDATION_NEW]
+    )
+    ]
     public ?string $last_name = null;
 
     /**
@@ -183,7 +203,7 @@ class Person
      * password-enabled Person records.
      */
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Assert\NotBlank(groups: ['complete'])]
+    #[Assert\NotBlank(groups: [self::VALIDATION_COMPLETE])]
     public ?string $email_address = null;
 
     /**
@@ -367,7 +387,7 @@ class Person
      *
      * @psalm-suppress PossiblyUnusedMethod - used via callback.
      */
-    #[Assert\Callback(groups: ['new'])]
+    #[Assert\Callback(groups: [self::VALIDATION_NEW])]
     public function validateCaptchaExistsIfNew(ExecutionContextInterface $context): void
     {
         // Brand new entity + no captcha solved.
@@ -385,7 +405,7 @@ class Person
      *
      * @psalm-suppress PossiblyUnusedMethod - used via callback.
      */
-    #[Assert\Callback(groups: ["complete"])]
+    #[Assert\Callback(groups: [self::VALIDATION_COMPLETE])]
     public function validatePasswordIfNotBlank(ExecutionContextInterface $context): void
     {
         $passwordUpdated = $this->raw_password !== null && $this->raw_password !== '';
