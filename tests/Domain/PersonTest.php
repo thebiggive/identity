@@ -11,6 +11,8 @@ use Symfony\Component\Uid\Uuid;
 
 class PersonTest extends TestCase
 {
+    private const string CUSTOMER_NAME = 'Loraine James';
+
     public function testGetters(): void
     {
         $person = $this->getPersonWithKeyFieldsSet();
@@ -61,6 +63,44 @@ class PersonTest extends TestCase
         $this->assertEquals('James', $message->last_name);
         $this->assertEquals('loraine@hyperdub.example.net', $message->email_address);
         $this->assertEquals('cus_1234567890', $message->stripe_customer_id);
+    }
+
+    public function testToStripeCustomerWithPasswordJustSet(): void
+    {
+        $now = new \DateTimeImmutable('now');
+
+        $person = $this->getPersonWithKeyFieldsSet();
+        // For new people, the point of verification of the email address is when they have a usable
+        // passworded account, so we send Stripe that timestamp.
+        $person->email_address_verified = $now;
+
+        $message = $person->getStripeCustomerParams();
+
+        $this->assertEquals([
+            'email' => $person->email_address,
+            'name' => self::CUSTOMER_NAME,
+            'metadata' => [
+                'environment' => 'test',
+                'personId' => (string) $person->getId(),
+                'hasPasswordSince' => $now->format('Y-m-d H:i:s'),
+                'emailAddress' => $person->email_address,
+            ],
+        ], $message);
+    }
+
+    public function testToStripeCustomerWithoutPassword(): void
+    {
+        $person = $this->getPersonWithKeyFieldsSet();
+        $message = $person->getStripeCustomerParams();
+
+        $this->assertEquals([
+            'email' => $person->email_address,
+            'name' => self::CUSTOMER_NAME,
+            'metadata' => [
+                'environment' => 'test',
+                'personId' => (string) $person->getId(),
+            ],
+        ], $message);
     }
 
     private function getPersonWithKeyFieldsSet(): Person

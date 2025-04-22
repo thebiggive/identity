@@ -50,6 +50,7 @@ class CreateTest extends TestCase
         $request = $this->buildRequest([
             'captcha_code' => 'good response',
             'first_name' => 'Loraine',
+            'last_name' => 'James',
         ]);
 
         $response = $app->handle($request);
