@@ -71,6 +71,7 @@ trait TestPeopleTrait
     private function getStripeCustomerCommonArgs(): array
     {
         return [
+            'email' => null,
             'metadata' => [
                 'environment' => 'test',
                 'personId' => static::$testPersonUuid,
