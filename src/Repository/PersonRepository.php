@@ -43,13 +43,15 @@ class PersonRepository extends EntityRepository
     public function hasPasswordEnabledPersonMatchingEmailAddress(string $emailAddress): bool
     {
         $qb = new QueryBuilder($this->getEntityManager());
-        $result = $qb->select('1')
+        $result = $qb->select('p')
             ->from(Person::class, 'p')
             ->where('p.email_address = :emailAddress')
             ->andWhere('p.password IS NOT NULL')
-            ->setParameter('emailAddress', $emailAddress)->getQuery()->getOneOrNullResult();
+            ->setParameter('emailAddress', $emailAddress)
+            ->getQuery()
+            ->getOneOrNullResult();
 
-        \assert(is_int($result) || is_null($result));
+        \assert($result === null || $result instanceof Person);
 
         return $result !== null;
     }
