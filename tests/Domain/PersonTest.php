@@ -63,6 +63,39 @@ class PersonTest extends TestCase
         $this->assertEquals('cus_1234567890', $message->stripe_customer_id);
     }
 
+    public function testToStripeCustomerWithPasswordJustSet(): void
+    {
+        $person = $this->getPersonWithKeyFieldsSet();
+        $now = new \DateTimeImmutable('now');
+        $message = $person->getStripeCustomerParams(passwordAddedAt: $now);
+
+        $this->assertEquals([
+            'email' => $person->email_address,
+            'name' => $person->first_name . ' ' . $person->last_name,
+            'metadata' => [
+                'environment' => 'test',
+                'personId' => (string) $person->getId(),
+                'hasPasswordSince' => $now->format('Y-m-d H:i:s'),
+                'emailAddress' => $person->email_address,
+            ],
+        ], $message);
+    }
+
+    public function testToStripeCustomerWithoutPassword(): void
+    {
+        $person = $this->getPersonWithKeyFieldsSet();
+        $message = $person->getStripeCustomerParams(passwordAddedAt: null);
+
+        $this->assertEquals([
+            'email' => $person->email_address,
+            'name' => $person->first_name . ' ' . $person->last_name,
+            'metadata' => [
+                'environment' => 'test',
+                'personId' => (string) $person->getId(),
+            ],
+        ], $message);
+    }
+
     private function getPersonWithKeyFieldsSet(): Person
     {
         $person = new Person();
