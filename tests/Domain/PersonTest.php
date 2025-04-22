@@ -71,7 +71,7 @@ class PersonTest extends TestCase
 
         $this->assertEquals([
             'email' => $person->email_address,
-            'name' => $person->first_name . ' ' . $person->last_name,
+            'name' => $this->summariseName($person->first_name, $person->last_name),
             'metadata' => [
                 'environment' => 'test',
                 'personId' => (string) $person->getId(),
@@ -88,12 +88,17 @@ class PersonTest extends TestCase
 
         $this->assertEquals([
             'email' => $person->email_address,
-            'name' => $person->first_name . ' ' . $person->last_name,
+            'name' => $this->summariseName($person->first_name, $person->last_name),
             'metadata' => [
                 'environment' => 'test',
                 'personId' => (string) $person->getId(),
             ],
         ], $message);
+    }
+
+    private function summariseName(?string $firstName, ?string $lastName): string
+    {
+        return ($firstName ?? '') . ' ' . ($lastName ?? '');
     }
 
     private function getPersonWithKeyFieldsSet(): Person
