@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
+use Assert\Assertion;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
@@ -416,6 +417,12 @@ class Person
 
     public function getStripeCustomerParams(\DateTimeImmutable $passwordAddedAt = null): array
     {
+        Assertion::eq(
+            $this->first_name === null,
+            $this->last_name === null,
+            'Names are always both or neither set.'
+        );
+
         $nameSet = $this->first_name !== null && $this->last_name !== null;
 
         $metadata = [
