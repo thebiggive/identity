@@ -11,6 +11,8 @@ use Symfony\Component\Uid\Uuid;
 
 class PersonTest extends TestCase
 {
+    private const string CUSTOMER_NAME = 'Loraine James';
+
     public function testGetters(): void
     {
         $person = $this->getPersonWithKeyFieldsSet();
@@ -71,7 +73,7 @@ class PersonTest extends TestCase
 
         $this->assertEquals([
             'email' => $person->email_address,
-            'name' => $this->summariseName($person->first_name, $person->last_name),
+            'name' => self::CUSTOMER_NAME,
             'metadata' => [
                 'environment' => 'test',
                 'personId' => (string) $person->getId(),
@@ -88,17 +90,12 @@ class PersonTest extends TestCase
 
         $this->assertEquals([
             'email' => $person->email_address,
-            'name' => $this->summariseName($person->first_name, $person->last_name),
+            'name' => self::CUSTOMER_NAME,
             'metadata' => [
                 'environment' => 'test',
                 'personId' => (string) $person->getId(),
             ],
         ], $message);
-    }
-
-    private function summariseName(?string $firstName, ?string $lastName): string
-    {
-        return ($firstName ?? '') . ' ' . ($lastName ?? '');
     }
 
     private function getPersonWithKeyFieldsSet(): Person
