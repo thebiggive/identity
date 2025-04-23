@@ -80,6 +80,18 @@ workflows:
   build:
     jobs:
       - test:
+          filters:
+            branches:
+              # separate `build-and-notify` workflow for these branches includes sending notifications
+              ignore: ['main', 'develop']
+          context:
+            - docker-hub-creds
+  build-and-notify:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: ['main', 'develop']
           context:
             - docker-hub-creds
             - jira
