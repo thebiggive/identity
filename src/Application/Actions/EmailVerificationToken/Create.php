@@ -126,5 +126,4 @@ class Create extends Action
             ],
         ]);
     }
-
 }
