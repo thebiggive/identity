@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions\Person;
 
-use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Action;
+use Assert\Assertion;
 use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Person;
@@ -37,7 +37,7 @@ use TypeError;
  *             pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
  *         ),
  *     ),
- *     summary="Update a Person, e.g. to set a password",
+ *     summary="Update a Person, e.g. to set name and email address",
  *     operationId="person_update",
  *     security={
  *         {"personJWT": {}}
@@ -129,7 +129,7 @@ class Update extends Action
             );
         }
 
-        $violations = $this->validator->validate($person, null, ['complete']);
+        $violations = $this->validator->validate($person, null, [Person::VALIDATION_COMPLETE]);
 
         if (count($violations) > 0) {
             $message = $this->violationsToPlainText($violations);
