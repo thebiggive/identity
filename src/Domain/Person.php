@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Domain;
 
+use Assert\Assertion;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
@@ -447,5 +448,55 @@ class Person
         $httpClient = HttpClient::create();
         $notCompromisedValidator = new Assert\NotCompromisedPasswordValidator($httpClient);
         return $notCompromisedValidator;
+    }
+
+    public function getStripeCustomerParams(): array
+    {
+        Assertion::eq(
+            $this->first_name === null,
+            $this->last_name === null,
+            'Names are always both or neither set.'
+        );
+
+        $nameSet = $this->first_name !== null && $this->last_name !== null;
+        $hasPasswordSince = $this->email_address_verified;
+
+        $metadata = [
+            'environment' => getenv('APP_ENV'),
+            'personId' => (string) $this->getId(),
+            ...($hasPasswordSince === null ? [] : [
+                'hasPasswordSince' => $hasPasswordSince->format('Y-m-d H:i:s'),
+                'emailAddress' => $this->email_address,
+            ])
+        ];
+
+        $params = [
+            'email' => $this->email_address,
+            ...($nameSet ? ['name' => sprintf('%s %s', $this->first_name, $this->last_name)] : []),
+            'metadata' => $metadata,
+        ];
+
+        // Billing address can vary per payment method and is best kept against that object as it's
+        // the only thing we know the address matches.
+        // "Home address" is collected only for Gift Aid declarations and is optional, so append it conditionally.
+        if (!$this->nullOrBlank($this->home_address_line_1)) {
+            $params['address'] = [
+                'line1' => $this->home_address_line_1,
+            ];
+
+            if (!$this->nullOrBlank($this->home_postcode)) {
+                $params['address']['postal_code'] = $this->home_postcode;
+
+                // Should be 'GB' when postcode non-null.
+                $params['address']['country'] = $this->home_country_code;
+            }
+        }
+
+        return $params;
+    }
+
+    private function nullOrBlank(?string $value): bool
+    {
+        return $value === null || trim($value) === '';
     }
 }

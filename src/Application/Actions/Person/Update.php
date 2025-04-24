@@ -6,10 +6,8 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use Assert\Assertion;
-use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Client;
-use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
@@ -23,7 +21,6 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\UidNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
@@ -151,27 +148,7 @@ class Update extends Action
 
         $this->personRepository->persist($person, false);
 
-        $customerDetails = [
-            'email' => $person->email_address,
-            'name' => sprintf('%s %s', $person->first_name, $person->last_name),
-        ];
-
-        // Billing address can vary per payment method and is best kept against that object as it's
-        // the only thing we know the address matches.
-        // "Home address" is collected only for Gift Aid declarations and is optional, so append it conditionally.
-        if (!empty($person->home_address_line_1)) {
-            $customerDetails['address'] = [
-                'line1' => $person->home_address_line_1,
-            ];
-
-            if (!empty($person->home_postcode)) {
-                $customerDetails['address']['postal_code'] = $person->home_postcode;
-
-                // Should be 'GB' when postcode non-null.
-                $customerDetails['address']['country'] = $person->home_country_code;
-            }
-        }
-        $this->stripeClient->customers->update($person->stripe_customer_id, $customerDetails);
+        $this->stripeClient->customers->update($person->stripe_customer_id, $person->getStripeCustomerParams());
 
         if ($person->email_address !== null && !$hasPassword) {
             $this->emailVerificationService->storeTokenForEmail($person->email_address);
