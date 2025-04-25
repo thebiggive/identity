@@ -161,6 +161,10 @@ class Create extends Action
 
         \assert($person !== null);
 
+        if (is_string($person->first_name) && md5(trim($person->first_name)) === '2f28febdbe7471f273f8242f37cdddb7') {
+            throw new \Exception('Exception thrown just to test alarms');
+        }
+
         $email_address = $person->email_address;
 
         $rawPassword = (string) ($requestBody['raw_password'] ?? null);
