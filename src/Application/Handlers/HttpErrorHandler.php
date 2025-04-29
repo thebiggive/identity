@@ -26,12 +26,10 @@ class HttpErrorHandler extends SlimErrorHandler
     {
         $exception = $this->exception;
         $statusCode = 500;
-        $error = $this->createInternalError(
-            'An internal error has occurred while processing your request.',
-            $this->displayErrorDetails ? $exception->getTrace() : null
+        $error = new ActionError(
+            ActionError::SERVER_ERROR,
+            'An internal error has occurred while processing your request.'
         );
-
-        $this->logger->info('HttpErrorHandler exception: ' . $this->exception->getMessage());
 
         if ($exception instanceof HttpException) {
             $statusCode = $exception->getCode();
@@ -58,37 +56,44 @@ class HttpErrorHandler extends SlimErrorHandler
             && $this->displayErrorDetails
         ) {
             $error->setDescription($exception->getMessage());
+
+            $trace = array_map(
+            /** @psalm-suppress PossiblyUndefinedArrayOffset
+             * Offsets defined at https://www.php.net/manual/en/exception.gettrace.php
+             */
+                fn(array $frame) => "{$frame['class']}::{$frame['function']} {$frame['file']}:{$frame['line']}",
+                $exception->getTrace()
+            );
+
+            $data = ['error' => $error, 'trace' => $trace];
+        } else {
+            $data = null;
         }
 
-        $payload = new ActionPayload($statusCode, null, $error);
+        $payload = new ActionPayload($statusCode, $data, $error);
         try {
-            $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+            $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR);
         } catch (\JsonException $exception) {
             $this->logger->warning(sprintf(
                 'Original error is not JSON so cannot be returned verbatim: %s',
                 $exception->getMessage(),
             ));
-            $payload = new ActionPayload(
-                $statusCode,
-                null,
-                $this->createInternalError('Original error is not encodable as JSON, see info logs'),
-            );
-            $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+            $encodedPayload = json_encode(new ActionPayload($statusCode), JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR);
         }
 
         $response = $this->responseFactory->createResponse($statusCode);
-
         $response->getBody()->write($encodedPayload);
 
-        return $response->withHeader('Content-Type', 'application/json');
-    }
+        if (!($this->exception instanceof HttpException)) {
+            $this->logError(sprintf(
+                "%s: %s \n#\n %s \n %s",
+                get_class($this->exception),
+                $this->exception->getMessage(),
+                $this->exception->getFile() . ":" . $this->exception->getLine(),
+                $this->exception->getTraceAsString(),
+            ));
+        }
 
-    private function createInternalError(string $message, array|null $trace = null): ActionError
-    {
-        return new ActionError(
-            ActionError::SERVER_ERROR,
-            $message,
-            $trace
-        );
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }
