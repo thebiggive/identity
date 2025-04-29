@@ -31,36 +31,36 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
         $this->commandTester = new CommandTester(new DeleteUnusablePersonRecords($this->connection, $this->now));
     }
 
-    public function testItDeletesA32HourOldPasswordlessPerson(): void
+    public function testItDeletesA8HourOldPasswordlessPerson(): void
     {
-        $this->addPersonToDatabase(createdAt: '2020-11-29 04:00:00', withPassword: false);
+        $this->addPersonToDatabase(createdAt: '2020-11-30 04:00:00', withPassword: false);
 
         $this->commandTester->execute([]);
 
         $this->assertNull($this->personRepository->find($this->personId));
     }
 
-    public function testItDoesNotDeletesALessThan32HourOldPasswordlessPerson(): void
+    public function testItDoesNotDeletesALessThan8HourOldPasswordlessPerson(): void
     {
-        $this->addPersonToDatabase(createdAt: '2020-11-29 04:00:01', withPassword: false);
+        $this->addPersonToDatabase(createdAt: '2020-11-30 04:00:01', withPassword: false);
 
         $this->commandTester->execute([]);
 
         $this->assertNotNull($this->personRepository->find($this->personId));
     }
 
-    public function testItDoesNotDeleteA32HourOldPasswordHavingPerson(): void
+    public function testItDoesNotDeleteAn8HourOldPasswordHavingPerson(): void
     {
-        $this->addPersonToDatabase(createdAt: '2020-11-29 04:00:00', withPassword: true);
+        $this->addPersonToDatabase(createdAt: '2020-11-30 04:00:00', withPassword: true);
 
         $this->commandTester->execute([]);
 
         $this->assertNotNull($this->personRepository->find($this->personId));
     }
 
-    public function testItDoesNotDeletesALessThan32HourOldPasswordHavingPerson(): void
+    public function testItDoesNotDeletesALessThan8HourOldPasswordHavingPerson(): void
     {
-        $this->addPersonToDatabase(createdAt: '2020-11-29 04:00:01', withPassword: true);
+        $this->addPersonToDatabase(createdAt: '2020-11-30 04:00:01', withPassword: true);
 
         $this->commandTester->execute([]);
 

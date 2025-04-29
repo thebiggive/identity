@@ -60,7 +60,7 @@ class GetDonationFundsTransferInstructionsTest extends TestCase
             ->withQueryParams(['currency' => 'gbp'])
             ->withHeader(
                 'x-tbg-auth',
-                Token::create(static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'),
+                Token::create(new \DateTimeImmutable(), static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'),
             );
 
         $response = $app->handle($request);

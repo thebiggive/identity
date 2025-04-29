@@ -20,7 +20,7 @@ class GetPersonTest extends IntegrationTest
         $response = $this->getApp()->handle(new ServerRequest(
             method: 'GET',
             uri: "/v1/people/{$uuid}",
-            headers: ['x-tbg-auth' => Token::create($uuid, true, '')],
+            headers: ['x-tbg-auth' => Token::create(new \DateTimeImmutable(), $uuid, true, '')],
         ));
 
         $decodedBody = json_decode($response->getBody()->getContents(), true);

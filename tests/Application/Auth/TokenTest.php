@@ -21,35 +21,35 @@ class TokenTest extends TestCase
 
     public function testCreateReturnsValidLookingToken(): void
     {
-        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
+        $token = Token::create(new \DateTimeImmutable(), 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertMatchesRegularExpression('/^[^.]+\.[^.]+\.[^.]+$/', $token);
     }
 
     public function testCheckPassesWhenAllValid(): void
     {
-        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
+        $token = Token::create(new \DateTimeImmutable(), 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertTrue(Token::check('somePersonId', true, $token, new NullLogger()));
     }
 
     public function testCheckFailsWhenWrongPersonId(): void
     {
-        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
+        $token = Token::create(new \DateTimeImmutable(), 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertFalse(Token::check('someOtherPersonId', true, $token, new NullLogger()));
     }
 
     public function testCheckFailsWhenSignatureGarbled(): void
     {
-        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
+        $token = Token::create(new \DateTimeImmutable(), 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertFalse(Token::check('somePersonId', true, $token . 'X', new NullLogger()));
     }
 
     public function testCheckFailsWithWrongCompletenessFlag(): void
     {
-        $token = Token::create('somePersonId', false, 'cus_aaaaaaaaaaaa11');
+        $token = Token::create(new \DateTimeImmutable(), 'somePersonId', false, 'cus_aaaaaaaaaaaa11');
 
         $this->assertFalse(Token::check('somePersonId', true, $token, new NullLogger()));
     }
@@ -57,9 +57,12 @@ class TokenTest extends TestCase
     public function testTokenValidFor7Hours59(): void
     {
         $log = new TestLogger();
-        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
+        $start = new \DateTimeImmutable('2025-01-01T00:00:00');
+        $checkTime = new \DateTimeImmutable('2025-01-01T07:59:59');
 
-        JWT::$timestamp = (new \DateTimeImmutable('+ 7 hours 59 minutes'))->getTimestamp();
+        $token = Token::create($start, 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
+
+        JWT::$timestamp = ($checkTime)->getTimestamp();
 
         $this->assertTrue(Token::check('somePersonId', true, $token, $log));
         $this->assertEmpty($log->messages);
@@ -68,9 +71,12 @@ class TokenTest extends TestCase
     public function testTokenExpiresInEightHours(): void
     {
         $log = new TestLogger();
-        $token = Token::create('somePersonId', true, 'cus_aaaaaaaaaaaa11');
+        $start = new \DateTimeImmutable('2025-01-01T00:00:00');
+        $checkTime = new \DateTimeImmutable('2025-01-01T08:00:00');
 
-        JWT::$timestamp = (new \DateTimeImmutable('+ 8 hours'))->getTimestamp();
+        $token = Token::create($start, 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
+
+        JWT::$timestamp = ($checkTime)->getTimestamp();
 
         $this->assertFalse(Token::check('somePersonId', true, $token, $log));
         $this->assertSame(
@@ -84,5 +90,17 @@ class TokenTest extends TestCase
             ],
             $log->messages
         );
+    }
+
+    public function testTokenForGuestUserExpiresInOneHour(): void
+    {
+        $start = new \DateTimeImmutable('2025-01-01T00:00:00');
+        $checkTime = new \DateTimeImmutable('2025-01-01T01:00:00');
+
+        $token = Token::create($start, 'somePersonId', false, 'cus_aaaaaaaaaaaa11');
+
+        JWT::$timestamp = ($checkTime)->getTimestamp();
+
+        $this->assertFalse(Token::check('somePersonId', true, $token, new NullLogger()));
     }
 }

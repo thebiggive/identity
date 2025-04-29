@@ -242,7 +242,7 @@ class Create extends Action
         $person->setStripeCustomerId($customer->id);
         $this->personRepository->persist($person, false);
 
-        $token = Token::create((string)$person->getId(), false, $person->stripe_customer_id);
+        $token = Token::create(new \DateTimeImmutable(), (string)$person->getId(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);
 
         if ($hasPassword) {

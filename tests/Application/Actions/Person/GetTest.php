@@ -341,7 +341,10 @@ class GetTest extends TestCase
     private function buildRequest(string $personId, bool $withTipBalance = false): ServerRequestInterface
     {
         return $this->buildRequestRaw($personId)
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'))
+            ->withHeader(
+                'x-tbg-auth',
+                Token::create(new \DateTimeImmutable(), static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11')
+            )
             ->withQueryParams([
                 'withTipBalances' => $withTipBalance ? 'true' : 'false',
             ]);

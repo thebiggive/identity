@@ -187,7 +187,15 @@ class UpdateTest extends TestCase
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 
         $request = $this->buildRequestRaw(static::$testPersonUuid, '<')
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
+            ->withHeader(
+                'x-tbg-auth',
+                Token::create(
+                    new \DateTimeImmutable(),
+                    static::$testPersonUuid,
+                    false,
+                    'cus_aaaaaaaaaaaa11'
+                )
+            );
 
         $response = $app->handle($request);
         $payloadJSON = (string) $response->getBody();
@@ -207,7 +215,10 @@ class UpdateTest extends TestCase
     private function buildRequest(string $personId, array $payloadValues): ServerRequestInterface
     {
         return $this->buildRequestRaw($personId, json_encode($payloadValues, JSON_THROW_ON_ERROR))
-            ->withHeader('x-tbg-auth', Token::create(static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11'));
+            ->withHeader(
+                'x-tbg-auth',
+                Token::create(new \DateTimeImmutable(), static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11')
+            );
     }
 
     private function buildRequestRaw(string $personId, string $payloadLiteral): ServerRequestInterface
