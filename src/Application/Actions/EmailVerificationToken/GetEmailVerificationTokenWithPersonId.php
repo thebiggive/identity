@@ -3,6 +3,8 @@
 namespace BigGive\Identity\Application\Actions\EmailVerificationToken;
 
 use BigGive\Identity\Application\Actions\Action;
+use BigGive\Identity\Application\Actions\Person\SetFirstPassword;
+use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Domain\EmailVerificationToken;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
@@ -99,7 +101,15 @@ class GetEmailVerificationTokenWithPersonId extends Action
             throw new HttpNotFoundException($request);
         }
 
-        $oldestAllowedTokenCreationDate = $this->now->modify('-8 hours');
+        /**
+         * Only allow viewing up to 5 minutes before the token is expired as far as {@see SetFirstPassword} is
+         * concerned, so user has time to fill in the registration form.
+         *
+         * Very few users will be trying to user the token exactly around the expiry time.
+         */
+        $oldestAllowedTokenCreationDate = $this->now
+            ->sub(new \DateInterval('PT' . Token::COMPLETE_ACCOUNT_VALIDITY_PERIOD_SECONDS . 'S'))
+            ->modify('+5 minutes');
 
         $token = $this->emailVerificationTokenRepository->findToken(
             email_address: $email_address,

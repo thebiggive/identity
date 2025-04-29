@@ -132,7 +132,7 @@ class Login extends Action
 
         return new JsonResponse([
             'id' => $id,
-            'jwt' => Token::create($id, true, $person->stripe_customer_id),
+            'jwt' => Token::create(new \DateTimeImmutable(), $id, true, $person->stripe_customer_id),
         ]);
     }
 

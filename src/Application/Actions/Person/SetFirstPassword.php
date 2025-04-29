@@ -4,6 +4,7 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
+use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
 use BigGive\Identity\Domain\EmailVerificationToken;
@@ -97,9 +98,7 @@ class SetFirstPassword extends Action
         // We allow slightly older tokens here than in GetEmailVerificationToken to account for time spent looking
         // at the token before using it.
         $oldestAllowedTokenCreationDate =
-            $this->now->modify('-8 hours')
-            ->modify('-5 minutes');
-
+            $this->now->sub(new \DateInterval('PT' . Token::COMPLETE_ACCOUNT_VALIDITY_PERIOD_SECONDS . 'S'));
         $token = $this->emailVerificationTokenRepository->findToken(
             email_address: $person->email_address,
             tokenSecret: $secret,
