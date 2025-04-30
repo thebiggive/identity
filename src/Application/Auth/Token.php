@@ -10,7 +10,16 @@ use Psr\Log\LoggerInterface;
 
 class Token
 {
-    public const int VALIDITY_PERIOD_SECONDS = 8 * 60 * 60;
+    /**
+     * Time for which we allow a person with password to stay logged in, also used as the time limit for a new
+     * donor to set their first password via the link in the donation thanks email.
+     */
+    public const int COMPLETE_ACCOUNT_VALIDITY_PERIOD_SECONDS = 8 * 60 * 60;
+
+    /**
+     * Time for a session to continue for a guest donor when they don't set a password.
+     */
+    public const int GUEST_ACCOUNT_VALIDITY_PERIOD_SECONDS = 1 * 60 * 60;
 
     /**
      * @link https://stackoverflow.com/questions/39239051/rs256-vs-hs256-whats-the-difference has info on hash
@@ -27,8 +36,12 @@ class Token
      *                              & setting basic details and optionally an initial password.
      * @return string Signed JWS
      */
-    public static function create(string $personId, bool $complete, ?string $pspCustomerId): string
-    {
+    public static function create(
+        \DateTimeImmutable $startingAt,
+        string $personId,
+        bool $complete,
+        ?string $pspCustomerId
+    ): string {
         $personClaims = [
             'person_id' => $personId,
             'complete' => $complete,
@@ -38,14 +51,22 @@ class Token
             $personClaims['psp_id'] = $pspCustomerId;
         }
 
+        $startTimestamp = $startingAt->getTimestamp();
+
+        if ($complete) {
+            $expiryTimestamp = $startTimestamp + self::COMPLETE_ACCOUNT_VALIDITY_PERIOD_SECONDS;
+        } else {
+            $expiryTimestamp = $startTimestamp + self::GUEST_ACCOUNT_VALIDITY_PERIOD_SECONDS;
+        }
+
         /**
          * @var array $claims
          * @link https://tools.ietf.org/html/rfc7519 has info on the standard keys like `exp`
          */
         $claims = [
             'iss' => getenv('BASE_URI'),
-            'iat' => time(),
-            'exp' => time() + self::VALIDITY_PERIOD_SECONDS,
+            'iat' => $startTimestamp,
+            'exp' => $expiryTimestamp,
             'sub' => $personClaims,
         ];
 

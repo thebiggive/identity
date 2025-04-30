@@ -150,25 +150,4 @@ class PersonRepository extends EntityRepository
             $this->persistForPasswordChange($person);
         }
     }
-
-    /**
-     * @return Person[]
-     */
-    public function findByNullStripeIdFrom16April(): array
-    {
-        $query = $this->getEntityManager()->createQuery(<<<EOT
-            SELECT p FROM BigGive\Identity\Domain\Person p
-            WHERE p.stripe_customer_id IS NULL
-            AND p.created_at >= :startOfDay
-            AND p.created_at < :endOfDay
-EOT)
-            ->setParameter('startOfDay', new \DateTimeImmutable('2025-04-16 00:00:00'))
-            ->setParameter('endOfDay', new \DateTimeImmutable('2025-04-17 00:00:00'))
-            ->setMaxResults(9);
-
-        /** @var Person[] $people */
-        $people = $query->getResult();
-
-        return $people;
-    }
 }

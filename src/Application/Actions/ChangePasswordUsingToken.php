@@ -2,6 +2,7 @@
 
 namespace BigGive\Identity\Application\Actions;
 
+use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -69,7 +70,7 @@ class ChangePasswordUsingToken extends Action
 
         $person = $token->person;
         $person->raw_password = (string) $requestData['new_password'];
-        $violations = $this->validator->validate($person, null, ['complete']);
+        $violations = $this->validator->validate($person, null, [Person::VALIDATION_COMPLETE]);
 
         $relevantViolationMessages = [];
 

@@ -161,6 +161,10 @@ class Create extends Action
 
         \assert($person !== null);
 
+        if (is_string($person->first_name) && md5(trim($person->first_name)) === '2f28febdbe7471f273f8242f37cdddb7') {
+            throw new \Exception('Exception thrown just to test alarms');
+        }
+
         $email_address = $person->email_address;
 
         $rawPassword = (string) ($requestBody['raw_password'] ?? null);
@@ -186,7 +190,7 @@ class Create extends Action
             $person->skipCaptchaPresenceValidation();
         }
 
-        $violations = $this->validator->validate($person, null, ['new']);
+        $violations = $this->validator->validate($person, null, [Person::VALIDATION_NEW]);
 
         if (count($violations) > 0) {
             $message = 'Validation error: ';
@@ -238,7 +242,7 @@ class Create extends Action
         $person->setStripeCustomerId($customer->id);
         $this->personRepository->persist($person, false);
 
-        $token = Token::create((string)$person->getId(), false, $person->stripe_customer_id);
+        $token = Token::create(new \DateTimeImmutable(), (string)$person->getId(), false, $person->stripe_customer_id);
         $person->addCompletionJWT($token);
 
         if ($hasPassword) {

@@ -2,6 +2,7 @@
 
 namespace BigGive\Identity\Application\Commands;
 
+use BigGive\Identity\Application\Actions\Person\SetFirstPassword;
 use BigGive\Identity\Application\Auth\Token;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -25,14 +26,13 @@ class DeleteUnusablePersonRecords extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         /**
-         * Passwordless person records really become useless IMHO imediatly when the 8 hour validity expires. But
-         * for now lets only delete them when they are four times older that, i.e. after 32 hours, just in case
-         * we need to see them in the DB for support and diagnostic purposes.
+         * Passwordless person records become useless  when the 8 hour limit imposed by
+         * {@see SetFirstPassword} expires - at that point they can't set a password and their guest session is
+         * definitely expired.
          */
-        $cutoffTimeIntervalSeconds = Token::VALIDITY_PERIOD_SECONDS * 4;
-
-        $cuttOffTimeString = $this->now->sub(new \DateInterval('PT' . $cutoffTimeIntervalSeconds . 'S'))
-            ->format('c');
+        $cuttOffTimeString = $this->now->sub(
+            new \DateInterval('PT' . Token::COMPLETE_ACCOUNT_VALIDITY_PERIOD_SECONDS . 'S')
+        )->format('c');
 
         $deletedCount = $this->connection->executeStatement(
             <<<'SQL'
