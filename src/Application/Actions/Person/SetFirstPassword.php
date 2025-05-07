@@ -12,6 +12,7 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
+use OpenApi\Annotations as OA;
 use BigGive\Identity\Client;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
