@@ -5,8 +5,12 @@ namespace BigGive\Identity\IntegrationTests;
 use BigGive\Identity\Application\Commands\DeleteUnusablePersonRecords;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
+use BigGive\Identity\Tests\TestLogger;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Prophecy\Prophecy\ObjectProphecy;
+use Psr\Log\LoggerInterface;
+use Stripe\StripeClient;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Uid\UuidV4;
 
@@ -17,6 +21,9 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
     private \DateTimeImmutable $now;
     private UuidV4 $personId;
     private string $randomEmail;
+    /** @var ObjectProphecy<StripeClient> */
+    private ObjectProphecy $stripeClientProphecy;
+    private TestLogger $logger;
     private CommandTester $commandTester;
 
     public function setUp(): void
@@ -28,7 +35,16 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
         $this->connection = $this->getService(Connection::class);
         $this->personId = \Symfony\Component\Uid\Uuid::v4();
         $this->randomEmail = 'test_delete_unusable' . random_int(1, 1_000_000) . '@thebiggivetest.co.uk';
-        $this->commandTester = new CommandTester(new DeleteUnusablePersonRecords($this->connection, $this->now));
+        $this->logger = new TestLogger();
+
+        $this->stripeClientProphecy = $this->prophesize(StripeClient::class);
+
+        $this->commandTester = new CommandTester(new DeleteUnusablePersonRecords(
+            $this->connection,
+            $this->now,
+            $this->stripeClientProphecy->reveal(),
+            $this->logger
+        ));
     }
 
     public function testItDeletesA8HourOldPasswordlessPerson(): void
@@ -38,6 +54,15 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
         $this->commandTester->execute([]);
 
         $this->assertNull($this->personRepository->find($this->personId));
+
+        $this->assertEqualsCanonicalizing(
+            [[
+                'level' => 'info',
+                'message' => 'Deleted 1 useless Person records from before 2020-11-30T04:00:00+00:00.',
+                'context' => [],
+            ]],
+            $this->logger->messages
+        );
     }
 
     public function testItDoesNotDeletesALessThan8HourOldPasswordlessPerson(): void

@@ -6,6 +6,7 @@ declare(strict_types=1);
 use BigGive\Identity\Application\Commands\DeleteUnusablePersonRecords;
 use BigGive\Identity\Application\Commands\PopulateUsers;
 use BigGive\Identity\Repository\PersonRepository;
+use Stripe\StripeClient;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
@@ -20,6 +21,13 @@ $personRepository = $psr11App->get(PersonRepository::class);
 $connection = $psr11App->get(\Doctrine\DBAL\Connection::class);
 \assert($connection instanceof \Doctrine\DBAL\Connection);
 
+$stripeClient = $psr11App->get(StripeClient::class);
+\assert($stripeClient instanceof StripeClient);
+
+$logger = $psr11App->get(\Psr\Log\LoggerInterface::class);
+\assert($logger instanceof \Psr\Log\LoggerInterface);
+
+
 $now = new \DateTimeImmutable();
 
 /** @var Command[] $commands */
@@ -27,7 +35,12 @@ $commands = [
     new PopulateUsers(
         $personRepository,
     ),
-    new DeleteUnusablePersonRecords($connection, $now),
+    new DeleteUnusablePersonRecords(
+            connection: $connection,
+            now: $now,
+            stripeClient: $stripeClient,
+            logger: $logger
+    ),
 ];
 
 foreach ($commands as $command) {
