@@ -32,9 +32,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
 /**
+ *  // phpcs:disable -- OpenAPI needs long lines for good descriptions .
  * @OA\Post(
  *     path="/v1/people",
- *     summary="Create a new Person record",
+ *     summary="Create a new Person record, initially with no password. If they want to login again they will need to set a password later.",
  *     operationId="person_create",
  *     @OA\RequestBody(
  *         description="All details needed to register a Person, including valid captcha_code",
@@ -63,6 +64,7 @@ use TypeError;
  *         description="Captcha verification failed",
  *     ),
  * ),
+ *  // phpcs:enable
  * @see Person
  */
 class Create extends Action
