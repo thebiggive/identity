@@ -37,7 +37,7 @@ use TypeError;
  *             pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
  *         ),
  *     ),
- *     summary="Update a Person, e.g. to set name and email address",
+ *     summary="Update a Person, e.g. to set name and email address - but may not be used to set or change a password",
  *     operationId="person_update",
  *     security={
  *         {"personJWT": {}}
