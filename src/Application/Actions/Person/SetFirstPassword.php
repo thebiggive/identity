@@ -13,11 +13,11 @@ use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use OpenApi\Annotations as OA;
+use BigGive\Identity\Client;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpNotFoundException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -60,6 +60,7 @@ class SetFirstPassword extends Action
         private PersonRepository $personRepository,
         private EmailVerificationTokenRepository $emailVerificationTokenRepository,
         private Mailer $mailerClient,
+        private Client\Stripe $stripeClient,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -141,7 +142,10 @@ class SetFirstPassword extends Action
         // another route we will create similar to this that creates a new account in a single step using a token
         // that doesn't relate to an existing account.
         try {
+            // We should persist Stripe's Customer ID on initial Person create.
+            \assert(is_string($person->stripe_customer_id));
             $this->personRepository->persist($person, false);
+            $this->stripeClient->customers->update($person->stripe_customer_id, $person->getStripeCustomerParams());
             $this->sendRegisteredEmail($person);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
             $this->logger->warning(sprintf(
