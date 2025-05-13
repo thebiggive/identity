@@ -70,7 +70,7 @@ class GetDonationFundsTransferInstructions extends Action
                     // Only UK bank support for now.
                     'type' => 'gb_bank_transfer',
                 ],
-                'currency' => $request->getQueryParams()['currency'] ?? 'gbp',
+                'currency' => (string)($request->getQueryParams()['currency'] ?? 'gbp'),
             ],
         );
 
