@@ -97,6 +97,10 @@ class Get extends Action
             // The hash must be non-null and reconciliation automatic for us to consider balances potentially
             // spendable. Note this does _not_ imply that any balances are non-zero right now, just that we
             // should check balances.
+            /**
+             * @psalm-suppress InvalidArrayAccess (we may be not using the stripe SDK exactly right, but this is a
+             * very frequently called function so if it didn't work we would know about it.)
+             */
             $balanceIsApplicable = (
                 !empty($stripeCustomer->cash_balance) &&
                 $stripeCustomer->cash_balance->available !== null &&
@@ -139,8 +143,14 @@ class Get extends Action
             throw new \LogicException('Stripe paymentIntents service not available in current mode');
         }
 
+        $stripe_customer_id = $person->stripe_customer_id;
+        if ($stripe_customer_id === null) {
+            $this->logger->warning("tried to get tip balances for person without stripe id");
+            return;
+        }
+
         $paymentIntents = $this->stripeClient->paymentIntents->all([
-            'customer' => $person->stripe_customer_id,
+            'customer' => $stripe_customer_id,
         ]);
 
         foreach ($paymentIntents->autoPagingIterator() as $paymentIntent) {
