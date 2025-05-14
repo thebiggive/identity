@@ -148,7 +148,14 @@ class Update extends Action
 
         $this->personRepository->persist($person, false);
 
-        $this->stripeClient->customers->update($person->stripe_customer_id, $person->getStripeCustomerParams());
+        $params = $person->getStripeCustomerParams();
+
+        unset($params['test_clock']); // these params not accepted by stripe for updated, and stripe library is now
+        // strictly typed.
+        unset($params['payment_method']);
+        unset($params['tax_id_data']);
+
+        $this->stripeClient->customers->update($person->stripe_customer_id, $params);
 
         if ($person->email_address !== null && !$hasPassword) {
             $this->emailVerificationService->storeTokenForEmail($person->email_address);

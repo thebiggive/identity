@@ -145,7 +145,14 @@ class SetFirstPassword extends Action
             // We should persist Stripe's Customer ID on initial Person create.
             \assert(is_string($person->stripe_customer_id));
             $this->personRepository->persist($person, false);
-            $this->stripeClient->customers->update($person->stripe_customer_id, $person->getStripeCustomerParams());
+            $params = $person->getStripeCustomerParams();
+
+            unset($params['test_clock']); // these params not accepted by stripe for updated, and stripe library is now
+            // strictly typed.
+            unset($params['payment_method']);
+            unset($params['tax_id_data']);
+
+            $this->stripeClient->customers->update($person->stripe_customer_id, $params);
             $this->sendRegisteredEmail($person);
         } catch (DuplicateEmailAddressWithPasswordException $duplicateException) {
             $this->logger->warning(sprintf(
