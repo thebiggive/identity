@@ -16,6 +16,7 @@ final class Version20250520163110 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
+        $this->addSql("DELETE from PasswordResetToken where PasswordResetToken.person in (SELECT id from Person where Person.stripe_customer_id = 'cus_MtF9poBxLXwhgQ') LIMIT 10;");
         $this->addSql("DELETE from Person where Person.stripe_customer_id = 'cus_MtF9poBxLXwhgQ' LIMIT 1");
     }
 
