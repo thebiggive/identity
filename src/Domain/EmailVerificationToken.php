@@ -5,16 +5,8 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use Assert\Assertion;
-use BigGive\Identity\Application\Security\Password;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Rfc4122\UuidV4;
 use Random\Randomizer;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity()]
 #[ORM\Index(columns: ['email_address'])]
@@ -70,5 +62,10 @@ class EmailVerificationToken
     {
         // (extra two minutes older to allow for user think time on registration page)
         return self::oldestCreationDateForViewingToken($at)->modify('-2 minutes');
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 }

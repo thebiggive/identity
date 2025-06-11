@@ -100,6 +100,13 @@ class Create extends Action
 
         $this->em->flush();
 
+        if (!$existingAccount && getenv('APP_ENV') !== 'production') {
+            $this->logger->info('Created email verification token for email address', [
+                'emailAddress' => $emailAddress,
+                'tokenId' => $token->getId(),
+            ]);
+        }
+
         return new JsonResponse([], 201);
     }
 

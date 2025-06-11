@@ -2,11 +2,9 @@
 
 namespace BigGive\Identity\Application\Security;
 
-use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\EmailVerificationToken;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\RoutableMessageBus;
 
@@ -44,8 +42,6 @@ class EmailVerificationService
         $this->entityManager->flush();
 
         /**
-         * @todo ID-47: Create \Messages\EmailVerificationToken class in library and uncomment below
-         *
          * required so that the code can be included in any donation-thanks emails sent out to this
          * person for them to use when setting their password after donating.
          */
