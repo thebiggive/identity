@@ -130,7 +130,11 @@ class Login extends Action
 
         $id = (string) $person->getId();
 
-        $this->logger->info(sprintf('Login success: UUID %s, Stripe Customer %s', $id, $person->stripe_customer_id));
+        $this->logger->info(sprintf(
+            'Login success: UUID %s, Stripe Customer %s',
+            $id,
+            $person->stripe_customer_id ?? '[none]',
+        ));
 
         return new JsonResponse([
             'id' => $id,
