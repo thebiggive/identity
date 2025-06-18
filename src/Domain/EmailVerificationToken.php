@@ -63,9 +63,4 @@ class EmailVerificationToken
         // (extra two minutes older to allow for user think time on registration page)
         return self::oldestCreationDateForViewingToken($at)->modify('-2 minutes');
     }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 }
