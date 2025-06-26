@@ -130,6 +130,12 @@ class Login extends Action
 
         $id = (string) $person->getId();
 
+        $this->logger->info(sprintf(
+            'Login success: UUID %s, Stripe Customer %s',
+            $id,
+            $person->stripe_customer_id ?? '[none]',
+        ));
+
         return new JsonResponse([
             'id' => $id,
             'jwt' => Token::create(new \DateTimeImmutable(), $id, true, $person->stripe_customer_id),
