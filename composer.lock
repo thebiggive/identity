@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef8fb99658c8f041b1204860c0903abc",
+    "content-hash": "1599471dc58a4fbbf16629e343bdaeef",
     "packages": [
         {
             "name": "async-aws/core",
@@ -6189,21 +6189,22 @@
         },
         {
             "name": "thebiggive/messages",
-            "version": "v3.3.1",
+            "version": "v3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thebiggive/messages.git",
-                "reference": "62759b920438c37187a2332c8d225380c776e7fb"
+                "reference": "dd62885d4d344fbb30f2283ee123ee0437f23f74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thebiggive/messages/zipball/62759b920438c37187a2332c8d225380c776e7fb",
-                "reference": "62759b920438c37187a2332c8d225380c776e7fb",
+                "url": "https://api.github.com/repos/thebiggive/messages/zipball/dd62885d4d344fbb30f2283ee123ee0437f23f74",
+                "reference": "dd62885d4d344fbb30f2283ee123ee0437f23f74",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.3",
                 "ramsey/uuid": "^4.7",
+                "symfony/amazon-sqs-messenger": "^7.1",
                 "symfony/messenger": "^7.1"
             },
             "require-dev": {
@@ -6228,9 +6229,9 @@
             "description": "Shared message / model classes for cross-service communication",
             "support": {
                 "issues": "https://github.com/thebiggive/messages/issues",
-                "source": "https://github.com/thebiggive/messages/tree/v3.3.1"
+                "source": "https://github.com/thebiggive/messages/tree/v3.3.2"
             },
-            "time": "2025-04-09T09:35:36+00:00"
+            "time": "2025-06-17T08:40:24+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -10626,9 +10627,9 @@
         "ext-pdo_mysql": "*",
         "ext-redis": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.3.1"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

@@ -158,6 +158,7 @@ class Update extends Action
         $this->stripeClient->customers->update($person->stripe_customer_id, $params);
 
         if ($person->email_address !== null && !$hasPassword) {
+            // Often stores 2 or 3 tokens during a donation as each change to the Person calls it afresh.
             $this->emailVerificationService->storeTokenForEmail($person->email_address);
         }
 
