@@ -83,13 +83,15 @@ To understand how these commands are run in CI, see [the CircleCI config file](.
 
 Actions are annotated with [swagger-php](https://github.com/zircote/swagger-php)-ready doc block annotations.
 
-Generate OpenAPI documentation corresponding to your local codebase with:
+If there is a recent enough CI run you can browse docs [from any recent `test` job's artifacts](https://app.circleci.com/pipelines/github/thebiggive/identity?branch=develop) – or re-run a job if not.
+
+Alternatively, generate OpenAPI documentation corresponding to your local codebase with:
 
     docker-compose exec identity-app composer run docs
 
-Once the app is more complete, we will copy/paste and publish generated docs to their
-[live home on SwaggerHub](https://app.swaggerhub.com/apis/Noel/TBG-Identity/)
-after any changes.
+Historically, generated docs were copied 
+[to SwaggerHub](https://app.swaggerhub.com/apis/Noel/TBG-Identity/)
+but edits have stopped working with the free plan, so you should assume this is less up to date than the alternatives.
 
 ### Typical registration flow
 
