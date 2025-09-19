@@ -121,7 +121,7 @@ workflows:
           requires:
             - test
           repo: '${AWS_ECR_REPO_NAME}'
-          region: '${AWS_REGION}'
+          region: 'us-east-1'
           tag: 'staging,staging-${CIRCLE_SHA1}'
           auth:
             - aws-cli/setup:
@@ -181,7 +181,7 @@ workflows:
           requires:
             - test
           repo: '${AWS_ECR_REPO_NAME}'
-          region: '${AWS_REGION}'
+          region: 'us-east-1'
           tag: 'regression,regression-${CIRCLE_SHA1}'
           auth:
             - aws-cli/setup:
@@ -241,7 +241,7 @@ workflows:
           requires:
             - test
           repo: '${AWS_ECR_REPO_NAME}'
-          region: '${AWS_REGION}'
+          region: 'us-east-1'
           tag: 'production,production-${CIRCLE_SHA1}'
           auth:
             - aws-cli/setup:
