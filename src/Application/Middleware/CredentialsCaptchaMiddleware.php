@@ -6,6 +6,7 @@ namespace BigGive\Identity\Application\Middleware;
 
 use BigGive\Identity\Domain\Credentials;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\HttpBadRequestException;
 
 class CredentialsCaptchaMiddleware extends CaptchaMiddleware
 {
@@ -13,11 +14,15 @@ class CredentialsCaptchaMiddleware extends CaptchaMiddleware
     {
         $body = (string) $request->getBody();
 
-        $credentials = $this->serializer->deserialize(
-            $body,
-            Credentials::class,
-            'json'
-        );
+        try {
+            $credentials = $this->serializer->deserialize(
+                $body,
+                Credentials::class,
+                'json'
+            );
+        } catch (\TypeError $e) {
+            throw new HttpBadRequestException($request, 'Bad login request format');
+        }
 
         return $credentials->captcha_code;
     }
