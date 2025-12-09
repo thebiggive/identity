@@ -20,6 +20,19 @@ final class Version20251203163459 extends AbstractMigration
         // (four accounts)
 
         $this->addSql(<<<SQL
+            DELETE FROM PasswordResetToken
+            WHERE PasswordResetToken.person IN (
+                UUID_TO_BIN('1ed7343f-948b-685a-b46c-5186792a1146'),
+                UUID_TO_BIN('1f0ced94-1a86-608e-a371-5bace4e4e829'),
+                UUID_TO_BIN('1f0cebca-913d-6a36-afe7-953cf4bccf3e'),
+                UUID_TO_BIN('1f0cde78-2950-6e78-9a4f-2fd251820bfe'),
+                UUID_TO_BIN('1f0cf949-81e4-6a3a-b916-63bb94a04df2')
+                )
+            LIMIT 5
+            SQL
+        );
+
+        $this->addSql(<<<SQL
             DELETE FROM Person
             WHERE Person.id IN (
                 UUID_TO_BIN('1ed7343f-948b-685a-b46c-5186792a1146'),
