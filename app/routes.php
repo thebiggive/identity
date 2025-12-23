@@ -11,7 +11,7 @@ use BigGive\Identity\Application\Actions\Login;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\EmailVerificationToken;
 use BigGive\Identity\Application\Actions\Status;
-use BigGive\Identity\Application\Middleware\CompletePersonPatchAuthMiddleware;
+use BigGive\Identity\Application\Middleware\CompletePersonWriteAuthMiddleware;
 use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
@@ -40,7 +40,11 @@ return function (App $app) {
             ->add(PersonPatchAuthMiddleware::class);
 
         $versionGroup->put('/people/{personId:[a-z0-9-]{36}}/address', Person\PutAddress::class)
-            ->add(CompletePersonPatchAuthMiddleware::class);
+            ->add(CompletePersonWriteAuthMiddleware::class);
+
+        $versionGroup->delete('/people/{personId:[a-z0-9-]{36}}', Person\Delete::class)
+            ->add(CompletePersonWriteAuthMiddleware::class);
+
 
         // no special auth needed for this, as the route is all about authentication auth is handled by the
         // controller itself.
