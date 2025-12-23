@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use Assert\Assertion;
+use BigGive\Identity\Application\Security\AuthenticationException;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
@@ -526,5 +527,13 @@ class Person
     private function nullOrBlank(?string $value): bool
     {
         return $value === null || trim($value) === '';
+    }
+
+    /**
+     * @throws AuthenticationException on incorrect password.
+     */
+    public function verifyPassword(string $passwordSupplied): void
+    {
+        Password::verify($passwordSupplied, $this);
     }
 }
