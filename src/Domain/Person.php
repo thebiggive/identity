@@ -227,7 +227,7 @@ class Person
     /**
      * @OA\Property()
      * @var string|null From residential address, if donor is claiming Gift Aid, or set in account page. Can be 'GB', or
-     * any other two letter country code, or 'OVERSEAS' if specific non UK country is not known. or null if not
+     * any other ISO 3166-1 alpha-2 code, or 'OVERSEAS' if specific non UK country is not known. or null if not
      * applicable.
      */
     #[ORM\Column(type: 'string', nullable: true)]

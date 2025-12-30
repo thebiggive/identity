@@ -36,7 +36,7 @@ class DeletePersonTest extends IntegrationTest
             ));
 
             $this->fail('Person should not be found after deletion');
-        } catch (HttpNotFoundException $exception){
+        } catch (HttpNotFoundException $exception) {
             $this->assertSame($exception->getMessage(), 'Person not found');
         }
     }

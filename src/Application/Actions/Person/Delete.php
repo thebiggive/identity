@@ -58,5 +58,4 @@ class Delete extends Action
 
         return new JsonResponse(['message' => 'Account deleted'], 200);
     }
-
 }

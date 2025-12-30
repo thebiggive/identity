@@ -54,9 +54,9 @@ class PutAddress extends Action
             $htmlMessage = $this->violationsToHtml($violations);
 
             return $this->validationError(
-                $message,
-                null,
-                true,
+                logMessage: $message,
+                publicMessage: null,
+                reduceSeverity: true,
                 htmlMessage: $htmlMessage,
             );
         }
