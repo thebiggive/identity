@@ -172,7 +172,17 @@ class PersonRepository extends EntityRepository
         $message->id = UuidV4::fromString($id->toRfc4122());
         $message->deleted = true;
 
-        $this->logger->info(sprintf("Will dispatch message to delete person %s", $message->id));
+        /** Can be used to check if we deleted a user with a given email address in case of queries. To reproduce in bash
+         * run `echo -n '<email>' | md5sum | cut -c1-3`
+         */
+        $emailHashPrefix = substr(md5($person->email_address ?? ''), 0, 3);
+
+        $this->logger->info(sprintf(
+            "Will dispatch message to delete person %s, email hash prefix %s",
+            $message->id,
+            $emailHashPrefix)
+        );
+
         $this->bus->dispatch(new Envelope($message));
     }
 }
