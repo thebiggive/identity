@@ -33,7 +33,7 @@ class Delete extends Action
     {
         if (! \in_array(getenv('APP_ENV'), ['local', 'test'], true)) {
             // new upcoming feature not yet ready for use outside local env.
-            throw new HttpNotFoundException($request, \getenv('APP_ENV'));
+            throw new HttpNotFoundException($request);
         }
 
         $body = \json_decode(json: (string) $request->getBody(), associative: true, depth: \JSON_THROW_ON_ERROR);
