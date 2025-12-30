@@ -31,7 +31,7 @@ class Delete extends Action
      */
     protected function action(Request $request, array $args): Response
     {
-        if (! \in_array(getenv('APP_ENV'), ['local', 'test'], true)) {
+        if (! \in_array(getenv('APP_ENV'), ['local', 'test', 'staging', 'regression'], true)) {
             // new upcoming feature not yet ready for use outside local env.
             throw new HttpNotFoundException($request);
         }
