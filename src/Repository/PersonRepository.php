@@ -150,4 +150,10 @@ class PersonRepository extends EntityRepository
             $this->persistForPasswordChange($person);
         }
     }
+
+    public function delete(Person $person): void
+    {
+        $this->getEntityManager()->remove($person);
+        $this->getEntityManager()->flush();
+    }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use Assert\Assertion;
+use BigGive\Identity\Application\Security\AuthenticationException;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
@@ -212,6 +213,7 @@ class Person
      * @var string|null From residential address, if donor is claiming Gift Aid.
      */
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Length(max: 255, groups: [self::VALIDATION_COMPLETE, self::VALIDATION_NEW])]
     public ?string $home_address_line_1 = null;
 
     /**
@@ -219,15 +221,17 @@ class Person
      * @var string|null From residential address, if donor is claiming Gift Aid and is GB-resident.
      */
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Length(max: 10, groups: [self::VALIDATION_COMPLETE, self::VALIDATION_NEW])]
     public ?string $home_postcode = null;
 
     /**
      * @OA\Property()
-     * @var string|null From residential address, if donor is claiming Gift Aid. Can be 'GB' or 'OVERSEAS',
-     *                  or null if not applicable. Consuming code should assume that additional ISO 3166-1
-     *                  alpha-2 country codes could be set in the future.
+     * @var string|null From residential address, if donor is claiming Gift Aid, or set in account page. Can be 'GB', or
+     * any other ISO 3166-1 alpha-2 code, or 'OVERSEAS' if specific non UK country is not known. or null if not
+     * applicable.
      */
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Length(max: 8, groups: [self::VALIDATION_COMPLETE, self::VALIDATION_NEW])]
     public ?string $home_country_code = null;
 
     /**
@@ -523,5 +527,13 @@ class Person
     private function nullOrBlank(?string $value): bool
     {
         return $value === null || trim($value) === '';
+    }
+
+    /**
+     * @throws AuthenticationException on incorrect password.
+     */
+    public function verifyPassword(string $passwordSupplied): void
+    {
+        Password::verify($passwordSupplied, $this);
     }
 }
