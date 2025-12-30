@@ -111,7 +111,7 @@ abstract class IntegrationTest extends TestCase
         $person->first_name = "Fred";
         $person->last_name = "Bloggs";
         $person->stripe_customer_id = 'cus_1234567890';
-        if (\is_string($password)) {
+        if ($password !== null && $password !== '') {
             $person->raw_password = $password;
         }
 
