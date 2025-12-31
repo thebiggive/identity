@@ -102,7 +102,7 @@ abstract class IntegrationTest extends TestCase
     /**
      * @param string $emailAddress - use a unique email address every time to avoid conflict with data already in DB.
      */
-    protected function addPersonToToDB(string $emailAddress): Uuid
+    protected function addPersonToToDB(string $emailAddress, ?string $password = null): Uuid
     {
         $person = new Person(
             notCompromisedPasswordValidator: $this->createStub(NotCompromisedPasswordValidator::class)
@@ -111,6 +111,9 @@ abstract class IntegrationTest extends TestCase
         $person->first_name = "Fred";
         $person->last_name = "Bloggs";
         $person->stripe_customer_id = 'cus_1234567890';
+        if ($password !== null && $password !== '') {
+            $person->raw_password = $password;
+        }
 
         $this->getService(PersonRepository::class)->persist($person, false);
 

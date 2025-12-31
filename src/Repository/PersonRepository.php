@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Repository;
 
+use Assert\Assertion;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;
@@ -12,6 +13,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Rfc4122\UuidV4;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\RoutableMessageBus;
 
@@ -149,5 +151,39 @@ class PersonRepository extends EntityRepository
             $person->raw_password = $raw_password;
             $this->persistForPasswordChange($person);
         }
+    }
+
+    /**
+     * Deletes a person from the DB here and dispatches a message to delete them from other systems (i.e. matchbot)
+     *
+     * Person must have been previously persisted, i.e. have non-null ID.
+     */
+    public function delete(Person $person): void
+    {
+        $id = $person->getId();
+        Assertion::notNull($id);
+        Assertion::notNull($this->logger);
+        Assertion::notNull($this->bus);
+
+        $this->getEntityManager()->remove($person);
+        $this->getEntityManager()->flush();
+
+        $message = new \Messages\Person();
+        $message->id = UuidV4::fromString($id->toRfc4122());
+        $message->deleted = true;
+
+        /**
+         * Can be used to check if we deleted a user with a given email address in case of queries. To reproduce in Bash
+         * run `echo -n '<email>' | md5sum | cut -c1-3`
+         */
+        $emailHashPrefix = substr(md5($person->email_address ?? ''), 0, 3);
+
+        $this->logger->info(sprintf(
+            "Will dispatch message to delete person %s, email hash prefix %s",
+            $message->id,
+            $emailHashPrefix
+        ));
+
+        $this->bus->dispatch(new Envelope($message));
     }
 }

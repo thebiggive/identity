@@ -32,7 +32,7 @@ class PasswordResetToken
     private readonly Uuid $secret;
 
     #[ManyToOne(targetEntity: Person::class)]
-    #[JoinColumn(name: 'person', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'person', referencedColumnName: 'id', onDelete: 'CASCADE')]
     public readonly Person $person;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
