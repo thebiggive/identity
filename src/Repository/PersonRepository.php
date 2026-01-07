@@ -172,6 +172,11 @@ class PersonRepository extends EntityRepository
         $message->id = UuidV4::fromString($id->toRfc4122());
         $message->deleted = true;
 
+        $message->first_name = 'placeholder-for-non-nullable';
+        $message->last_name = 'placeholder-for-non-nullable';
+        $message->email_address = 'placeholder-for-non-nullable';
+        $message->stripe_customer_id = 'placeholder-for-non-nullable';
+
         /**
          * Can be used to check if we deleted a user with a given email address in case of queries. To reproduce in Bash
          * run `echo -n '<email>' | md5sum | cut -c1-3`
