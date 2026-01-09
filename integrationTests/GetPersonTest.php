@@ -3,6 +3,7 @@
 namespace BigGive\Identity\IntegrationTests;
 
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use GuzzleHttp\Psr7\ServerRequest;
@@ -17,10 +18,14 @@ class GetPersonTest extends IntegrationTest
     {
         $uuid = $this->addPersonToToDB("someemail" . Uuid::v4() . "@example.com")->toRfc4122();
 
+        $secret = getenv('JWT_ID_SECRET');
+        \assert(\is_string($secret));
+        $tokenService = new TokenService($secret);
+
         $response = $this->getApp()->handle(new ServerRequest(
             method: 'GET',
             uri: "/v1/people/{$uuid}",
-            headers: ['x-tbg-auth' => Token::create(new \DateTimeImmutable(), $uuid, true, '')],
+            headers: ['x-tbg-auth' => $tokenService->create(new \DateTimeImmutable(), $uuid, true, '')],
         ));
 
         $decodedBody = json_decode($response->getBody()->getContents(), true);

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Application\Messenger\PersonUpserted;
 use BigGive\Identity\Application\Middleware\AlwaysPassFriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
@@ -300,5 +301,12 @@ return function (ContainerBuilder $containerBuilder) {
 
             return new RoutableMessageBus($busContainer, $bus);
         },
+
+        TokenService::class => static function (): TokenService {
+            $secret = getenv('JWT_ID_SECRET');
+            \assert(\is_string($secret), 'JWT ID secret must be provided as a string');
+
+            return new TokenService($secret);
+        }
     ]);
 };

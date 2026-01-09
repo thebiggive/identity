@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
@@ -340,10 +341,17 @@ class GetTest extends TestCase
 
     private function buildRequest(string $personId, bool $withTipBalance = false): ServerRequestInterface
     {
+        $secret = getenv('JWT_ID_SECRET');
+        \assert(\is_string($secret));
         return $this->buildRequestRaw($personId)
             ->withHeader(
                 'x-tbg-auth',
-                Token::create(new \DateTimeImmutable(), static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11')
+                (new TokenService($secret))->create(
+                    new \DateTimeImmutable(),
+                    static::$testPersonUuid,
+                    true,
+                    'cus_aaaaaaaaaaaa11'
+                )
             )
             ->withQueryParams([
                 'withTipBalances' => $withTipBalance ? 'true' : 'false',

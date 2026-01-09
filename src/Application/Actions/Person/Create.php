@@ -8,6 +8,7 @@ use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Client\Stripe;
@@ -79,6 +80,7 @@ class Create extends Action
         private readonly EmailVerificationTokenRepository $emailVerificationTokenRepository,
         private readonly \DateTimeImmutable $now,
         private Mailer $mailerClient,
+        private readonly TokenService $tokenService,
     ) {
         parent::__construct($logger);
     }
@@ -240,7 +242,13 @@ class Create extends Action
         $person->setStripeCustomerId($customer->id);
         $this->personRepository->persist($person, false);
 
-        $token = Token::create(new \DateTimeImmutable(), (string)$person->getId(), false, $person->stripe_customer_id);
+        $token = $this->tokenService->create(
+            new \DateTimeImmutable(),
+            (string)$person->getId(),
+            false,
+            $person->stripe_customer_id
+        );
+
         $person->addCompletionJWT($token);
 
         if ($hasPassword) {

@@ -8,8 +8,13 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Psr\Log\LoggerInterface;
 
-class Token
+class TokenService
 {
+    public function __construct(
+        #[\SensitiveParameter] private readonly string $secret
+    ) {
+    }
+
     /**
      * Time for which we allow a person with password to stay logged in, also used as the time limit for a new
      * donor to set their first password via the link in the donation thanks email.
@@ -36,7 +41,7 @@ class Token
      *                              & setting basic details and optionally an initial password.
      * @return string Signed JWS
      */
-    public static function create(
+    public function create(
         \DateTimeImmutable $startingAt,
         string $personId,
         bool $complete,
@@ -70,7 +75,7 @@ class Token
             'sub' => $personClaims,
         ];
 
-        return JWT::encode($claims, static::getSecret(), static::$algorithm);
+        return JWT::encode($claims, $this->secret, static::$algorithm);
     }
 
     /**
@@ -81,10 +86,11 @@ class Token
      * @param LoggerInterface   $logger
      * @return bool Whether the token is valid for the given person.
      */
-    public static function check(string $personId, ?bool $complete, string $jws, LoggerInterface $logger): bool
+    public function check(string $personId, ?bool $complete, string $jws, LoggerInterface $logger): bool
     {
-        $key = new Key(static::getSecret(), static::$algorithm);
+        $key = new Key($this->secret, static::$algorithm);
         try {
+            /** @var object{iss: string, sub:object{person_id: string, complete: ?bool}} $decodedJwtBody */
             $decodedJwtBody = JWT::decode($jws, $key);
         } catch (\Exception $exception) {
             $type = get_class($exception);
@@ -118,16 +124,5 @@ class Token
         }
 
         return true;
-    }
-
-    private static function getSecret(): string
-    {
-        $secret = getenv('JWT_ID_SECRET');
-
-        if ($secret === false) {
-            throw new \Exception("JWT_ID_SECRET not set in environment");
-        }
-
-        return $secret;
     }
 }

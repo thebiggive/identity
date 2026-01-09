@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions;
 
 use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Application\Security\AuthenticationException;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Domain\Credentials;
@@ -64,6 +65,7 @@ class Login extends Action
         private readonly PersonRepository $personRepository,
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
+        private readonly TokenService $tokenService,
     ) {
         parent::__construct($logger);
     }
@@ -138,7 +140,7 @@ class Login extends Action
 
         return new JsonResponse([
             'id' => $id,
-            'jwt' => Token::create(new \DateTimeImmutable(), $id, true, $person->stripe_customer_id),
+            'jwt' => $this->tokenService->create(new \DateTimeImmutable(), $id, true, $person->stripe_customer_id),
         ]);
     }
 
