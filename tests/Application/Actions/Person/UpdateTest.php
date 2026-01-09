@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions\Person;
 
-use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Person;
@@ -22,9 +22,14 @@ class UpdateTest extends TestCase
 {
     use TestPeopleTrait;
 
+    private TokenService $tokenService;
+
     public function setUp(): void
     {
         parent::setUp();
+        $secret = getenv('JWT_ID_SECRET');
+        \assert(\is_string($secret));
+        $this->tokenService = new TokenService([$secret]);
         $this->getContainer()->set(
             EmailVerificationService::class,
             $this->createStub(EmailVerificationService::class)
@@ -189,7 +194,7 @@ class UpdateTest extends TestCase
         $request = $this->buildRequestRaw(static::$testPersonUuid, '<')
             ->withHeader(
                 'x-tbg-auth',
-                Token::create(
+                $this->tokenService->create(
                     new \DateTimeImmutable(),
                     static::$testPersonUuid,
                     false,
@@ -217,7 +222,12 @@ class UpdateTest extends TestCase
         return $this->buildRequestRaw($personId, json_encode($payloadValues, JSON_THROW_ON_ERROR))
             ->withHeader(
                 'x-tbg-auth',
-                Token::create(new \DateTimeImmutable(), static::$testPersonUuid, false, 'cus_aaaaaaaaaaaa11')
+                $this->tokenService->create(
+                    new \DateTimeImmutable(),
+                    static::$testPersonUuid,
+                    false,
+                    'cus_aaaaaaaaaaaa11'
+                )
             );
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Actions;
 
-use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Repository\PersonRepository;
 use BigGive\Identity\Tests\TestCase;
@@ -20,6 +20,10 @@ class GetDonationFundsTransferInstructionsTest extends TestCase
         $person = $this->getTestPerson(true);
 
         $app = $this->getAppInstance();
+
+        $secret = getenv('JWT_ID_SECRET');
+        \assert(\is_string($secret));
+        $tokenService = new TokenService([$secret]);
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
@@ -60,7 +64,7 @@ class GetDonationFundsTransferInstructionsTest extends TestCase
             ->withQueryParams(['currency' => 'gbp'])
             ->withHeader(
                 'x-tbg-auth',
-                Token::create(new \DateTimeImmutable(), static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'),
+                $tokenService->create(new \DateTimeImmutable(), static::$testPersonUuid, true, 'cus_aaaaaaaaaaaa11'),
             );
 
         $response = $app->handle($request);

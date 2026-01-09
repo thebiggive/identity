@@ -4,7 +4,7 @@ namespace BigGive\Identity\Application\Commands;
 
 use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Person\SetFirstPassword;
-use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Stripe\StripeClient;
@@ -38,7 +38,7 @@ class DeleteUnusablePersonRecords extends Command
          * definitely expired.
          */
         $cuttOffTimeString = $this->now->sub(
-            new \DateInterval('PT' . Token::COMPLETE_ACCOUNT_VALIDITY_PERIOD_SECONDS . 'S')
+            new \DateInterval('PT' . TokenService::COMPLETE_ACCOUNT_VALIDITY_PERIOD_SECONDS . 'S')
         )->format('c');
 
         $deletedCount = 0;

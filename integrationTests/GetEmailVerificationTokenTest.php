@@ -2,7 +2,6 @@
 
 namespace BigGive\Identity\IntegrationTests;
 
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Security\EmailVerificationService;
 use BigGive\Identity\Domain\EmailVerificationToken;
 use BigGive\Identity\Domain\Person;

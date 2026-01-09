@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Assert\Assertion;
+use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Application\Messenger\PersonUpserted;
 use BigGive\Identity\Application\Middleware\AlwaysPassFriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
@@ -300,5 +302,33 @@ return function (ContainerBuilder $containerBuilder) {
 
             return new RoutableMessageBus($busContainer, $bus);
         },
+
+        TokenService::class => static function (): TokenService {
+            // the first secret in the list is the one that will be used to issue tokens. For rotation
+            // replace it with a new secret and move it to a later position in the list for at least eight hours
+            // to allow existing tokens to expire.
+            /* @var string|false $secretsString */
+            $secretsString = getenv('JWT_ID_SECRETS');
+            /** @psalm-suppress RedundantConditionGivenDocblockType - I don't think this is redundant */
+            \assert(is_string($secretsString) || $secretsString === false);
+            if ($secretsString !== false) {
+                /** @var non-empty-list<string> $secrets */
+                $secrets = json_decode($secretsString, true);
+
+                $oldSecret = getenv('JWT_ID_SECRET');
+                if (is_string($oldSecret)) {
+                    // add old secret at the end of the list not the begining, so it will be accepted in old JWTs
+                    // but not used when creating new ones.
+                    $secrets[] = $oldSecret;
+                }
+            } else {
+                $secret = getenv('JWT_ID_SECRET');
+                \assert(\is_string($secret), 'JWT ID secret must be provided as a string');
+                $secrets = [$secret];
+            }
+
+
+            return new TokenService($secrets);
+        }
     ]);
 };

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Middleware;
 
-use BigGive\Identity\Application\Auth\Token;
+use BigGive\Identity\Application\Auth\TokenService;
 use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,7 +28,8 @@ abstract class PersonAuthMiddleware implements MiddlewareInterface
      */
     #[Pure]
     public function __construct(
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private TokenService $tokenService,
     ) {
     }
 
@@ -49,7 +50,7 @@ abstract class PersonAuthMiddleware implements MiddlewareInterface
             $this->unauthorised($this->logger, true, $request);
         }
 
-        if (!Token::check($personId, $this->getCompletePropertyRequirement(), $jws, $this->logger)) {
+        if (! $this->tokenService->check($personId, $this->getCompletePropertyRequirement(), $jws, $this->logger)) {
             $this->unauthorised($this->logger, false, $request);
         }
 
