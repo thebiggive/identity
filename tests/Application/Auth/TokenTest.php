@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Tests\Application\Auth;
 
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Tests\TestCase;
 use BigGive\Identity\Tests\TestLogger;

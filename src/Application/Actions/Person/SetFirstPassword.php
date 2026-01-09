@@ -4,7 +4,6 @@ namespace BigGive\Identity\Application\Actions\Person;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Domain\DomainException\DuplicateEmailAddressWithPasswordException;

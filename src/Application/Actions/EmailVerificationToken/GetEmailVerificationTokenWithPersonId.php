@@ -4,7 +4,6 @@ namespace BigGive\Identity\Application\Actions\EmailVerificationToken;
 
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\Person\SetFirstPassword;
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Domain\EmailVerificationToken;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;

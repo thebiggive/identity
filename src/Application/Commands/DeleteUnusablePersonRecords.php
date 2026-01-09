@@ -4,7 +4,6 @@ namespace BigGive\Identity\Application\Commands;
 
 use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Person\SetFirstPassword;
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Auth\TokenService;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;

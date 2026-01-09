@@ -2,7 +2,6 @@
 
 namespace BigGive\Identity\IntegrationTests;
 
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Middleware;
 
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Auth\TokenService;
 use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ResponseInterface;

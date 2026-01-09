@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Actions;
 
-use BigGive\Identity\Application\Auth\Token;
 use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Application\Security\AuthenticationException;
 use BigGive\Identity\Application\Security\Password;
