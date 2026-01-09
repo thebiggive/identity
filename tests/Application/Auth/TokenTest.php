@@ -18,9 +18,7 @@ class TokenTest extends TestCase
 
     public function setUp(): void
     {
-        $secret = getenv('JWT_ID_SECRET');
-        \assert(\is_string($secret));
-        $this->tokenService = new TokenService($secret);
+        $this->tokenService = new TokenService(['some_secret', 'old_secret']);
     }
 
     public function tearDown(): void
@@ -39,6 +37,14 @@ class TokenTest extends TestCase
     public function testCheckPassesWhenAllValid(): void
     {
         $token = $this->tokenService->create(new \DateTimeImmutable(), 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
+
+        $this->assertTrue($this->tokenService->check('somePersonId', true, $token, new NullLogger()));
+    }
+
+    public function testCheckPassesWhenValidAgainstAnOlderSecret(): void
+    {
+        $oldTokenService = new TokenService(['old_secret']);
+        $token = $oldTokenService->create(new \DateTimeImmutable(), 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertTrue($this->tokenService->check('somePersonId', true, $token, new NullLogger()));
     }
@@ -94,7 +100,8 @@ class TokenTest extends TestCase
                 [
                 'level' => 'warning',
                 'message' =>
-                    'JWT error: decoding for person ID somePersonId: Firebase\JWT\ExpiredException - Expired token',
+                    'JWT error: decoding for person ID somePersonId: Firebase\JWT\SignatureInvalidException ' .
+                    '- Signature verification failed',
                 'context' => []
                 ]
             ],

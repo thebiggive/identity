@@ -19,7 +19,7 @@ class DeletePersonTest extends IntegrationTest
     {
         $secret = getenv('JWT_ID_SECRET');
         \assert(\is_string($secret));
-        $tokenService = new TokenService($secret);
+        $tokenService = new TokenService([$secret]);
 
         $uuid = $this->addPersonToToDB(
             emailAddress: "someemail" . Uuid::v4() . "@example.com",

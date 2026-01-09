@@ -30,7 +30,7 @@ class UpdateTest extends TestCase
         parent::setUp();
         $secret = getenv('JWT_ID_SECRET');
         \assert(\is_string($secret));
-        $this->tokenService = new TokenService($secret);
+        $this->tokenService = new TokenService([$secret]);
         $this->getContainer()->set(
             EmailVerificationService::class,
             $this->createStub(EmailVerificationService::class)

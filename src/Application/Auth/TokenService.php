@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace BigGive\Identity\Application\Auth;
 
+use Assert\Assertion;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Psr\Log\LoggerInterface;
 
 class TokenService
 {
+    /**
+     * @param non-empty-list<string> $secrets list of secrets used for signing and veryifing JWTs.
+     * The first one is used for signing, and verification will succeed if a token matches any of them.
+     */
     public function __construct(
-        #[\SensitiveParameter] private readonly string $secret
+        #[\SensitiveParameter] private readonly array $secrets
     ) {
+        Assertion::notEmpty($secrets, 'JWT ID secrets must be provided as a non-empty list of strings');
     }
 
     /**
@@ -75,7 +81,7 @@ class TokenService
             'sub' => $personClaims,
         ];
 
-        return JWT::encode($claims, $this->secret, static::$algorithm);
+        return JWT::encode($claims, $this->secrets[0], static::$algorithm);
     }
 
     /**
@@ -88,20 +94,28 @@ class TokenService
      */
     public function check(string $personId, ?bool $complete, string $jws, LoggerInterface $logger): bool
     {
-        $key = new Key($this->secret, static::$algorithm);
-        try {
-            /** @var object{iss: string, sub:object{person_id: string, complete: ?bool}} $decodedJwtBody */
-            $decodedJwtBody = JWT::decode($jws, $key);
-        } catch (\Exception $exception) {
-            $type = get_class($exception);
+        $decodedJwtBody = null;
+        $lastException = null;
+        foreach ($this->secrets as $secret) {
+            $key = new Key($secret, static::$algorithm);
+            try {
+                /** @var object{iss: string, sub:object{person_id: string, complete: ?bool}} $decodedJwtBody */
+                $decodedJwtBody = JWT::decode($jws, $key);
+            } catch (\Exception $exception) {
+                $lastException = $exception;
+            }
+        }
+        if ($decodedJwtBody === null) {
+            \assert($lastException instanceof \Exception);
+            $type = get_class($lastException);
             // This is only a warning for now. We've seen likely crawlers + bots send invalid
             // requests. In the event that we find they are sending partial JWTs (rather than
             // none) and so getting here we might consider further reducing this log to `info()`
             // level so we can spot more serious issues.
-            $logger->warning("JWT error: decoding for person ID $personId: $type - {$exception->getMessage()}");
-
+            $logger->warning("JWT error: decoding for person ID $personId: $type - {$lastException->getMessage()}");
             return false;
         }
+
 
         if ($decodedJwtBody->iss !== getenv('BASE_URI')) {
             $logger->error("JWT error: issued by wrong site {$decodedJwtBody->iss}");

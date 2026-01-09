@@ -20,7 +20,7 @@ class GetPersonTest extends IntegrationTest
 
         $secret = getenv('JWT_ID_SECRET');
         \assert(\is_string($secret));
-        $tokenService = new TokenService($secret);
+        $tokenService = new TokenService([$secret]);
 
         $response = $this->getApp()->handle(new ServerRequest(
             method: 'GET',

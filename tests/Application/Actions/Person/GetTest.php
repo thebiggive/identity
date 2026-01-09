@@ -346,7 +346,7 @@ class GetTest extends TestCase
         return $this->buildRequestRaw($personId)
             ->withHeader(
                 'x-tbg-auth',
-                (new TokenService($secret))->create(
+                (new TokenService([$secret]))->create(
                     new \DateTimeImmutable(),
                     static::$testPersonUuid,
                     true,
