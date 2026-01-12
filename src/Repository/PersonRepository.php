@@ -172,6 +172,15 @@ class PersonRepository extends EntityRepository
         $message->id = UuidV4::fromString($id->toRfc4122());
         $message->deleted = true;
 
+        // required to lookup person in matchbot.
+        $message->stripe_customer_id = $person->stripe_customer_id ??
+            throw new \Exception('Cannot delete person without stripe ID set');
+
+        $message->first_name = 'placeholder-for-non-nullable';
+        $message->last_name = 'placeholder-for-non-nullable';
+        $message->email_address = 'placeholder-for-non-nullable';
+
+
         /**
          * Can be used to check if we deleted a user with a given email address in case of queries. To reproduce in Bash
          * run `echo -n '<email>' | md5sum | cut -c1-3`
