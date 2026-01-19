@@ -310,23 +310,9 @@ return function (ContainerBuilder $containerBuilder) {
             /* @var string|false $secretsString */
             $secretsString = getenv('JWT_ID_SECRETS');
             /** @psalm-suppress RedundantConditionGivenDocblockType - I don't think this is redundant */
-            \assert(is_string($secretsString) || $secretsString === false);
-            if ($secretsString !== false) {
-                /** @var non-empty-list<string> $secrets */
-                $secrets = json_decode($secretsString, true);
-
-                $oldSecret = getenv('JWT_ID_SECRET');
-                if (is_string($oldSecret)) {
-                    // add old secret at the end of the list not the begining, so it will be accepted in old JWTs
-                    // but not used when creating new ones.
-                    $secrets[] = $oldSecret;
-                }
-            } else {
-                $secret = getenv('JWT_ID_SECRET');
-                \assert(\is_string($secret), 'JWT ID secret must be provided as a string');
-                $secrets = [$secret];
-            }
-
+            \assert(is_string($secretsString));
+            /** @var non-empty-list<string> $secrets */
+            $secrets = json_decode($secretsString, true);
 
             return new TokenService($secrets);
         }

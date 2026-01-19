@@ -17,9 +17,11 @@ class GetPersonTest extends IntegrationTest
     {
         $uuid = $this->addPersonToToDB("someemail" . Uuid::v4() . "@example.com")->toRfc4122();
 
-        $secret = getenv('JWT_ID_SECRET');
-        \assert(\is_string($secret));
-        $tokenService = new TokenService([$secret]);
+        $secretsString = getenv('JWT_ID_SECRETS');
+        \assert(\is_string($secretsString));
+        /** @var non-empty-list<string> $secrets */
+        $secrets = \json_decode($secretsString);
+        $tokenService = new TokenService($secrets);
 
         $response = $this->getApp()->handle(new ServerRequest(
             method: 'GET',

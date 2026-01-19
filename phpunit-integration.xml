@@ -19,7 +19,7 @@
   <php>
     <env name="APP_ENV" value="test" force="true" />
     <env name="BASE_URI" value="https://unit-test-fake-id-sub.thebiggivetest.org.uk" force="true"/>
-    <env name="JWT_ID_SECRET" value="unitTestJWTSecret" force="true"/>
+    <env name="JWT_ID_SECRETS" value="[&quot;unitTestJWTSecret&quot;]" force="true"/>
     <env name="MAILER_BASE_URI" value="https://mailer-fake-site.thebiggivetest.org.uk" force="true"/>
     <env name="MAILER_SEND_SECRET" value="Abcdefghijklmnopqrstuvwxyz" force="true"/>
     <env name="MAX_CREATES_PER_IP_PER_5M" value="1" force="true" />
