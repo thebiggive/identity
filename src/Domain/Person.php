@@ -455,27 +455,22 @@ class Person
     }
 
     /**
-     *
      * @psalm-suppress InvalidReturnType - working around new strictly typed stripe library that does not use
-     * either classes or type aliases.
+     *  either classes or type aliases.
      * @psalm-suppress InvalidReturnStatement
      *
      * @return array{
      *     address?: array{
-     *      city?: string, country?: string, line1?: string, line2?: string, postal_code?: string, state?: string
-     *     }|null,
-     *     balance?: int, cash_balance?: array{settings?: array{reconciliation_mode?: string}},
-     *     description?: string, email?: string, expand?: array<array-key, string>, invoice_prefix?: string,
-     *     invoice_settings?: array{custom_fields?: array<array-key, array{name: string, value: string}>|null,
-     *     default_payment_method?: string, footer?: string,
-     *     rendering_options?: array{amount_tax_display?: null|string, template?: string}|null},
-     *     metadata?: \Stripe\StripeObject|null, name?: string, next_invoice_sequence?:
-     *     int, payment_method?: string, phone?: string, preferred_locales?: array<array-key, string>,
-     *     shipping?: array{address: array{city?: string, country?: string, line1?: string, line2?: string,
-     *     postal_code?: string, state?: string}, name: string, phone?: string}|null, source?: string,
-     *     tax?: array{ip_address?: null|string, validate_location?: string}, tax_exempt?: null|string,
+     *       line1: non-empty-string,
+     *       postal_code?: non-empty-string,
+     *       country?: non-empty-string,
+     *     },
+     *     email?: string,
+     *     name?: non-empty-string,
+     *     metadata: array<string, string>,
+     *     test_clock?: string,
+     *     payment_method?: string,
      *     tax_id_data?: array<array-key, array{type: string, value: string}>,
-     *     test_clock?: string, validate?: bool
      * }
      * @throws \Assert\AssertionFailedException
      */
