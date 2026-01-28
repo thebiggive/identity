@@ -312,7 +312,7 @@ return function (ContainerBuilder $containerBuilder) {
             /** @psalm-suppress RedundantConditionGivenDocblockType - I don't think this is redundant */
             \assert(is_string($secretsString));
             /** @var non-empty-list<string> $secrets */
-            $secrets = json_decode($secretsString, true);
+            $secrets = json_decode($secretsString, true, 512, JSON_THROW_ON_ERROR);
 
             return new TokenService($secrets);
         }
