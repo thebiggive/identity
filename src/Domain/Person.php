@@ -379,14 +379,19 @@ class Person
     public function toMatchBotSummaryMessage(): \Messages\Person
     {
         \assert($this->id !== null, 'Person ID must be set to sync to MatchBot');
-        \assert($this->first_name !== null, 'First name must be set to sync to MatchBot');
+        \assert(
+            $this->first_name !== null || $this->is_organisation,
+            'First name must be set to sync to MatchBot for an individual',
+        );
         \assert($this->last_name !== null, 'Last name must be set to sync to MatchBot');
         \assert($this->email_address !== null, 'Email address must be set to sync to MatchBot');
         \assert($this->stripe_customer_id !== null, 'Stripe customer ID must be set to sync to MatchBot');
 
         $message = new \Messages\Person();
         $message->id = UuidV4::fromString($this->id->toRfc4122());
-        $message->first_name = $this->first_name;
+
+        // matchbot ignores this field when is_organisation is true.
+        $message->first_name = $this->first_name ?? 'placeholder-for-non-nullable';
         $message->last_name = $this->last_name;
         $message->email_address = $this->email_address;
         $message->stripe_customer_id = $this->stripe_customer_id;
@@ -487,13 +492,16 @@ class Person
      */
     public function getStripeCustomerParams(): array
     {
-        Assertion::eq(
-            $this->first_name === null,
-            $this->last_name === null,
-            'Names are always both or neither set.'
-        );
+        if (! $this->is_organisation) {
+            Assertion::eq(
+                $this->first_name === null,
+                $this->last_name === null,
+                'Names are always both or neither set.'
+            );
+        }
 
-        $nameSet = $this->first_name !== null && $this->last_name !== null;
+
+        $nameSet = $this->last_name !== null;
         $hasPasswordSince = $this->email_address_verified;
 
         $metadata = [
@@ -505,9 +513,18 @@ class Person
             ])
         ];
 
+        if ($nameSet && ! $this->is_organisation) {
+            Assertion::notNull($this->first_name, 'First name must be set for non-organisations');
+            $nameParam = ['name' => sprintf('%s %s', $this->first_name, $this->last_name)];
+        } elseif ($nameSet) {
+            $nameParam = ['name' => $this->last_name];
+        } else {
+            $nameParam = [];
+        }
+
         $params = [
             'email' => $this->email_address,
-            ...($nameSet ? ['name' => sprintf('%s %s', $this->first_name, $this->last_name)] : []),
+            ...($nameParam),
             'metadata' => $metadata,
         ];
 
