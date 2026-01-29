@@ -41,7 +41,7 @@
         "symfony/serializer": "^6.1",
         "symfony/uid": "^6.1",
         "symfony/validator": "^6.1",
-        "thebiggive/messages": "^3.3.4",
+        "thebiggive/messages": "^3.4.0",
         "zircote/swagger-php": "^4.4.7"
     },
     "require-dev": {
