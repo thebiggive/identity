@@ -293,6 +293,16 @@ class Person
     #[ORM\Column(nullable: true, type: 'datetime_immutable')]
     public ?\DateTimeImmutable $email_address_verified = null;
 
+    /**
+     * Whether this person is an organisation, e.g. a club, association, or company, rather than an individual human.
+     * If false, they will be assumed to be an individual, but as this is historically the default, and we can't fully
+     * control how people sign up for donor accounts, it is not guaranteed.
+     *
+     * If true, the organisation's name should be in the "last_name" field, and the "first_name" should be null.
+     */
+    #[ORM\Column(nullable: true)]
+    public ?bool $is_organisation = false;
+
     /** Always null in prod for now as can't be saved in DB, set to double in tests. */
     private ?Assert\NotCompromisedPasswordValidator $notCompromisedPasswordValidator = null;
 
@@ -383,6 +393,7 @@ class Person
         $message->home_address_line_1 = $this->home_address_line_1;
         $message->home_postcode = $this->home_postcode;
         $message->home_country_code = $this->home_country_code;
+        $message->is_organisation = $this->is_organisation ?? false;
 
         return $message;
     }

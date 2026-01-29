@@ -42,6 +42,7 @@ class GetPersonTest extends IntegrationTest
                 "home_country_code",
                 "home_postcode",
                 "id",
+                "is_organisation",
                 "last_name",
                 "pending_tip_balance",
                 "recently_confirmed_tips_total",
