@@ -364,7 +364,7 @@ class Person
             'recipientEmailAddress' => $this->email_address,
             'forGlobalCampaign' => false,
             'params' => [
-                'donorFirstName' => $this->getFirstName(),
+                'donorFirstName' => $this->getFirstName() ?? $this->getLastName(),
                 'donorEmail' => $this->email_address,
             ],
         ];
