@@ -123,6 +123,7 @@ class Create extends Action
             'recipientEmailAddress' => $emailAddress,
             'params' => [
                 'firstName' => $existingAccount->getFirstName(),
+                'lastName' => $existingAccount->getLastName(),
             ],
         ]);
     }
