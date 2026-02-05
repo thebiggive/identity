@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # This script is taken from https://aws.amazon.com/blogs/security/how-to-manage-secrets-for-amazon-ec2-container-service-based-applications-by-using-amazon-s3-and-docker/
 # and is used to set up app secrets in ECS without exposing them as widely as using ECS env vars directly would.
@@ -17,8 +18,8 @@ composer doctrine:ensure-prod || exit 2
 
 echo "Running migrations before start if necessary..."
 composer doctrine:cache:clear
-composer doctrine:migrate
-composer doctrine:generate-proxies
+composer doctrine:migrate || exit 3
+composer doctrine:generate-proxies || exit 4
 
 echo "Starting task..."
 # Call the normal CLI entry-point script, passing on script name and any other arguments

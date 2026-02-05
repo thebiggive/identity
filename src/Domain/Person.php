@@ -293,6 +293,16 @@ class Person
     #[ORM\Column(nullable: true, type: 'datetime_immutable')]
     public ?\DateTimeImmutable $email_address_verified = null;
 
+    /**
+     * Whether this person is an organisation, e.g. a club, association, or company, rather than an individual human.
+     * If false, they will be assumed to be an individual, but as this is historically the default, and we can't fully
+     * control how people sign up for donor accounts, it is not guaranteed.
+     *
+     * If true, the organisation's name should be in the "last_name" field, and the "first_name" should be null.
+     */
+    #[ORM\Column(nullable: true)]
+    public ?bool $is_organisation = false;
+
     /** Always null in prod for now as can't be saved in DB, set to double in tests. */
     private ?Assert\NotCompromisedPasswordValidator $notCompromisedPasswordValidator = null;
 
@@ -354,7 +364,7 @@ class Person
             'recipientEmailAddress' => $this->email_address,
             'forGlobalCampaign' => false,
             'params' => [
-                'donorFirstName' => $this->getFirstName(),
+                'donorFirstName' => $this->getFirstName() ?? $this->getLastName(),
                 'donorEmail' => $this->email_address,
             ],
         ];
@@ -369,20 +379,26 @@ class Person
     public function toMatchBotSummaryMessage(): \Messages\Person
     {
         \assert($this->id !== null, 'Person ID must be set to sync to MatchBot');
-        \assert($this->first_name !== null, 'First name must be set to sync to MatchBot');
+        \assert(
+            $this->first_name !== null || $this->is_organisation,
+            'First name must be set to sync to MatchBot for an individual',
+        );
         \assert($this->last_name !== null, 'Last name must be set to sync to MatchBot');
         \assert($this->email_address !== null, 'Email address must be set to sync to MatchBot');
         \assert($this->stripe_customer_id !== null, 'Stripe customer ID must be set to sync to MatchBot');
 
         $message = new \Messages\Person();
         $message->id = UuidV4::fromString($this->id->toRfc4122());
-        $message->first_name = $this->first_name;
+
+        // matchbot ignores this field when is_organisation is true.
+        $message->first_name = $this->first_name ?? 'placeholder-for-non-nullable';
         $message->last_name = $this->last_name;
         $message->email_address = $this->email_address;
         $message->stripe_customer_id = $this->stripe_customer_id;
         $message->home_address_line_1 = $this->home_address_line_1;
         $message->home_postcode = $this->home_postcode;
         $message->home_country_code = $this->home_country_code;
+        $message->is_organisation = $this->is_organisation ?? false;
 
         return $message;
     }
@@ -455,39 +471,37 @@ class Person
     }
 
     /**
-     *
      * @psalm-suppress InvalidReturnType - working around new strictly typed stripe library that does not use
-     * either classes or type aliases.
+     *  either classes or type aliases.
      * @psalm-suppress InvalidReturnStatement
      *
      * @return array{
      *     address?: array{
-     *      city?: string, country?: string, line1?: string, line2?: string, postal_code?: string, state?: string
-     *     }|null,
-     *     balance?: int, cash_balance?: array{settings?: array{reconciliation_mode?: string}},
-     *     description?: string, email?: string, expand?: array<array-key, string>, invoice_prefix?: string,
-     *     invoice_settings?: array{custom_fields?: array<array-key, array{name: string, value: string}>|null,
-     *     default_payment_method?: string, footer?: string,
-     *     rendering_options?: array{amount_tax_display?: null|string, template?: string}|null},
-     *     metadata?: \Stripe\StripeObject|null, name?: string, next_invoice_sequence?:
-     *     int, payment_method?: string, phone?: string, preferred_locales?: array<array-key, string>,
-     *     shipping?: array{address: array{city?: string, country?: string, line1?: string, line2?: string,
-     *     postal_code?: string, state?: string}, name: string, phone?: string}|null, source?: string,
-     *     tax?: array{ip_address?: null|string, validate_location?: string}, tax_exempt?: null|string,
+     *       line1: non-empty-string,
+     *       postal_code?: non-empty-string,
+     *       country?: non-empty-string,
+     *     },
+     *     email?: string,
+     *     name?: non-empty-string,
+     *     metadata: array<string, string>,
+     *     test_clock?: string,
+     *     payment_method?: string,
      *     tax_id_data?: array<array-key, array{type: string, value: string}>,
-     *     test_clock?: string, validate?: bool
      * }
      * @throws \Assert\AssertionFailedException
      */
     public function getStripeCustomerParams(): array
     {
-        Assertion::eq(
-            $this->first_name === null,
-            $this->last_name === null,
-            'Names are always both or neither set.'
-        );
+        if (! $this->is_organisation) {
+            Assertion::eq(
+                $this->first_name === null,
+                $this->last_name === null,
+                'Names are always both or neither set.'
+            );
+        }
 
-        $nameSet = $this->first_name !== null && $this->last_name !== null;
+
+        $nameSet = $this->last_name !== null;
         $hasPasswordSince = $this->email_address_verified;
 
         $metadata = [
@@ -499,9 +513,18 @@ class Person
             ])
         ];
 
+        if ($nameSet && ! $this->is_organisation) {
+            Assertion::notNull($this->first_name, 'First name must be set for non-organisations');
+            $nameParam = ['name' => sprintf('%s %s', $this->first_name, $this->last_name)];
+        } elseif ($nameSet) {
+            $nameParam = ['name' => $this->last_name];
+        } else {
+            $nameParam = [];
+        }
+
         $params = [
             'email' => $this->email_address,
-            ...($nameSet ? ['name' => sprintf('%s %s', $this->first_name, $this->last_name)] : []),
+            ...($nameParam),
             'metadata' => $metadata,
         ];
 

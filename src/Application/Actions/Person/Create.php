@@ -170,7 +170,12 @@ class Create extends Action
 
         if ($rawPassword !== '') {
             $hasPassword = true;
-            Assertion::allNotEmpty([$email_address, $person->first_name, $person->last_name]);
+            Assertion::allNotEmpty([$email_address, $person->last_name]);
+
+            if (! $person->is_organisation) {
+                Assertion::notEmpty($person->first_name);
+            }
+
             \assert($email_address !== null); // Psalm can't understand previous line.
 
             $this->assertValidEmailVerificationTokenSupplied(

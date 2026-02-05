@@ -20,10 +20,11 @@ class GetDonationFundsTransferInstructionsTest extends TestCase
         $person = $this->getTestPerson(true);
 
         $app = $this->getAppInstance();
-
-        $secret = getenv('JWT_ID_SECRET');
-        \assert(\is_string($secret));
-        $tokenService = new TokenService([$secret]);
+        $secretsString = getenv('JWT_ID_SECRETS');
+        \assert(\is_string($secretsString));
+        /** @var non-empty-list<string> $secrets */
+        $secrets = \json_decode($secretsString);
+        $tokenService = new TokenService($secrets);
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);
         $personRepoProphecy->find(static::$testPersonUuid)
