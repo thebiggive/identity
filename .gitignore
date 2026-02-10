@@ -8,6 +8,7 @@
 /tests/local-users.php
 # Ignored so that PHP annotations remain the source of truth. Run `composer run docs` to generate.
 docs/openapi.yaml
+/.build-commit-id.php
 
 .env
 /coverage.xml
