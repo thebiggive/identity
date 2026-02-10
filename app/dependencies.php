@@ -60,6 +60,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         CacheItemPoolInterface::class => function (ContainerInterface $c): CacheItemPoolInterface {
+            $commitId = $c->get('commit-id');
+            \assert(is_string($commitId));
+
             $redis = $c->get(Redis::class);
             if ($redis === null) {
                 // Should never happen live except during major infrastructure issues.
@@ -72,7 +75,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new RedisAdapter(
                 $c->get(Redis::class),
                 // Distinguish rate limit data etc. from other apps + use cases.
-                "identity-{$c->get(SettingsInterface::class)->get('appEnv')}",
+                "identity-{$c->get(SettingsInterface::class)->get('appEnv')}-$commitId",
                 3600, // Allow Auto-clearing cache/rate limit data after an hour.
             );
         },
@@ -82,6 +85,8 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getConnection();
         },
+
+        'commit-id' => static fn(ContainerInterface $_c): string => require __DIR__ . "/../.build-commit-id.php",
 
         EntityManagerInterface::class => static function (ContainerInterface $c): EntityManagerInterface {
             if (!Type::hasType('uuid')) {
@@ -95,6 +100,9 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         LoggerInterface::class => function (ContainerInterface $c): LoggerInterface {
+            $commitId = $c->get('commit-id');
+            \assert(is_string($commitId));
+
             $settings = $c->get(SettingsInterface::class);
 
             $loggerSettings = $settings->get('logger');
@@ -106,6 +114,19 @@ return function (ContainerBuilder $containerBuilder) {
 
             $handler = new StreamHandler($loggerSettings['path'], $loggerSettings['level']);
             $logger->pushHandler($handler);
+
+            $logger->pushProcessor(new class ($commitId) implements Monolog\Processor\ProcessorInterface
+            {
+                public function __construct(private string $commit_id)
+                {
+                }
+                #[\Override]
+                public function __invoke(array $record)
+                {
+                    $record['extra']['commit'] = substr($this->commit_id, offset: 0, length: 7);
+                    return $record;
+                }
+            });
 
             return $logger;
         },
