@@ -340,12 +340,15 @@ class GetTest extends TestCase
 
     private function buildRequest(string $personId, bool $withTipBalance = false): ServerRequestInterface
     {
-        $secret = getenv('JWT_ID_SECRET');
-        \assert(\is_string($secret));
+        $secretsString = getenv('JWT_ID_SECRETS');
+        \assert(\is_string($secretsString));
+        /** @var non-empty-list<string> $secrets */
+        $secrets = \json_decode($secretsString);
+
         return $this->buildRequestRaw($personId)
             ->withHeader(
                 'x-tbg-auth',
-                (new TokenService([$secret]))->create(
+                (new TokenService($secrets))->create(
                     new \DateTimeImmutable(),
                     static::$testPersonUuid,
                     true,

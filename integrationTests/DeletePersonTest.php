@@ -16,9 +16,11 @@ class DeletePersonTest extends IntegrationTest
 {
     public function testItDeletesAPersonRecord(): void
     {
-        $secret = getenv('JWT_ID_SECRET');
-        \assert(\is_string($secret));
-        $tokenService = new TokenService([$secret]);
+        $secretsString = getenv('JWT_ID_SECRETS');
+        \assert(\is_string($secretsString));
+        /** @var non-empty-list<string> $secrets */
+        $secrets = \json_decode($secretsString);
+        $tokenService = new TokenService($secrets);
 
         $uuid = $this->addPersonToToDB(
             emailAddress: "someemail" . Uuid::v4() . "@example.com",

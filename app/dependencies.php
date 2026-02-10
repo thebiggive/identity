@@ -236,7 +236,7 @@ return function (ContainerBuilder $containerBuilder) {
         Client\Stripe::class => static function (ContainerInterface $c): Client\Stripe {
             // Both hardcoding the version and using library default - see discussion at
             // https://github.com/thebiggive/matchbot/pull/927/files/5fa930f3eee3b0c919bcc1027319dc7ae9d0be05#diff-c4fef49ee08946228bb39de898c8770a1a6a8610fc281627541ec2e49c67b118
-            \assert(ApiVersion::CURRENT === '2025-04-30.basil');
+            \assert(ApiVersion::CURRENT === '2025-12-15.clover');
 
             $settings = $c->get(SettingsInterface::class);
             \assert($settings instanceof SettingsInterface);
@@ -310,23 +310,9 @@ return function (ContainerBuilder $containerBuilder) {
             /* @var string|false $secretsString */
             $secretsString = getenv('JWT_ID_SECRETS');
             /** @psalm-suppress RedundantConditionGivenDocblockType - I don't think this is redundant */
-            \assert(is_string($secretsString) || $secretsString === false);
-            if ($secretsString !== false) {
-                /** @var non-empty-list<string> $secrets */
-                $secrets = json_decode($secretsString, true);
-
-                $oldSecret = getenv('JWT_ID_SECRET');
-                if (is_string($oldSecret)) {
-                    // add old secret at the end of the list not the begining, so it will be accepted in old JWTs
-                    // but not used when creating new ones.
-                    $secrets[] = $oldSecret;
-                }
-            } else {
-                $secret = getenv('JWT_ID_SECRET');
-                \assert(\is_string($secret), 'JWT ID secret must be provided as a string');
-                $secrets = [$secret];
-            }
-
+            \assert(is_string($secretsString));
+            /** @var non-empty-list<string> $secrets */
+            $secrets = json_decode($secretsString, true, 512, JSON_THROW_ON_ERROR);
 
             return new TokenService($secrets);
         }

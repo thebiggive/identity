@@ -27,9 +27,12 @@ class UpdateTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $secret = getenv('JWT_ID_SECRET');
-        \assert(\is_string($secret));
-        $this->tokenService = new TokenService([$secret]);
+        $secretsString = getenv('JWT_ID_SECRETS');
+        \assert(\is_string($secretsString));
+        /** @var non-empty-list<string> $secrets */
+        $secrets = \json_decode($secretsString);
+
+        $this->tokenService = new TokenService($secrets);
         $this->getContainer()->set(
             EmailVerificationService::class,
             $this->createStub(EmailVerificationService::class)
