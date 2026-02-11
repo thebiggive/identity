@@ -5,9 +5,9 @@ namespace BigGive\Identity\Application\Commands;
 use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Person\SetFirstPassword;
 use BigGive\Identity\Application\Auth\TokenService;
+use BigGive\Identity\Client;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
-use Stripe\StripeClient;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,7 +24,7 @@ class DeleteUnusablePersonRecords extends Command
     public function __construct(
         private Connection $connection,
         private \DateTimeImmutable $now,
-        private StripeClient $stripeClient,
+        private Client\Stripe $stripeClient,
         private LoggerInterface $logger,
     ) {
         parent::__construct();
