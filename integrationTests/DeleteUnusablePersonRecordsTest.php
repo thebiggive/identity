@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
-use Stripe\StripeClient;
+use BigGive\Identity\Client;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Uid\UuidV4;
 
@@ -21,7 +21,7 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
     private \DateTimeImmutable $now;
     private UuidV4 $personId;
     private string $randomEmail;
-    /** @var ObjectProphecy<StripeClient> */
+    /** @var ObjectProphecy<Client\Stripe> */
     private ObjectProphecy $stripeClientProphecy;
     private TestLogger $logger;
     private CommandTester $commandTester;
@@ -37,7 +37,7 @@ class DeleteUnusablePersonRecordsTest extends IntegrationTest
         $this->randomEmail = 'test_delete_unusable' . random_int(1, 1_000_000) . '@thebiggivetest.co.uk';
         $this->logger = new TestLogger();
 
-        $this->stripeClientProphecy = $this->prophesize(StripeClient::class);
+        $this->stripeClientProphecy = $this->prophesize(Client\Stripe::class);
 
         $this->commandTester = new CommandTester(new DeleteUnusablePersonRecords(
             $this->connection,
