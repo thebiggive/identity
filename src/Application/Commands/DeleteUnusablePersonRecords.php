@@ -63,7 +63,7 @@ class DeleteUnusablePersonRecords extends Command
             Assertion::string($id);
 
             if ($stripeCustomerId !== null) {
-                $this->detatchAllPaymentCardsForCustomer($stripeCustomerId);
+                $this->detatchAllPaymentCardsForCustomerIfStillExists($stripeCustomerId);
             }
 
             // check for password and limit below should not be necessary, as it's impossible to set a password
@@ -89,7 +89,7 @@ class DeleteUnusablePersonRecords extends Command
         return 0;
     }
 
-    private function detatchAllPaymentCardsForCustomer(string $stripeCustomerId): void
+    private function detatchAllPaymentCardsForCustomerIfStillExists(string $stripeCustomerId): void
     {
         // implementation copied from Matchbot's DeleteStalePaymentDetails which I'm planning to delete
         // in the next days. Not a problem if both systems are doing this for now.
@@ -99,11 +99,23 @@ class DeleteUnusablePersonRecords extends Command
 
         $iteratorPageSize = 100;
 
-        $paymentMethods = $this->stripeClient->paymentMethods->all([
-            'customer' => $stripeCustomerId,
-            'type' => 'card',
-            'limit' => $iteratorPageSize,
-        ]);
+        try {
+            $paymentMethods = $this->stripeClient->paymentMethods->all([
+                'customer' => $stripeCustomerId,
+                'type' => 'card',
+                'limit' => $iteratorPageSize,
+            ]);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            if ($e->getHttpStatus() === 404) { // 'No such customer' has HTTP 404.
+                $this->logger->info(sprintf(
+                    'Stripe customer %s not found when trying to detach payment methods, probably already deleted',
+                    $stripeCustomerId,
+                ));
+                return;
+            }
+
+            throw $e;
+        }
 
         foreach ($paymentMethods->autoPagingIterator() as $paymentMethod) {
             $this->logger->info(sprintf(
