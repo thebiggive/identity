@@ -27,7 +27,7 @@ class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInter
         return [Person::class => true,];
     }
 
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         $data = $this->normalizer->normalize($object, $format, $context);
 
@@ -42,7 +42,7 @@ class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInter
         return $data;
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null): bool
     {
         return $data instanceof Person;
     }

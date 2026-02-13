@@ -76,9 +76,10 @@ class Login extends Action
      */
     protected function action(Request $request, array $args): Response
     {
+        $body = ((string) $request->getBody());
         try {
             $credentials = $this->serializer->deserialize(
-                $body = ((string) $request->getBody()),
+                $body,
                 Credentials::class,
                 'json',
             );

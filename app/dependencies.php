@@ -21,8 +21,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use GuzzleHttp\Client as GuzzleClient;
-use LosMiddleware\RateLimit\RateLimitMiddleware;
-use LosMiddleware\RateLimit\RateLimitOptions;
+use Los\RateLimit\RateLimitMiddleware;
+use Los\RateLimit\RateLimitOptions;
 use Mezzio\ProblemDetails\ProblemDetailsResponseFactory;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -257,7 +257,7 @@ return function (ContainerBuilder $containerBuilder) {
         Client\Stripe::class => static function (ContainerInterface $c): Client\Stripe {
             // Both hardcoding the version and using library default - see discussion at
             // https://github.com/thebiggive/matchbot/pull/927/files/5fa930f3eee3b0c919bcc1027319dc7ae9d0be05#diff-c4fef49ee08946228bb39de898c8770a1a6a8610fc281627541ec2e49c67b118
-            \assert(ApiVersion::CURRENT === '2025-12-15.clover');
+            \assert(ApiVersion::CURRENT === '2026-01-28.clover');
 
             $settings = $c->get(SettingsInterface::class);
             \assert($settings instanceof SettingsInterface);

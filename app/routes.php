@@ -17,7 +17,7 @@ use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PlainCaptchaMiddleware;
-use LosMiddleware\RateLimit\RateLimitMiddleware;
+use Los\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

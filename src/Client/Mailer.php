@@ -49,7 +49,7 @@ class Mailer
                 ));
                 return false;
             }
-        } catch (GuzzleException | RequestException $ex) {
+        } catch (RequestException $ex) {
             $this->logger->error(sprintf(
                 '%s email exception %s with error code %s: %s. Body: %s',
                 $requestBody['templateKey'],
@@ -57,6 +57,16 @@ class Mailer
                 $ex->getCode(),
                 $ex->getMessage(),
                 $ex->getResponse() ? $ex->getResponse()->getBody() : 'N/A',
+            ));
+            return false;
+        } catch (GuzzleException $ex) {
+            $this->logger->error(sprintf(
+                '%s email exception %s with error code %s: %s. Body: %s',
+                $requestBody['templateKey'],
+                get_class($ex),
+                $ex->getCode(),
+                $ex->getMessage(),
+                'N/A',
             ));
             return false;
         }

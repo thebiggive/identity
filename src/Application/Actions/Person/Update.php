@@ -101,9 +101,10 @@ class Update extends Action
         // `has_password` on the person object is only set when the Normalizer's run.
         $hasPassword = $person->getPasswordHash() !== null;
 
+        $body = ((string) $request->getBody());
         try {
             $this->serializer->deserialize(
-                $body = ((string) $request->getBody()),
+                $body,
                 Person::class,
                 'json',
                 [
