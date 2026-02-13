@@ -81,7 +81,7 @@ class TokenService
             'sub' => $personClaims,
         ];
 
-        return JWT::encode($claims, $this->secrets[0], static::$algorithm);
+        return JWT::encode($claims, $this->secrets[0], self::$algorithm);
     }
 
     /**
@@ -97,7 +97,7 @@ class TokenService
         $decodedJwtBody = null;
         $lastException = null;
         foreach ($this->secrets as $secret) {
-            $key = new Key($secret, static::$algorithm);
+            $key = new Key($secret, self::$algorithm);
             try {
                 /** @var object{iss: string, sub:object{person_id: string, complete: ?bool}} $decodedJwtBody */
                 $decodedJwtBody = JWT::decode($jws, $key);
