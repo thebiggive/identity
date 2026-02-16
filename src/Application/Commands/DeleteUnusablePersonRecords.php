@@ -114,6 +114,14 @@ class DeleteUnusablePersonRecords extends Command
                 return;
             }
 
+            $this->logger->warning(sprintf(
+                'DUPR: Unexpected Stripe API error code %d for Stripe customer %s, %s: %s',
+                $e->getHttpStatus() ?? -1,
+                $stripeCustomerId,
+                get_class($e),
+                $e->getMessage(),
+            ));
+
             throw $e;
         }
 
