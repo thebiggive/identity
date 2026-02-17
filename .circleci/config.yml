@@ -14,7 +14,7 @@ jobs:
     # generation-dependent tests to work.
     working_directory: /var/www/html
     docker:
-      - image: thebiggive/php:dev-8.3
+      - image: thebiggive/php:dev-8.5
         auth:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN

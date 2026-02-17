@@ -16,8 +16,8 @@ class PersonCaptchaMiddleware extends CaptchaMiddleware
 
         $captchaCode = '';
 
-        /** @var Person $person */
         try {
+            /** @var Person $person */
             $person = $this->serializer->deserialize(
                 $body,
                 Person::class,

@@ -2,3 +2,10 @@ parameters:
   level: 4
   paths:
     - src
+  universalObjectCratesClasses:
+    - Stripe\StripeObject
+  ignoreErrors:
+#		Allow unused params if name starts with _
+    - '#PasswordResetToken::\$id is never read#'
+    - '#\EmailVerificationToken::\$id is never read#'
+
