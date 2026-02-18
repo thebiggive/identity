@@ -7,6 +7,7 @@ namespace BigGive\Identity\Tests\Application\Actions;
 use BigGive\Identity\Application\Actions\ActionPayload;
 use BigGive\Identity\Tests\TestCase;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,7 +41,7 @@ class StatusTest extends TestCase
         $connectionProphecy = $this->prophesize(Connection::class);
         $connectionProphecy->getNativeConnection()
             ->shouldBeCalledOnce()
-            ->willThrow(new \Doctrine\DBAL\Exception\ConnectionException());
+            ->willThrow(new ConnectionException('Server went away'));
 
         $entityManagerProphecy = $this->prophesize(EntityManagerInterface::class);
         $entityManagerProphecy->getConnection()->shouldBeCalledOnce()->willReturn($connectionProphecy->reveal());
