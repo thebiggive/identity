@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions;
 
 use BigGive\Identity\Domain\DomainException\DomainRecordNotFoundException;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -16,27 +16,10 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-/**
- * @OA\Info(title="Big Give Identity service", version="1.0.0"),
- * @OA\Server(
- *     description="Staging",
- *     url="https://identity-staging.thebiggivetest.org.uk",
- * ),
- * @OA\SecurityScheme(
- *     securityScheme="personJWT",
- *     type="apiKey",
- *     in="header",
- *     name="x-tbg-auth",
- * ),
- * @OA\SecurityScheme(
- *      securityScheme="captcha",
- *      type="apiKey",
- *      in="header",
- *      name="x-captcha-code",
- *  ),
- *
- * Swagger Hub doesn't (yet?) support `"bearerFormat": "JWT"`.
- */
+#[OA\Info(title: 'Big Give Identity service', version: '1.0.0')]
+#[OA\Server(description: 'Staging', url: 'https://identity-staging.thebiggivetest.org.uk')]
+#[OA\SecurityScheme(securityScheme: 'personJWT', type: 'apiKey', in: 'header', name: 'x-tbg-auth')]
+#[OA\SecurityScheme(securityScheme: 'captcha', type: 'apiKey', in: 'header', name: 'x-captcha-code')]
 abstract class Action
 {
     public function __construct(protected readonly LoggerInterface $logger)

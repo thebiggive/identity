@@ -10,7 +10,7 @@ use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Domain\Credentials;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -20,43 +20,28 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
-/**
- * @OA\Post(
- *     path="/v1/auth",
- *     summary="Log in to get a token for authenticated Identity and MatchBot calls",
- *     operationId="authenticate",
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/Credentials"),
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Authenticated",
- *         @OA\JsonContent(
- *          format="object",
- *          example={
- *              "jwt": "some.token.123",
- *          },
- *         ),
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Invalid or missing data",
- *         @OA\JsonContent(
- *          format="object",
- *          example={
- *              "error": {
- *                  "description": "The error details",
- *              },
- *          },
- *         ),
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Authentication failed",
- *     ),
- * )
- */
+#[OA\Post(
+    path: '/v1/auth',
+    summary: 'Log in to get a token for authenticated Identity and MatchBot calls',
+    operationId: 'authenticate',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(ref: '#/components/schemas/Credentials'),
+    ),
+    responses: [
+        new OA\Response(
+            response: 200,
+            description: 'Authenticated',
+            content: new OA\JsonContent(format: 'object', example: ['jwt' => 'some.token.123']),
+        ),
+        new OA\Response(
+            response: 400,
+            description: 'Invalid or missing data',
+            content: new OA\JsonContent(format: 'object', example: ['error' => ['description' => 'The error details']]),
+        ),
+        new OA\Response(response: 401, description: 'Authentication failed'),
+    ],
+)]
 class Login extends Action
 {
     public function __construct(

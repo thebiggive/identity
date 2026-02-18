@@ -42,18 +42,18 @@
         "symfony/uid": "^6.1",
         "symfony/validator": "^6.1",
         "thebiggive/messages": "^3.4.0",
-        "zircote/swagger-php": "^4.4.7"
+        "zircote/swagger-php": "^5.8.2"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
         "jetbrains/phpstorm-attributes": "^1.0",
-        "squizlabs/php_codesniffer": "^4.0",
         "phpspec/prophecy-phpunit": "^2.2",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.6",
         "psalm/plugin-phpunit": "^0.19.2",
         "roave/security-advisories": "dev-latest",
+        "squizlabs/php_codesniffer": "^4.0",
         "vimeo/psalm": "^6.15.1",
         "weirdan/doctrine-psalm-plugin": "^2.9"
     },
