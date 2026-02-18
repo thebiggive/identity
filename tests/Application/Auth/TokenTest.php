@@ -17,7 +17,10 @@ class TokenTest extends TestCase
 
     public function setUp(): void
     {
-        $this->tokenService = new TokenService(['some_secret', 'old_secret']);
+        $this->tokenService = new TokenService([
+            'some_secret_must_be_32_chars_lng',
+            'old_secret_must_be_32_chars_long',
+        ]);
     }
 
     public function tearDown(): void
@@ -42,7 +45,7 @@ class TokenTest extends TestCase
 
     public function testCheckPassesWhenValidAgainstAnOlderSecret(): void
     {
-        $oldTokenService = new TokenService(['old_secret']);
+        $oldTokenService = new TokenService(['old_secret_must_be_32_chars_long']);
         $token = $oldTokenService->create(new \DateTimeImmutable(), 'somePersonId', true, 'cus_aaaaaaaaaaaa11');
 
         $this->assertTrue($this->tokenService->check('somePersonId', true, $token, new NullLogger()));
