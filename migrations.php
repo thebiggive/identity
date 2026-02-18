@@ -12,7 +12,7 @@ return [
     ],
 
     'migrations_paths' => [
-        'BigGive\Identity\Migrations' => '/src/Migrations',
+        'BigGive\Identity\Migrations' => './src/Migrations',
     ],
 
     'all_or_nothing' => true,

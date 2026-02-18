@@ -15,6 +15,7 @@ use BigGive\Identity\Monolog\Processor\AwsTraceIdProcessor;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
@@ -93,8 +94,18 @@ return function (ContainerBuilder $containerBuilder) {
                 Type::addType('uuid', UuidType::class);
             }
 
+            $connectionParams = $c->get(SettingsInterface::class)->get('doctrine')['connection'];
+
+            // DBAL needs schema filter to not incorrectly include migrations table as if it's ORM managed.
+            // See https://github.com/doctrine/migrations/issues/1406
+            $dbalConfig = new \Doctrine\DBAL\Configuration();
+            $dbalConfig->setSchemaAssetsFilter(
+                static fn (string|AbstractAsset $assetName): bool =>
+                    (is_string($assetName) ? $assetName : $assetName->getObjectName()) !== 'doctrine_migration_versions'
+            );
+
             return new EntityManager(
-                DriverManager::getConnection($c->get(SettingsInterface::class)->get('doctrine')['connection']),
+                DriverManager::getConnection($connectionParams, $dbalConfig),
                 $c->get(ORM\Configuration::class),
             );
         },
@@ -166,6 +177,7 @@ return function (ContainerBuilder $containerBuilder) {
             $config->setMetadataDriverImpl(
                 new AttributeDriver($doctrineSettings['metadata_dirs']),
             );
+
 
             // Note that we *don't* use a result cache for this app, for both functional and security
             // reasons:

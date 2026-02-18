@@ -84,23 +84,24 @@
             "BigGive\\Identity\\IntegrationTests\\": "integrationTests/"
         }
     },
+    "bin": ["bin/doctrine"],
     "scripts": {
         "docs": "openapi --output docs/openapi.yaml src",
         "doctrine:cache:clear": [
-            "doctrine orm:clear-cache:metadata",
-            "doctrine orm:clear-cache:query",
-            "doctrine orm:clear-cache:result"
+            "./bin/doctrine orm:clear-cache:metadata",
+            "./bin/doctrine orm:clear-cache:query",
+            "./bin/doctrine orm:clear-cache:result"
         ],
         "doctrine:delete-and-recreate": [
-            "doctrine orm:schema-tool:drop --full-database --force",
+            "./bin/doctrine orm:schema-tool:drop --full-database --force",
             "@doctrine:migrate",
             "./identity identity:populate-test-users"
         ],
-        "doctrine:ensure-prod": "doctrine orm:ensure-production-settings",
+        "doctrine:ensure-prod": "./bin/doctrine orm:ensure-production-settings",
         "doctrine:migrate": "doctrine-migrations migrate --no-interaction --allow-no-migration",
         "doctrine:migrate:diff": ["@doctrine:cache:clear", "doctrine-migrations diff"],
         "doctrine:migrate:generate": "doctrine-migrations generate",
-        "doctrine:validate": ["@doctrine:cache:clear", "doctrine orm:validate-schema"],
+        "doctrine:validate": ["@doctrine:cache:clear", "./bin/doctrine orm:validate-schema"],
         "sa:check": "vendor/bin/phpstan # todo - introduce psalm also when Psalm 7 is released with PHP 8.5 support",
         "sa:check:inc-baseline-ignored": "vendor/bin/psalm --show-info=true --output-format=by-issue-level",
         "lint:check": "phpcs --standard=phpcs.xml -s .",
