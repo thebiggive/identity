@@ -97,7 +97,6 @@
             "./identity identity:populate-test-users"
         ],
         "doctrine:ensure-prod": "doctrine orm:ensure-production-settings",
-        "doctrine:generate-proxies": "doctrine orm:generate-proxies",
         "doctrine:migrate": "doctrine-migrations migrate --no-interaction --allow-no-migration",
         "doctrine:migrate:diff": ["@doctrine:cache:clear", "doctrine-migrations diff"],
         "doctrine:migrate:generate": "doctrine-migrations generate",
