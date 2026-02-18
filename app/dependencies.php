@@ -159,9 +159,9 @@ return function (ContainerBuilder $containerBuilder) {
                 $cache,
             );
 
-            // Turn off auto-proxies in ECS envs, where we explicitly generate them on startup entrypoint and cache all
-            // files indefinitely.
-            $config->setAutoGenerateProxyClasses($doctrineSettings['dev_mode']);
+            // Enable PHP 8.4+ native lazy objects - no proxy file generation needed.
+            // This is required in Doctrine ORM 4.0+.
+            $config->enableNativeLazyObjects(true);
 
             $config->setMetadataDriverImpl(
                 new AttributeDriver($doctrineSettings['metadata_dirs']),
