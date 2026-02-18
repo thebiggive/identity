@@ -35,7 +35,7 @@ class PasswordResetToken
     #[JoinColumn(name: 'person', referencedColumnName: 'id', onDelete: 'CASCADE')]
     public readonly Person $person;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $used = null;
 
     private function __construct(Person $person, Uuid $secret)
