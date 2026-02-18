@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
@@ -24,10 +24,11 @@
         "doctrine/orm": "^2.12",
         "firebase/php-jwt": "^6.3",
         "guzzlehttp/guzzle": "^7.5",
-        "los/los-rate-limit": "^3.3",
+        "laminas/laminas-diactoros": "^3.8",
+        "los/los-rate-limit": "dev-master",
         "middlewares/client-ip": "^2.0",
         "monolog/monolog": "^2.6",
-        "php-di/php-di": "^6.4",
+        "php-di/php-di": "^7.0",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.14",
         "stripe/stripe-php": "^v19.2.0",
@@ -52,11 +53,15 @@
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.6",
-        "psalm/plugin-phpunit": "^0.18",
+        "psalm/plugin-phpunit": "^0.19.2",
         "roave/security-advisories": "dev-latest",
-        "vimeo/psalm": "^5.25.0",
+        "vimeo/psalm": "^6.15.1",
         "weirdan/doctrine-psalm-plugin": "^2.9"
     },
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/thebiggive/LosRateLimit"
+    }],
     "config": {
         "optimize-autoloader": true,
         "process-timeout": 0,
@@ -66,7 +71,7 @@
             "cweagans/composer-patches": true
         },
         "platform": {
-            "php": "8.3.1"
+            "php": "8.5.2"
         }
     },
     "autoload": {
@@ -98,7 +103,7 @@
         "doctrine:migrate:diff": ["@doctrine:cache:clear", "doctrine-migrations diff"],
         "doctrine:migrate:generate": "doctrine-migrations generate",
         "doctrine:validate": ["@doctrine:cache:clear", "doctrine orm:validate-schema"],
-        "sa:check": "vendor/bin/psalm",
+        "sa:check": "vendor/bin/phpstan # todo - introduce psalm also when Psalm 7 is released with PHP 8.5 support",
         "sa:check:inc-baseline-ignored": "vendor/bin/psalm --show-info=true --output-format=by-issue-level",
         "lint:check": "phpcs --standard=phpcs.xml -s .",
         "lint:fix": "phpcbf --standard=phpcs.xml -s .",

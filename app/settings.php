@@ -16,7 +16,7 @@ return function (ContainerBuilder $containerBuilder) {
 
             $doctrineConnectionOptions = [];
             if (getenv('APP_ENV') !== 'local') {
-                $doctrineConnectionOptions[PDO::MYSQL_ATTR_SSL_CA]
+                $doctrineConnectionOptions[\Pdo\Mysql::ATTR_SSL_CA]
                     = dirname(__DIR__) . '/deploy/rds-ca-eu-west-1-bundle.pem';
             }
 
