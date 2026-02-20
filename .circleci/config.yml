@@ -53,8 +53,6 @@ jobs:
 
       - run: composer run sa:check
 
-      - run: composer run doctrine:generate-proxies
-
       - run: composer run test
 
       - run: composer run doctrine:migrate

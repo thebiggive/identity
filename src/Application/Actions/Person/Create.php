@@ -17,13 +17,12 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Stripe\Exception\ApiErrorException;
-use Stripe\Service\CustomerService;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -32,41 +31,32 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
 /**
- *  // phpcs:disable -- OpenAPI needs long lines for good descriptions .
- * @OA\Post(
- *     path="/v1/people",
- *     summary="Create a new Person record, initially with no password. If they want to login again they will need to set a password later.",
- *     operationId="person_create",
- *     @OA\RequestBody(
- *         description="All details needed to register a Person, including valid captcha_code",
- *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/Person")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Registered",
- *         @OA\JsonContent(ref="#/components/schemas/Person"),
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Invalid or missing data",
- *         @OA\JsonContent(
- *          format="object",
- *          example={
- *              "error": {
- *                  "description": "The error details",
- *              }
- *          },
- *         ),
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Captcha verification failed",
- *     ),
- * ),
- *  // phpcs:enable
  * @see Person
  */
+#[OA\Post(
+    path: '/v1/people',
+    summary: 'Create a new Person record, initially with no password. ' .
+        'If they want to login again they will need to set a password later.',
+    operationId: 'person_create',
+    requestBody: new OA\RequestBody(
+        description: 'All details needed to register a Person, including valid captcha_code',
+        required: true,
+        content: new OA\JsonContent(ref: '#/components/schemas/Person'),
+    ),
+    responses: [
+        new OA\Response(
+            response: 200,
+            description: 'Registered',
+            content: new OA\JsonContent(ref: '#/components/schemas/Person'),
+        ),
+        new OA\Response(
+            response: 400,
+            description: 'Invalid or missing data',
+            content: new OA\JsonContent(format: 'object', example: ['error' => ['description' => 'The error details']]),
+        ),
+        new OA\Response(response: 401, description: 'Captcha verification failed'),
+    ],
+)]
 class Create extends Action
 {
     public function __construct(

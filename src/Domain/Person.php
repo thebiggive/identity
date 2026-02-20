@@ -8,10 +8,9 @@ use Assert\Assertion;
 use BigGive\Identity\Application\Security\AuthenticationException;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Client\Mailer;
-use BigGive\Identity\Domain\Normalizers\HasPasswordNormalizer;
 use BigGive\Identity\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Ramsey\Uuid\Rfc4122\UuidV4;
 use Random\Randomizer;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -29,30 +28,28 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *
  * @psalm-suppress PossiblyUnusedProperty - properties are used in FE after this is serialised.
  *
- * @OA\Schema(
- *  description="Person – initially anonymous. To be login-ready, first_name,
- *  last_name, email_address and password are required.",
- *
- *   @OA\Property(
- *   property="secretNumber",
- *   description="Secret six digit number required when creating the user with a password or setting password for first time to prove access to email",
- *   type="string",
- *   nullable=true,
- *   ),
- *
- *   @OA\Property(
- *   property="has_password",
- *   description="Whether or not the person has ever set a password. Person records without passwords set are auto-deleted unless a paassword is set shortly after",
- *   type="bool",
- *   ),
- * )
- * // phpcs:enable
  * @see Credentials
  */
 #[ORM\Table(name: 'Person')]
 #[ORM\Index(name: 'email_and_password', columns: ['email_address', 'password'])]
 #[ORM\Entity(repositoryClass: PersonRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[OA\Schema(
+    description: 'Person – initially anonymous. To be login-ready, first_name, last_name, email_address and password are required.',
+    properties: [
+        new OA\Property(
+            property: 'secretNumber',
+            description: 'Secret six digit number required when creating the user with a password or setting password for first time to prove access to email',
+            type: 'string',
+            nullable: true,
+        ),
+        new OA\Property(
+            property: 'has_password',
+            description: 'Whether or not the person has ever set a password. Person records without passwords set are auto-deleted unless a password is set shortly after',
+            type: 'bool',
+        ),
+    ],
+)]
 class Person
 {
     use TimestampsTrait;

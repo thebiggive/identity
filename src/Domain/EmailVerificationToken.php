@@ -20,7 +20,7 @@ class EmailVerificationToken
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = null;
 
-    #[ORM\Column()]
+    #[ORM\Column(type: 'datetime_immutable')]
     public \DateTimeImmutable $created_at;
 
     #[ORM\Column()]

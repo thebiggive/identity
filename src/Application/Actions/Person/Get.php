@@ -9,7 +9,7 @@ use BigGive\Identity\Client\Stripe;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -22,35 +22,34 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @OA\Get(
- *     path="/v1/people/{personId}",
- *     @OA\PathParameter(
- *         name="personId",
- *         description="UUID of the person",
- *         @OA\Schema(
- *             type="string",
- *             format="uuid",
- *             example="f7095caf-7180-4ddf-a212-44bacde69066",
- *             pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
- *         ),
- *     ),
- *     summary="Get a Person",
- *     operationId="person_get",
- *     security={
- *         {"personJWT": {}}
- *     },
- *     @OA\Response(
- *         response=200,
- *         description="Person found",
- *         @OA\JsonContent(ref="#/components/schemas/Person")
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="JWT token verification failed",
- *     ),
- * ),
  * @see Person
  */
+#[OA\Get(
+    path: '/v1/people/{personId}',
+    summary: 'Get a Person',
+    operationId: 'person_get',
+    security: [['personJWT' => []]],
+    parameters: [
+        new OA\PathParameter(
+            name: 'personId',
+            description: 'UUID of the person',
+            schema: new OA\Schema(
+                type: 'string',
+                format: 'uuid',
+                example: 'f7095caf-7180-4ddf-a212-44bacde69066',
+                pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+            ),
+        ),
+    ],
+    responses: [
+        new OA\Response(
+            response: 200,
+            description: 'Person found',
+            content: new OA\JsonContent(ref: '#/components/schemas/Person'),
+        ),
+        new OA\Response(response: 401, description: 'JWT token verification failed'),
+    ],
+)]
 class Get extends Action
 {
     /**
