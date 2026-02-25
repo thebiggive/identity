@@ -12,7 +12,7 @@ use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use BigGive\Identity\Client;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -26,32 +26,36 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * They will get both encoded in a link when they make a donation.
  *
- * @OA\Post(
- *     path="/v1/people/setFirstPassword",
- *     summary="Set a password for a previously anonymous person account",
- *     @OA\RequestBody(
- *         description="",
- *         required=true,
- *         @OA\JsonContent(
- *              @OA\Property(property="personUuid", type="string", example="7bb10832-1acd-11f0-8cc1-836914a6fa41"),
- *              @OA\Property(property="secret", type="string", example="654321"),
- *              @OA\Property(property="password", type="string", example="correct horse battery staple"),
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Password changed",
- *         @OA\JsonContent(),
- *     ),
- *      @OA\Response(
- *         response=400,
- *         description="Returned if the new password is bad (e.g. too short), or it the secret token is
- * invalid or expired",
- *         @OA\JsonContent(),
- *     ),
- * ),
  * @link https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk
  */
+#[OA\Post(
+    path: '/v1/people/setFirstPassword',
+    summary: 'Set a password for a previously anonymous person account',
+    requestBody: new OA\RequestBody(
+        description: '',
+        required: true,
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'personUuid',
+                    type: 'string',
+                    example: '7bb10832-1acd-11f0-8cc1-836914a6fa41',
+                ),
+                new OA\Property(property: 'secret', type: 'string', example: '654321'),
+                new OA\Property(property: 'password', type: 'string', example: 'correct horse battery staple'),
+            ],
+        ),
+    ),
+    responses: [
+        new OA\Response(response: 200, description: 'Password changed', content: new OA\JsonContent()),
+        new OA\Response(
+            response: 400,
+            description: 'Returned if the new password is bad (e.g. too short), ' .
+                'or if the secret token is invalid or expired',
+            content: new OA\JsonContent(),
+        ),
+    ],
+)]
 class SetFirstPassword extends Action
 {
     public function __construct(
@@ -61,7 +65,7 @@ class SetFirstPassword extends Action
         private EmailVerificationTokenRepository $emailVerificationTokenRepository,
         private Mailer $mailerClient,
         private Client\Stripe $stripeClient,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($logger);
     }
@@ -87,9 +91,9 @@ class SetFirstPassword extends Action
             );
         }
 
-        $uuid = (string) ($requestBody["personUuid"] ?? throw new HttpBadRequestException($request));
-        $secret = (string) ($requestBody["secret"] ?? throw new HttpBadRequestException($request));
-        $newPassword = (string) ($requestBody["password"] ?? throw new HttpBadRequestException($request));
+        $uuid = (string)($requestBody["personUuid"] ?? throw new HttpBadRequestException($request));
+        $secret = (string)($requestBody["secret"] ?? throw new HttpBadRequestException($request));
+        $newPassword = (string)($requestBody["password"] ?? throw new HttpBadRequestException($request));
 
         $person = $this->personRepository->find($uuid);
         if ($person === null || $person->email_address === null) {

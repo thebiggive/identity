@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain;
 
 use JsonSerializable;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @OA\Schema(
- *  required={"email_address", "raw_password"},
- *  description="Model representing a login attempt; not ORM-backed but the values should correspond to a Person",
- * )
  * @see Person
  */
+#[OA\Schema(
+    required: ['email_address', 'raw_password'],
+    description: 'Model representing a login attempt; not ORM-backed but the values should correspond to a Person',
+)]
 class Credentials implements JsonSerializable
 {
     /**
