@@ -18,9 +18,6 @@ if [ -n "$JWT_ID_SECRETS" ]; then
   export JWT_ID_SECRETS=$(echo "$JWT_ID_SECRETS" | base64 -d)
 fi
 
-# Make Doctrine check it's set up right, inc. using a real, persistent-across-runs cache e.g. Redis.
-composer doctrine:ensure-prod || exit 2
-
 # This is a bit hack-y because on a deploy that includes a new migration, several containers may be in
 # a race to try to run it. However because migrations are versioned and run transactionally, and we
 # call Doctrine with `--allow-no-migration`, it *should* be safe and subsequent instances' attempts to
