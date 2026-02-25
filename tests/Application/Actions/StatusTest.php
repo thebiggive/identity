@@ -62,12 +62,11 @@ class StatusTest extends TestCase
     private function getConnectedMockEntityManager(): EntityManagerInterface
     {
         $config = ORM\ORMSetup::createAttributeMetadataConfiguration(
-            ['/var/www/html/src/Domain'],
-            false, // Simulate live mode for these tests.
-            '/var/www/html/var/doctrine/proxies',
+            paths: ['/var/www/html/src/Domain'],
+            isDevMode: false, // Simulate live mode for these tests.
             // For now, we want this class's tests to pass without covering Redis cache simulation
             // » use the Array in-memory cache.
-            new ArrayAdapter(),
+            cache: new ArrayAdapter(),
         );
 
         // Enable native lazy objects - no proxy generation needed with PHP 8.4+.

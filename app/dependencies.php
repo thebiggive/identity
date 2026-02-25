@@ -164,10 +164,9 @@ return function (ContainerBuilder $containerBuilder) {
             $doctrineSettings = $settings->get('doctrine');
 
             $config = ORM\ORMSetup::createAttributeMetadataConfiguration(
-                $doctrineSettings['metadata_dirs'],
-                $doctrineSettings['dev_mode'],
-                $doctrineSettings['cache_dir'] . '/proxies',
-                $cache,
+                paths: $doctrineSettings['metadata_dirs'],
+                isDevMode: $doctrineSettings['dev_mode'],
+                cache: $cache,
             );
 
             // Enable PHP 8.4+ native lazy objects - no proxy file generation needed.
