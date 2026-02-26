@@ -99,10 +99,13 @@ return function (ContainerBuilder $containerBuilder) {
             // DBAL needs schema filter to not incorrectly include migrations table as if it's ORM managed.
             // See https://github.com/doctrine/migrations/issues/1406
             $dbalConfig = new \Doctrine\DBAL\Configuration();
-            $dbalConfig->setSchemaAssetsFilter(
-                static fn (string|AbstractAsset $assetName): bool =>
-                    (is_string($assetName) ? $assetName : $assetName->getObjectName()) !== 'doctrine_migration_versions'
-            );
+            // Only set schema assets filter for ORM schema tool commands, not for migrations
+            if (getenv('DOCTRINE_ORM_SCHEMA_TOOL')) {
+                $dbalConfig->setSchemaAssetsFilter(
+                    static fn (string|AbstractAsset $asset): bool =>
+                        (is_string($asset) ? $asset : $asset->getObjectName()) !== 'doctrine_migration_versions'
+                );
+            }
 
             return new EntityManager(
                 DriverManager::getConnection($connectionParams, $dbalConfig),
