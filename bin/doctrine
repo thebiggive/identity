@@ -8,8 +8,8 @@ use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Psr\Container\ContainerInterface;
 
-// Distinguish from Doctrine Migrations
-putenv('DOCTRINE_ORM_SCHEMA_TOOL=1');
+/** Distinguish from Doctrine Migrations */
+const RUNNING_DOCTRINE_ORM_SCHEMA_TOOL = true;
 
 /** @var ContainerInterface $container */
 $container = require __DIR__ . '/../bootstrap.php';
