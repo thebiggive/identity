@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BigGive\Identity\Application\Actions;
 
 use BigGive\Identity\Client\Stripe;
-use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -72,6 +71,15 @@ class GetDonationFundsTransferInstructions extends Action
                 'currency' => (string)($request->getQueryParams()['currency'] ?? 'gbp'),
             ],
         );
+
+        // Bizarrely it does seem that sort_code is they key name which contains both account_number and actual
+        // sort_code, per https://docs.stripe.com/payments/customer-balance/funding-instructions?bt-region-tabs=uk&dashboard-or-api=funding-instructions-api&country=uk
+        $this->logger->info(sprintf(
+            'Got funding instructions for Stripe customer %s: account number %s and sort code %s',
+            $person->stripe_customer_id,
+            $instructions->bank_transfer->financial_addresses[0]->sort_code->account_number,
+            $instructions->bank_transfer->financial_addresses[0]->sort_code->sort_code,
+        ));
 
         return new JsonResponse($instructions);
     }
