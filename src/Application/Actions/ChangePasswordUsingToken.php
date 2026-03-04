@@ -14,9 +14,6 @@ use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @link https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk
- */
 #[OA\Post(
     path: '/v1/change-forgotten-password',
     summary: 'Change a forgotten password using a password reset token',

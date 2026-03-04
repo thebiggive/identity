@@ -25,8 +25,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * the secret email verification token code {@see EmailVerificationToken}, and the UUID of the account.
  *
  * They will get both encoded in a link when they make a donation.
- *
- * @link https://stripe.com/docs/payments/customer-balance/funding-instructions?bt-region-tabs=uk
  */
 #[OA\Post(
     path: '/v1/people/setFirstPassword',
