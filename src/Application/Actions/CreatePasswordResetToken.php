@@ -8,7 +8,7 @@ use BigGive\Identity\Domain\PasswordResetToken;
 use BigGive\Identity\Repository\PasswordResetTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -16,37 +16,36 @@ use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- *  @OA\Post(
- *     path="/v1/password-reset-token",
- *     summary="Create a password reset token",
- *     operationId="password_reset_token_create",
- *     security={
- *         {"captcha": {}}
- *     },
- *     @OA\RequestBody(
- *         description="",
- *         required=true,
- *         @OA\JsonContent(
- *              @OA\Property(property="email_address", type="string", example="fred@example.com"),
- *        )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Token created and emailed to user, if they exist, which the server does
- * not confirm or deny via http",
- *         @OA\JsonContent(),
- *        ),
- *     @OA\Response(
- *         response=400,
- *         description="Email address is invalid, e.g. doesn't create @ sign. The absence of this
- * error doesn't mean the email is registered with us or exists, just that the format looks OK..",
- *         @OA\JsonContent(),
- *        )
- *     )
- *   )
- * )
- */
+#[OA\Post(
+    path: '/v1/password-reset-token',
+    summary: 'Create a password reset token',
+    operationId: 'password_reset_token_create',
+    security: [['captcha' => []]],
+    requestBody: new OA\RequestBody(
+        description: '',
+        required: true,
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'email_address', type: 'string', example: 'fred@example.com'),
+            ],
+        ),
+    ),
+    responses: [
+        new OA\Response(
+            response: 200,
+            description: 'Token created and emailed to user, if they exist, ' .
+                'which the server does not confirm or deny via http',
+            content: new OA\JsonContent(),
+        ),
+        new OA\Response(
+            response: 400,
+            description: "Email address is invalid, e.g. doesn't contain @ sign. " .
+                "The absence of this error doesn't mean the email is registered with us or exists, " .
+                "just that the format looks OK.",
+            content: new OA\JsonContent(),
+        ),
+    ],
+)]
 class CreatePasswordResetToken extends Action
 {
     public function __construct(

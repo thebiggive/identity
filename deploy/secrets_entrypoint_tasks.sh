@@ -18,13 +18,9 @@ if [ -n "$JWT_ID_SECRETS" ]; then
   export JWT_ID_SECRETS=$(echo "$JWT_ID_SECRETS" | base64 -d)
 fi
 
-# Make Doctrine check it's set up right, inc. using a real, persistent-across-runs cache e.g. Redis.
-composer doctrine:ensure-prod || exit 2
-
 echo "Running migrations before start if necessary..."
 composer doctrine:cache:clear
 composer doctrine:migrate || exit 3
-composer doctrine:generate-proxies || exit 4
 
 echo "Starting task..."
 # Call the normal CLI entry-point script, passing on script name and any other arguments

@@ -11,7 +11,7 @@ use BigGive\Identity\Client;
 use BigGive\Identity\Domain\Person;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\TextResponse;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -25,53 +25,52 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
 /**
- * @OA\Put(
- *     path="/v1/people/{personId}",
- *     @OA\PathParameter(
- *         name="personId",
- *         description="UUID of the person to update",
- *         @OA\Schema(
- *             type="string",
- *             format="uuid",
- *             example="f7095caf-7180-4ddf-a212-44bacde69066",
- *             pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
- *         ),
- *     ),
- *     summary="Update a Person, e.g. to set name and email address - but may not be used to set or change a password",
- *     operationId="person_update",
- *     security={
- *         {"personJWT": {}}
- *     },
- *     @OA\RequestBody(
- *         description="All details needed to register a Person",
- *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/Person")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Registered",
- *         @OA\JsonContent(ref="#/components/schemas/Person"),
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Invalid or missing data",
- *         @OA\JsonContent(
- *          format="object",
- *          example={
- *              "error": {
- *                  "type": "DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD",
- *                  "description": "The error details",
- *              }
- *          },
- *         ),
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="JWT token verification failed",
- *     ),
- * ),
  * @see Person
  */
+#[OA\Put(
+    path: '/v1/people/{personId}',
+    summary: 'Update a Person, e.g. to set name and email address - but may not be used to set or change a password',
+    operationId: 'person_update',
+    security: [['personJWT' => []]],
+    parameters: [
+        new OA\PathParameter(
+            name: 'personId',
+            description: 'UUID of the person to update',
+            schema: new OA\Schema(
+                type: 'string',
+                format: 'uuid',
+                example: 'f7095caf-7180-4ddf-a212-44bacde69066',
+                pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+            ),
+        ),
+    ],
+    requestBody: new OA\RequestBody(
+        description: 'All details needed to register a Person',
+        required: true,
+        content: new OA\JsonContent(ref: '#/components/schemas/Person'),
+    ),
+    responses: [
+        new OA\Response(
+            response: 200,
+            description: 'Registered',
+            content: new OA\JsonContent(ref: '#/components/schemas/Person'),
+        ),
+        new OA\Response(
+            response: 400,
+            description: 'Invalid or missing data',
+            content: new OA\JsonContent(
+                format: 'object',
+                example: [
+                    'error' => [
+                        'type' => 'DUPLICATE_EMAIL_ADDRESS_WITH_PASSWORD',
+                        'description' => 'The error details',
+                    ],
+                ],
+            ),
+        ),
+        new OA\Response(response: 401, description: 'JWT token verification failed'),
+    ],
+)]
 class Update extends Action
 {
     public function __construct(

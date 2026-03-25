@@ -11,9 +11,7 @@ use DI\Container;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Exception\HttpBadRequestException;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Uid\UuidV4;
 
 class ChangePasswordWithTokenTest extends TestCase
 {
@@ -27,7 +25,7 @@ class ChangePasswordWithTokenTest extends TestCase
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
         $passwordResetToken = PasswordResetToken::random($person);
-        $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
+        $passwordResetToken->created_at = new \DateTimeImmutable("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
         $passwordResetTokenProphecy->persist($passwordResetToken)->shouldBeCalled();
 
@@ -63,7 +61,7 @@ class ChangePasswordWithTokenTest extends TestCase
         $person = new Person();
 
         $passwordResetToken = PasswordResetToken::random($person);
-        $passwordResetToken->created_at = new \DateTime("62 minutes ago");
+        $passwordResetToken->created_at = new \DateTimeImmutable("62 minutes ago");
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
 
@@ -97,7 +95,7 @@ class ChangePasswordWithTokenTest extends TestCase
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
         $passwordResetToken = PasswordResetToken::random($person);
-        $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
+        $passwordResetToken->created_at = new \DateTimeImmutable("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
         $passwordResetTokenProphecy->persist($passwordResetToken)->shouldBeCalled();
 
@@ -138,7 +136,7 @@ class ChangePasswordWithTokenTest extends TestCase
 
         $passwordResetTokenProphecy = $this->prophesize(PasswordResetTokenRepository::class);
         $passwordResetToken = PasswordResetToken::random($person);
-        $passwordResetToken->created_at = new \DateTime("59 minutes ago"); // almost expired
+        $passwordResetToken->created_at = new \DateTimeImmutable("59 minutes ago"); // almost expired
         $passwordResetTokenProphecy->findForUse($secret)->willReturn($passwordResetToken);
 
         $personRepoProphecy = $this->prophesize(PersonRepository::class);

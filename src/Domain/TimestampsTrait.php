@@ -12,17 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 trait TimestampsTrait
 {
-    /**
-     * @var \DateTimeInterface
-     */
-    #[ORM\Column(type: 'datetime')]
-    public \DateTimeInterface $created_at;
+    #[ORM\Column(type: 'datetime_immutable')]
+    public \DateTimeImmutable $created_at;
 
-    /**
-     * @var \DateTimeInterface
-     */
-    #[ORM\Column(type: 'datetime')]
-    public \DateTimeInterface $updated_at;
+    #[ORM\Column(type: 'datetime_immutable')]
+    public \DateTimeImmutable $updated_at;
 
     #[ORM\PrePersist]
     final public function createdNow(): void
@@ -35,6 +29,6 @@ trait TimestampsTrait
     #[ORM\PreUpdate]
     public function updatedNow(): void
     {
-        $this->updated_at = new \DateTime('now');
+        $this->updated_at = new \DateTimeImmutable('now');
     }
 }

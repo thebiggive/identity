@@ -1,29 +1,15 @@
-From f04ad1b5481dd8291153b25ecc274c95c4704be2 Mon Sep 17 00:00:00 2001
-From: Barney Laurance <barney@thebiggive.org.uk>
-Date: Fri, 28 Feb 2025 15:07:45 +0000
-Subject: [PATCH] Do the fix
+--- a/vendor/doctrine/dbal/src/Schema/AbstractSchemaManager.php
++++ b/vendor/doctrine/dbal/src/Schema/AbstractSchemaManager.php
+@@ -1344,6 +1344,12 @@ abstract class AbstractSchemaManager
 
----
- src/Schema/AbstractSchemaManager.php | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/src/Schema/AbstractSchemaManager.php b/src/Schema/AbstractSchemaManager.php
-index 2e38bb8..ab53887 100644
---- a/src/Schema/AbstractSchemaManager.php
-+++ b/src/Schema/AbstractSchemaManager.php
-@@ -1478,6 +1478,12 @@ abstract class AbstractSchemaManager
- 
          $indexes = [];
          foreach ($result as $indexKey => $data) {
 +            // Fix for https://github.com/doctrine/dbal/issues/5306
-+            // adapted from fix by  Junaid Farooq at https://github.com/doctrine/dbal/pull/6811
++            // adapted from fix by Junaid Farooq at https://github.com/doctrine/dbal/pull/6811
 +            if (! isset($data['columns'][0])) {
 +                continue;
 +            }
 +            //
-             $index            = null;
-             $defaultPrevented = false;
- 
--- 
-2.43.0
-
+             $indexes[$indexKey] = new Index(
+                 $data['name'],
+                 $data['columns'],

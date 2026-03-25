@@ -41,7 +41,7 @@ class FriendlyCaptchaVerifier
         $statusCode = $response->getStatusCode();
         $responseContent = $response->getBody()->getContents();
 
-        if ($statusCode  !== 200) {
+        if ($statusCode !== 200) {
             // we can log part of the secret for debugging so we can see which one its using without exposing the whole
             // secret.
             $secretEndsWith = substr($this->secret, -3);
