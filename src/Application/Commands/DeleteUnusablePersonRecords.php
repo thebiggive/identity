@@ -106,9 +106,9 @@ class DeleteUnusablePersonRecords extends Command
                 'limit' => $iteratorPageSize,
             ]);
         } catch (\Stripe\Exception\ApiErrorException $e) {
-            if ($e->getHttpStatus() === 404) { // 'No such customer' has HTTP 404.
+            if ($e->getHttpStatus() === 400) { // 'No such customer' has HTTP 400 in context of GET /v1/payment_methods.
                 $this->logger->info(sprintf(
-                    'Stripe customer %s not found when trying to detach payment methods, probably already deleted',
+                    'Stripe customer %s not found when trying to detach payment methods, already deleted or stub',
                     $stripeCustomerId,
                 ));
                 return;
