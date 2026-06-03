@@ -99,7 +99,7 @@ class TokenService
         foreach ($this->secrets as $secret) {
             $key = new Key($secret, self::$algorithm);
             try {
-                /** @var object{iss: string, sub:object{person_id: string, complete: ?bool}} $decodedJwtBody */
+                /** @var object{iss: string, sub:object{person_id: string, complete: ?bool}}&\stdClass $decodedJwtBody */
                 $decodedJwtBody = JWT::decode($jws, $key);
             } catch (\Exception $exception) {
                 $lastException = $exception;

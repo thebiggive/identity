@@ -18,7 +18,7 @@ class EmailVerificationToken
     #[ORM\Id]
     #[ORM\Column(type: 'integer', unique: true)]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    private ?int $id = null;
+    private ?int $id = null; // @phpstan-ignore property.unusedType (may be useful for manual queries)
 
     #[ORM\Column(type: 'datetime_immutable')]
     public \DateTimeImmutable $created_at;
@@ -46,7 +46,6 @@ class EmailVerificationToken
     ): self {
         $randomizer ??= new Randomizer();
         $code = $randomizer->getBytesFromString('0123456789', 6);
-        \assert(is_string($code));
 
         Assertion::email($emailAddress);
 
