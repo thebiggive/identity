@@ -38,6 +38,10 @@ class Status extends Action
      */
     protected function action(Request $request, array $args): Response
     {
+        if (getenv('APP_ENV') !== 'production' && isset($request->getQueryParams()['issue-warning-please'])) {
+            trigger_error('Testing how we handle warnings, you asked to issue-warning-please', E_USER_WARNING);
+        }
+
         /** @var string|null $errorMessage */
         $errorMessage = null;
 
