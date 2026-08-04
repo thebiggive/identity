@@ -20,7 +20,7 @@ class PopulateUsers extends Command
         parent::__construct();
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         if (getenv('APP_ENV') !== 'local') {
             throw new \Exception('Populate users command is for local dev environments only');
