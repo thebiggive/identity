@@ -272,7 +272,7 @@ return function (ContainerBuilder $containerBuilder) {
         Client\Stripe::class => static function (ContainerInterface $c): Client\Stripe {
             // Both hardcoding the version and using library default - see discussion at
             // https://github.com/thebiggive/matchbot/pull/927/files/5fa930f3eee3b0c919bcc1027319dc7ae9d0be05#diff-c4fef49ee08946228bb39de898c8770a1a6a8610fc281627541ec2e49c67b118
-            \assert(ApiVersion::CURRENT === '2026-01-28.clover');
+            \assert(ApiVersion::CURRENT === '2026-02-25.clover');
 
             $settings = $c->get(SettingsInterface::class);
             \assert($settings instanceof SettingsInterface);
