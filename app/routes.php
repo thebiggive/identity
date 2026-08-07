@@ -8,6 +8,7 @@ use BigGive\Identity\Application\Actions\EmailVerificationToken\GetEmailVerifica
 use BigGive\Identity\Application\Actions\GetDonationFundsTransferInstructions;
 use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
+use BigGive\Identity\Application\Actions\LoginOrGetToken;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\EmailVerificationToken;
 use BigGive\Identity\Application\Actions\Status;
@@ -61,6 +62,9 @@ return function (App $app) {
 
         $versionGroup->post('/auth', Login::class)
             ->add(CredentialsCaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+
+        $versionGroup->post('/auth-or-get-token', LoginOrGetToken::class)
+            ->add(CredentialsCaptchaMiddleware::class);
 
         $versionGroup->post(
             '/password-reset-token',
