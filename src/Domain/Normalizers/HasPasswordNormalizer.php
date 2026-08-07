@@ -5,26 +5,27 @@ declare(strict_types=1);
 namespace BigGive\Identity\Domain\Normalizers;
 
 use BigGive\Identity\Domain\Person;
+use Override;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInterface
+readonly class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInterface
 {
     /**
      * @psalm-suppress PossiblyUnusedMethod - called by PHP-DI
      */
-    public function __construct(private readonly PropertyNormalizer $normalizer)
+    public function __construct(private PropertyNormalizer $normalizer)
     {
     }
 
     /**
      * @psalm-suppress PossiblyUnusedMethod - called by Symfony Serializer.
      */
-    public function getSupportedTypes(): array
+    public function getSupportedTypes(?string $format): array
     {
-        return [Person::class => true,];
+        return [Person::class => true];
     }
 
     public function normalize(mixed $object, ?string $format = null, array $context = []): array
@@ -42,11 +43,13 @@ class HasPasswordNormalizer implements NormalizerInterface, SerializerAwareInter
         return $data;
     }
 
-    public function supportsNormalization(mixed $data, ?string $format = null): bool
+    #[Override]
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Person;
     }
 
+    #[Override]
     public function setSerializer(SerializerInterface $serializer): void
     {
         $this->normalizer->setSerializer($serializer);

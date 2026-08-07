@@ -80,6 +80,7 @@ class Create extends Action
         }
 
         $emailAddress = (string)($requestBody["emailAddress"] ?? throw new HttpBadRequestException($request));
+        $regularGiving = (bool)($requestBody['regularGiving'] ?? false);
 
         $existingAccount = $this->personRepository->findPasswordEnabledPersonByEmailAddress($emailAddress);
 
@@ -92,9 +93,9 @@ class Create extends Action
         }
 
         if ($existingAccount) {
-            $this->sendEmailThatAccountAlreadyRegistered($emailAddress, $existingAccount);
+            $this->sendEmailThatAccountAlreadyRegistered($emailAddress, $existingAccount, $regularGiving);
         } else {
-            $this->persistAndSendToken($token, $emailAddress);
+            $this->persistAndSendToken($token, $emailAddress, $regularGiving);
         }
 
         $this->em->flush();
@@ -102,12 +103,15 @@ class Create extends Action
         return new JsonResponse([], 201);
     }
 
-    private function persistAndSendToken(EmailVerificationToken $token, string $emailAddress): void
+    private function persistAndSendToken(EmailVerificationToken $token, string $emailAddress, bool $regularGiving): void
     {
         $this->em->persist($token);
 
+        $templateKey = $regularGiving ?
+            'new-account-email-verification-regular-giving' : 'new-account-email-verification';
+
         $this->mailer->sendEmail([
-            'templateKey' => 'new-account-email-verification',
+            'templateKey' => $templateKey,
             'recipientEmailAddress' => $emailAddress,
             'params' => [
                 'secretCode' => $token->random_code
@@ -115,10 +119,16 @@ class Create extends Action
         ]);
     }
 
-    private function sendEmailThatAccountAlreadyRegistered(string $emailAddress, Person $existingAccount): void
-    {
+    private function sendEmailThatAccountAlreadyRegistered(
+        string $emailAddress,
+        Person $existingAccount,
+        bool $regularGiving
+    ): void {
+        $templateKey = $regularGiving ?
+            'new-account-email-already-registered-regular-giving' : 'new-account-email-already-registered';
+
         $this->mailer->sendEmail([
-            'templateKey' => 'new-account-email-already-registered',
+            'templateKey' => $templateKey,
             'recipientEmailAddress' => $emailAddress,
             'params' => [
                 'firstName' => $existingAccount->getFirstName(),

@@ -36,15 +36,15 @@ $commands = [
         $personRepository,
     ),
     new DeleteUnusablePersonRecords(
-            connection: $connection,
-            now: $now,
-            stripeClient: $stripeClient,
-            logger: $logger
+        connection: $connection,
+        now: $now,
+        stripeClient: $stripeClient,
+        logger: $logger
     ),
 ];
 
 foreach ($commands as $command) {
-    $cliApp->add($command);
+    $cliApp->addCommand($command);
 }
 
 $cliApp->run();
