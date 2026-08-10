@@ -112,7 +112,7 @@ class LoginOrGetToken extends Action
 
 
         // assuming that didn't return either:
-        $this->fail(Password::BAD_LOGIN_MESSAGE);
+        return $this->fail(Password::BAD_LOGIN_MESSAGE);
     }
 
     private function fail(string $message): Response
