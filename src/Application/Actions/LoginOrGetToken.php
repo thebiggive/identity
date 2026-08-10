@@ -6,6 +6,8 @@ use BigGive\Identity\Application\Auth\TokenService;
 use BigGive\Identity\Application\Security\AuthenticationException;
 use BigGive\Identity\Application\Security\Password;
 use BigGive\Identity\Domain\Credentials;
+use BigGive\Identity\Domain\EmailVerificationToken;
+use BigGive\Identity\Repository\EmailVerificationTokenRepository;
 use BigGive\Identity\Repository\PersonRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -31,11 +33,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class LoginOrGetToken extends Action
 {
     public function __construct(
+        private readonly \DateTimeImmutable $now,
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly TokenService $tokenService,
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
+        private EmailVerificationTokenRepository $emailVerificationTokenRepository,
     ) {
         parent::__construct($logger);
     }
@@ -52,6 +56,7 @@ class LoginOrGetToken extends Action
 
         $body = ((string) $request->getBody());
         try {
+            /** @var Credentials $credentials */
             $credentials = $this->serializer->deserialize(
                 $body,
                 Credentials::class,
@@ -108,10 +113,26 @@ class LoginOrGetToken extends Action
             ]);
         }
 
-        // @todo add copy of code from GetEmailVerificationNoPersonId including return if found.
+        $oldestAllowedTokenCreationDate = EmailVerificationToken::oldestCreationDateForViewingToken($this->now);
 
+        $token = $this->emailVerificationTokenRepository->findToken(
+            email_address: $credentials->email_address,
+            tokenSecret: $credentials->raw_password,
+            createdSince: $oldestAllowedTokenCreationDate
+        );
 
-        // assuming that didn't return either:
+        if ($token) {
+            return new JsonResponse([
+                'token' => [
+                    'valid' => true,
+                    'email_address' => $token->email_address,
+                    'first_name' => null,
+                    'last_name' => null,
+                ]
+            ]);
+        }
+
+        // since that didn't find anything either either:
         return $this->fail(Password::BAD_LOGIN_MESSAGE);
     }
 
