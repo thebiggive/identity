@@ -108,6 +108,7 @@ class LoginOrGetToken extends Action
             return new JsonResponse([
                 'id' => $id,
                 'jwt' => $this->tokenService->create(new \DateTimeImmutable(), $id, true, $person->stripe_customer_id),
+                'type' => 'jwt',
             ]);
         }
 
@@ -121,6 +122,7 @@ class LoginOrGetToken extends Action
 
         if ($token) {
             return new JsonResponse([
+                'type' => 'emailVerificationToken',
                 'token' => [
                     'valid' => true,
                     'email_address' => $token->email_address,
