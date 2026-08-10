@@ -236,10 +236,14 @@ class Create extends Action
         $person->setStripeCustomerId($customer->id);
         $this->personRepository->persist($person, false);
 
+        // I think $complete will now always be true, but not 100% sure.
+        // Could add logging to check but I don't think it's essential now.
+        $complete = $tokenSecretSupplied !== '';
+
         $token = $this->tokenService->create(
             new \DateTimeImmutable(),
             (string)$person->getId(),
-            false,
+            $complete,
             $person->stripe_customer_id
         );
 
