@@ -40,7 +40,8 @@ use TypeError;
         'If they want to login again they will need to set a password later.',
     operationId: 'person_create',
     requestBody: new OA\RequestBody(
-        description: 'All details needed to register a Person, including valid captcha_code or secretNumber (email verification code)',
+        description: 'All details needed to register a Person, including valid captcha_code or secretNumber ' .
+        '(email verification code)',
         required: true,
         content: new OA\JsonContent(ref: '#/components/schemas/Person'),
     ),
@@ -178,7 +179,8 @@ class Create extends Action
             $person->email_address_verified = $this->now;
             $person->raw_password = $rawPassword;
         } else {
-            // as we didn't require them to supply an email verification token here we must verify a captcha code instead.
+            // as we didn't require them to supply an email verification token here we must verify a captcha code
+            // instead.
             $this->friendlyCaptchaVerifier->verify($person->captcha_code);
             $hasPassword = false;
             Assertion::null($person->raw_password);
