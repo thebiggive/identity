@@ -182,10 +182,7 @@ class Create extends Action
             // as we didn't require them to supply an email verification token here we must verify a captcha code
             // instead.
             if (! $this->friendlyCaptchaVerifier->verify($person->captcha_code)) {
-                return $this->validationError(
-                    logMessage: "Captcha missing or invalid for creating person",
-                    publicMessage: 'Sorry, there was an error with the CAPTCHA and we could not create your account.',
-                );
+                throw new HttpBadRequestException($request, 'CAPTCHA verification error');
             }
             $hasPassword = false;
             Assertion::null($person->raw_password);
