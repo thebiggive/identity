@@ -40,7 +40,7 @@ use TypeError;
         'If they want to login again they will need to set a password later.',
     operationId: 'person_create',
     requestBody: new OA\RequestBody(
-        description: 'All details needed to register a Person, including valid captcha_code',
+        description: 'All details needed to register a Person, including valid captcha_code or secretNumber (email verification code)',
         required: true,
         content: new OA\JsonContent(ref: '#/components/schemas/Person'),
     ),
