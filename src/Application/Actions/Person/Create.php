@@ -77,6 +77,40 @@ class Create extends Action
         parent::__construct($logger);
     }
 
+    private function checkEmailTokenOrCaptchaValid(
+        bool $hasPassword,
+        ?string $email_address,
+        Person $person,
+        string $tokenSecretSupplied,
+        Request $request,
+        string $rawPassword
+    ): void {
+        if ($hasPassword) {
+            Assertion::allNotEmpty([$email_address, $person->last_name]);
+
+            if (!$person->is_organisation) {
+                Assertion::notEmpty($person->first_name);
+            }
+
+            \assert($email_address !== null); // Psalm can't understand previous line.
+
+            $this->assertValidEmailVerificationTokenSupplied(
+                email_address: $email_address,
+                tokenSecretSupplied: $tokenSecretSupplied,
+                request: $request
+            );
+            $person->email_address_verified = $this->now;
+            $person->raw_password = $rawPassword;
+        } else {
+            // as we didn't require them to supply an email verification token here we must verify a captcha code
+            // instead.
+            if (!$this->friendlyCaptchaVerifier->verify($person->captcha_code)) {
+                throw new HttpBadRequestException($request, 'CAPTCHA verification error');
+            }
+            Assertion::null($person->raw_password);
+        }
+    }
+
     public function assertValidEmailVerificationTokenSupplied(
         string $email_address,
         string $tokenSecretSupplied,
@@ -161,32 +195,16 @@ class Create extends Action
 
         $rawPassword = (string) ($requestBody['raw_password'] ?? null);
 
-        if ($rawPassword !== '') {
-            $hasPassword = true;
-            Assertion::allNotEmpty([$email_address, $person->last_name]);
+        $hasPassword = $rawPassword !== '';
 
-            if (! $person->is_organisation) {
-                Assertion::notEmpty($person->first_name);
-            }
-
-            \assert($email_address !== null); // Psalm can't understand previous line.
-
-            $this->assertValidEmailVerificationTokenSupplied(
-                email_address: $email_address,
-                tokenSecretSupplied: $tokenSecretSupplied,
-                request: $request
-            );
-            $person->email_address_verified = $this->now;
-            $person->raw_password = $rawPassword;
-        } else {
-            // as we didn't require them to supply an email verification token here we must verify a captcha code
-            // instead.
-            if (! $this->friendlyCaptchaVerifier->verify($person->captcha_code)) {
-                throw new HttpBadRequestException($request, 'CAPTCHA verification error');
-            }
-            $hasPassword = false;
-            Assertion::null($person->raw_password);
-        }
+        $this->checkEmailTokenOrCaptchaValid(
+            hasPassword: $hasPassword,
+            email_address: $email_address,
+            person: $person,
+            tokenSecretSupplied: $tokenSecretSupplied,
+            request: $request,
+            rawPassword: $rawPassword
+        );
 
         if ($this->settings->get('friendly_captcha')['bypass']) {
             $person->skipCaptchaPresenceValidation();
