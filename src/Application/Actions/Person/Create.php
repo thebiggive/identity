@@ -8,6 +8,7 @@ use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Application\Auth\TokenService;
+use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Client\Stripe;
@@ -62,6 +63,7 @@ class Create extends Action
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
+        private readonly FriendlyCaptchaVerifier $friendlyCaptchaVerifier,
         private readonly SerializerInterface $serializer,
         private readonly SettingsInterface $settings,
         private readonly Stripe $stripeClient,
@@ -176,6 +178,8 @@ class Create extends Action
             $person->email_address_verified = $this->now;
             $person->raw_password = $rawPassword;
         } else {
+            // as we didn't require them to supply an email verification token here we must verify a captcha code instead.
+            $this->friendlyCaptchaVerifier->verify($person->captcha_code);
             $hasPassword = false;
             Assertion::null($person->raw_password);
         }
