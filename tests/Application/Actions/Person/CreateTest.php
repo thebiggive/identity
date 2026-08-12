@@ -72,6 +72,69 @@ class CreateTest extends TestCase
         $this->assertObjectNotHasProperty('password', $payload);
     }
 
+    public function testFailingCaptcha(): void
+    {
+        $this->expectException(HttpUnauthorizedException::class);
+        $this->expectExceptionMessage('Unauthorised');
+
+        $person = $this->getTestPerson();
+
+        $app = $this->getAppInstance();
+        $this->getContainer()->set(
+            FriendlyCaptchaVerifier::class,
+            new class extends FriendlyCaptchaVerifier {
+                public function __construct()
+                {
+                }
+                public function verify(string $solution): bool
+                {
+                    return false;
+                }
+            }
+        );
+
+        $entityManagerProphecy = $this->prophesize(EntityManagerInterface::class);
+        $entityManagerProphecy->persist(Argument::type(Person::class))->shouldNotBeCalled();
+        $entityManagerProphecy->flush()->shouldNotBeCalled();
+
+        $this->getContainer()->set(EntityManagerInterface::class, $entityManagerProphecy->reveal());
+
+        $request = $this->buildRequest([
+            'first_name' => $person->first_name,
+            'last_name' => $person->last_name,
+            'raw_password' => $person->raw_password,
+            'email_address' => $person->email_address,
+            'captcha_code' => 'bad response',
+        ]);
+
+        $app->handle($request);
+    }
+
+    public function testMissingCaptcha(): void
+    {
+        $this->expectException(HttpUnauthorizedException::class);
+        $this->expectExceptionMessage('Unauthorised');
+
+        $person = $this->getTestPerson();
+
+        $app = $this->getAppInstance();
+
+        $personRepoProphecy = $this->prophesize(PersonRepository::class);
+        $personRepoProphecy->persist(Argument::type(Person::class), false)
+            ->shouldNotBeCalled();
+
+        $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
+
+        $request = $this->buildRequest([
+            'first_name' => $person->first_name,
+            'last_name' => $person->last_name,
+            'raw_password' => $person->raw_password,
+            'email_address' => $person->email_address,
+        ]);
+
+        $app->handle($request);
+    }
+
     public function testBadJSON(): void
     {
         $app = $this->getAppInstance();

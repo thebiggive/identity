@@ -20,7 +20,6 @@ class FriendlyCaptchaVerifier
      * @return bool Whether or not solution is valid.
      * Returns true in case of an error connecting to the Friendly Captcha Server
      */
-    #[\NoDiscard]
     public function verify(string $solution): bool
     {
         if (getenv('APP_ENV') === 'regression') {
