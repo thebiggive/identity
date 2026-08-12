@@ -22,7 +22,9 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Exception\ApiErrorException;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
@@ -104,9 +106,15 @@ class Create extends Action
         } else {
             // as we didn't require them to supply an email verification token here we must verify a captcha code
             // instead.
+            if ($person->captcha_code === null) {
+                $this->logger->log(LogLevel::WARNING, 'Security: Person Create captcha code not sent');
+                throw new HttpUnauthorizedException($request, 'Unauthorised');
+            }
+
             if (!$this->friendlyCaptchaVerifier->verify($person->captcha_code)) {
                 throw new HttpBadRequestException($request, 'CAPTCHA verification error');
             }
+
             Assertion::null($person->raw_password);
         }
     }
