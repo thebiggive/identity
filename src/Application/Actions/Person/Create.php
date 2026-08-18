@@ -191,6 +191,8 @@ class Create extends Action
         }
 
         ['person' => $person, 'error' => $validationError] = $this->deserializePerson($request, $this->serializer);
+        $person->trimNames();
+
         $tokenSecretSupplied = (string)($requestBody["secretNumber"] ?? null);
 
         if ($validationError) {

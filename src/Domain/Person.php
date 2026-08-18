@@ -556,4 +556,12 @@ class Person
     {
         Password::verify($passwordSupplied, $this);
     }
+
+    public function trimNames(): void
+    {
+        // Ideally, I'd do this in the deserialization, but there's been an open ticket in Symfony
+        // to support it since 2018: https://github.com/symfony/symfony/issues/27933
+        $this->first_name = \is_string($this->first_name) ? trim($this->first_name) : null;
+        $this->last_name = \is_string($this->last_name) ? trim($this->last_name) : null;
+    }
 }
