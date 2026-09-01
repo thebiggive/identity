@@ -8,6 +8,7 @@ use BigGive\Identity\Application\Actions\EmailVerificationToken\GetEmailVerifica
 use BigGive\Identity\Application\Actions\GetDonationFundsTransferInstructions;
 use BigGive\Identity\Application\Actions\GetPasswordResetToken;
 use BigGive\Identity\Application\Actions\Login;
+use BigGive\Identity\Application\Actions\LoginOrGetToken;
 use BigGive\Identity\Application\Actions\Person;
 use BigGive\Identity\Application\Actions\EmailVerificationToken;
 use BigGive\Identity\Application\Actions\Status;
@@ -15,7 +16,6 @@ use BigGive\Identity\Application\Middleware\CompletePersonWriteAuthMiddleware;
 use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
-use BigGive\Identity\Application\Middleware\PersonCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PlainCaptchaMiddleware;
 use Los\RateLimit\RateLimitMiddleware;
 use Middlewares\ClientIp;
@@ -33,8 +33,10 @@ return function (App $app) {
         : (new ClientIp())->proxy([], ['X-Forwarded-For']);
 
     $app->group('/v1', function (Group $versionGroup) {
-        $versionGroup->post('/people', Person\Create::class)
-            ->add(PersonCaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+        $versionGroup->post('/people', Person\Create::class);
+        // PersonCaptchaMiddleware removed - was here but not needed since they will have already been through
+        // a captcha recently to get the email verification token, or donated money. We don't need to make them
+        // do another captcha and that would be awkward on the regular giving form.
 
         $versionGroup->put('/people/{personId:[a-z0-9-]{36}}', Person\Update::class)
             ->add(PersonPatchAuthMiddleware::class);
@@ -61,6 +63,9 @@ return function (App $app) {
 
         $versionGroup->post('/auth', Login::class)
             ->add(CredentialsCaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
+
+        $versionGroup->post('/auth-or-get-token', LoginOrGetToken::class)
+            ->add(CredentialsCaptchaMiddleware::class);
 
         $versionGroup->post(
             '/password-reset-token',

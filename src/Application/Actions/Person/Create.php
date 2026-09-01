@@ -8,6 +8,7 @@ use Assert\Assertion;
 use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ActionError;
 use BigGive\Identity\Application\Auth\TokenService;
+use BigGive\Identity\Application\Middleware\FriendlyCaptchaVerifier;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use BigGive\Identity\Client\Mailer;
 use BigGive\Identity\Client\Stripe;
@@ -21,7 +22,9 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpUnauthorizedException;
 use Stripe\Exception\ApiErrorException;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
@@ -39,7 +42,8 @@ use TypeError;
         'If they want to login again they will need to set a password later.',
     operationId: 'person_create',
     requestBody: new OA\RequestBody(
-        description: 'All details needed to register a Person, including valid captcha_code',
+        description: 'All details needed to register a Person, including valid captcha_code or secretNumber ' .
+        '(email verification code)',
         required: true,
         content: new OA\JsonContent(ref: '#/components/schemas/Person'),
     ),
@@ -62,6 +66,7 @@ class Create extends Action
     public function __construct(
         LoggerInterface $logger,
         private readonly PersonRepository $personRepository,
+        private readonly FriendlyCaptchaVerifier $friendlyCaptchaVerifier,
         private readonly SerializerInterface $serializer,
         private readonly SettingsInterface $settings,
         private readonly Stripe $stripeClient,
@@ -72,6 +77,46 @@ class Create extends Action
         private readonly TokenService $tokenService,
     ) {
         parent::__construct($logger);
+    }
+
+    private function checkEmailTokenOrCaptchaValid(
+        bool $hasPassword,
+        ?string $email_address,
+        Person $person,
+        string $tokenSecretSupplied,
+        Request $request,
+        string $rawPassword
+    ): void {
+        if ($hasPassword) {
+            Assertion::allNotEmpty([$email_address, $person->last_name]);
+
+            if (!$person->is_organisation) {
+                Assertion::notEmpty($person->first_name);
+            }
+
+            \assert($email_address !== null); // Psalm can't understand previous line.
+
+            $this->assertValidEmailVerificationTokenSupplied(
+                email_address: $email_address,
+                tokenSecretSupplied: $tokenSecretSupplied,
+                request: $request
+            );
+            $person->email_address_verified = $this->now;
+            $person->raw_password = $rawPassword;
+        } else {
+            // as we didn't require them to supply an email verification token here we must verify a captcha code
+            // instead.
+            if ($person->captcha_code === null) {
+                $this->logger->log(LogLevel::WARNING, 'Security: Person Create captcha code not sent');
+                throw new HttpUnauthorizedException($request, 'Unauthorised');
+            }
+
+            if (!$this->friendlyCaptchaVerifier->verify($person->captcha_code)) {
+                throw new HttpBadRequestException($request, 'CAPTCHA verification error');
+            }
+
+            Assertion::null($person->raw_password);
+        }
     }
 
     public function assertValidEmailVerificationTokenSupplied(
@@ -146,6 +191,8 @@ class Create extends Action
         }
 
         ['person' => $person, 'error' => $validationError] = $this->deserializePerson($request, $this->serializer);
+        $person->trimNames();
+
         $tokenSecretSupplied = (string)($requestBody["secretNumber"] ?? null);
 
         if ($validationError) {
@@ -158,27 +205,16 @@ class Create extends Action
 
         $rawPassword = (string) ($requestBody['raw_password'] ?? null);
 
-        if ($rawPassword !== '') {
-            $hasPassword = true;
-            Assertion::allNotEmpty([$email_address, $person->last_name]);
+        $hasPassword = $rawPassword !== '';
 
-            if (! $person->is_organisation) {
-                Assertion::notEmpty($person->first_name);
-            }
-
-            \assert($email_address !== null); // Psalm can't understand previous line.
-
-            $this->assertValidEmailVerificationTokenSupplied(
-                email_address: $email_address,
-                tokenSecretSupplied: $tokenSecretSupplied,
-                request: $request
-            );
-            $person->email_address_verified = $this->now;
-            $person->raw_password = $rawPassword;
-        } else {
-            $hasPassword = false;
-            Assertion::null($person->raw_password);
-        }
+        $this->checkEmailTokenOrCaptchaValid(
+            hasPassword: $hasPassword,
+            email_address: $email_address,
+            person: $person,
+            tokenSecretSupplied: $tokenSecretSupplied,
+            request: $request,
+            rawPassword: $rawPassword
+        );
 
         if ($this->settings->get('friendly_captcha')['bypass']) {
             $person->skipCaptchaPresenceValidation();
@@ -236,10 +272,14 @@ class Create extends Action
         $person->setStripeCustomerId($customer->id);
         $this->personRepository->persist($person, false);
 
+        // I think $complete will now always be true, but not 100% sure.
+        // Could add logging to check but I don't think it's essential now.
+        $complete = $tokenSecretSupplied !== '';
+
         $token = $this->tokenService->create(
             new \DateTimeImmutable(),
             (string)$person->getId(),
-            false,
+            $complete,
             $person->stripe_customer_id
         );
 
