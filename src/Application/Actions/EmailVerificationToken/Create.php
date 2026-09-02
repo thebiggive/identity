@@ -131,7 +131,7 @@ class Create extends Action
             'templateKey' => $templateKey,
             'recipientEmailAddress' => $emailAddress,
             'params' => [
-                'firstName' => $existingAccount->getFirstName(),
+                'donorFirstName' => $existingAccount->getFirstName(),
             ],
         ]);
     }
