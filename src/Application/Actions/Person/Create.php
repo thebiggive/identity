@@ -79,13 +79,18 @@ class Create extends Action
         parent::__construct($logger);
     }
 
+    /**
+     * Require that one of the 2 tokens is provided, except in Staging load tests where in the absence of an email
+     * token, Friendly Captcha may be bypassed.
+     */
     private function checkEmailTokenOrCaptchaValid(
         bool $hasPassword,
         ?string $email_address,
         Person $person,
         string $tokenSecretSupplied,
         Request $request,
-        string $rawPassword
+        string $rawPassword,
+        bool $permitCaptchaBypass,
     ): void {
         if ($hasPassword) {
             Assertion::allNotEmpty([$email_address, $person->last_name]);
@@ -103,6 +108,8 @@ class Create extends Action
             );
             $person->email_address_verified = $this->now;
             $person->raw_password = $rawPassword;
+        } elseif ($permitCaptchaBypass) {
+            return;
         } else {
             // as we didn't require them to supply an email verification token here we must verify a captcha code
             // instead.
@@ -207,16 +214,19 @@ class Create extends Action
 
         $hasPassword = $rawPassword !== '';
 
+        $bypassFriendlyCaptcha = $this->settings->get('friendly_captcha')['bypass'];
+
         $this->checkEmailTokenOrCaptchaValid(
             hasPassword: $hasPassword,
             email_address: $email_address,
             person: $person,
             tokenSecretSupplied: $tokenSecretSupplied,
             request: $request,
-            rawPassword: $rawPassword
+            rawPassword: $rawPassword,
+            permitCaptchaBypass: $bypassFriendlyCaptcha,
         );
 
-        if ($this->settings->get('friendly_captcha')['bypass']) {
+        if ($bypassFriendlyCaptcha) {
             $person->skipCaptchaPresenceValidation();
         }
 
