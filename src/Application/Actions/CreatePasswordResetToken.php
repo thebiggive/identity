@@ -97,8 +97,8 @@ class CreatePasswordResetToken extends Action
             'templateKey' => 'password-reset-requested',
             'recipientEmailAddress' => $email,
             'params' => [
-                'firstName' => $person->getFirstName(),
-                'lastName' => $person->getLastName(),
+                'donorFirstName' => $person->getFirstName(),
+                'donorLastName' => $person->getLastName(),
                 'resetLink' => $resetLink,
             ],
         ]);

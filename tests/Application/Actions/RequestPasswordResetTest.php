@@ -92,8 +92,8 @@ class RequestPasswordResetTest extends TestCase
             $bodyParams = $params['params'];
             $this->assertIsArray($bodyParams);
             $this->assertMatchesRegularExpression('/http.*/', $bodyParams['resetLink']);
-            $this->assertSame('Joe', $bodyParams['firstName']);
-            $this->assertSame('Bloggs', $bodyParams['lastName']);
+            $this->assertSame('Joe', $bodyParams['donorFirstName']);
+            $this->assertSame('Bloggs', $bodyParams['donorLastName']);
 
             return true;
         }))->shouldBeCalledOnce();
