@@ -108,6 +108,14 @@ class Create extends Action
             );
             $person->email_address_verified = $this->now;
             $person->raw_password = $rawPassword;
+
+            // Ensure that e.g. the password meets minimum standards.
+            $violations = $this->validator->validate($person, null, [Person::VALIDATION_COMPLETE]);
+            if (count($violations) > 0) {
+                // Typically front-end is already giving detailed feedback on any validation issues, so we can guess
+                // slightly and be general here for now.
+                throw new HttpBadRequestException($request, 'Invalid password');
+            }
         } elseif ($permitCaptchaBypass) {
             return;
         } else {
@@ -216,16 +224,6 @@ class Create extends Action
 
         $bypassFriendlyCaptcha = $this->settings->get('friendly_captcha')['bypass'];
 
-        $this->checkEmailTokenOrCaptchaValid(
-            hasPassword: $hasPassword,
-            email_address: $email_address,
-            person: $person,
-            tokenSecretSupplied: $tokenSecretSupplied,
-            request: $request,
-            rawPassword: $rawPassword,
-            permitCaptchaBypass: $bypassFriendlyCaptcha,
-        );
-
         if ($bypassFriendlyCaptcha) {
             $person->skipCaptchaPresenceValidation();
         }
@@ -248,6 +246,16 @@ class Create extends Action
                 true,
             );
         }
+
+        $this->checkEmailTokenOrCaptchaValid(
+            hasPassword: $hasPassword,
+            email_address: $email_address,
+            person: $person,
+            tokenSecretSupplied: $tokenSecretSupplied,
+            request: $request,
+            rawPassword: $rawPassword,
+            permitCaptchaBypass: $bypassFriendlyCaptcha,
+        );
 
         try {
             // We can't send the person record to matchbot just yet, as we need to give them a stripe ID first.
