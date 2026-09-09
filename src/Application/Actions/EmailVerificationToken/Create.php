@@ -79,7 +79,12 @@ class Create extends Action
             );
         }
 
-        $emailAddress = (string)($requestBody["emailAddress"] ?? throw new HttpBadRequestException($request));
+        // TODO switch Donate to using email_address then remove camel case.
+        $emailAddress = (string)(
+            $requestBody["email_address"] ??
+            $requestBody["emailAddress"] ??
+            throw new HttpBadRequestException($request)
+        );
         $regularGiving = (bool)($requestBody['regularGiving'] ?? false);
 
         $existingAccount = $this->personRepository->findPasswordEnabledPersonByEmailAddress($emailAddress);
