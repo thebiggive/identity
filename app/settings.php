@@ -11,11 +11,14 @@ return function (ContainerBuilder $containerBuilder) {
     // Global Settings Object
     $containerBuilder->addDefinitions([
         SettingsInterface::class => function () {
-            $isProduction = getenv('APP_ENV') === 'production';
+
+           /** @var 'local'|'test'|'regression'|'staging'|'production' $appEnv */
+            $appEnv = getenv('APP_ENV');
+            $isProduction = $appEnv === 'production';
             $isLoadTest = !$isProduction && isset($_SERVER['HTTP_X_IS_LOAD_TEST']);
 
             $doctrineConnectionOptions = [];
-            if (getenv('APP_ENV') !== 'local') {
+            if ($appEnv !== 'local') {
                 $doctrineConnectionOptions[\Pdo\Mysql::ATTR_SSL_CA]
                     = dirname(__DIR__) . '/deploy/rds-ca-eu-west-1-bundle.pem';
             }
@@ -33,12 +36,12 @@ return function (ContainerBuilder $containerBuilder) {
                         'sendSecret' => getenv('MAILER_SEND_SECRET'),
                     ],
                 ],
-                'appEnv' => getenv('APP_ENV'),
+                'appEnv' => $appEnv,
                 'bypassPsp' => $isLoadTest,
-                'displayErrorDetails' => ! $isProduction,
+                'displayErrorDetails' => $appEnv === 'local' || $appEnv === 'test',
                 'doctrine' => [
                     // if true, metadata caching is forcefully disabled
-                    'dev_mode' => in_array(getenv('APP_ENV'), ['local', 'test'], true),
+                    'dev_mode' => in_array($appEnv, ['local', 'test'], true),
 
                     'cache_dir' => __DIR__ . '/../var/doctrine',
                     'metadata_dirs' => [__DIR__ . '/../src/Domain'],
@@ -62,7 +65,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'logger' => [
                     'name' => 'identity',
                     'path' => 'php://stdout',
-                    'level' => getenv('APP_ENV') === 'local' ? Logger::DEBUG : Logger::INFO,
+                    'level' => $appEnv === 'local' ? Logger::DEBUG : Logger::INFO,
                 ],
                 'los_rate_limit' => [
                     // Dynamic so we can increase it for load tests or as needed based on observed
@@ -70,8 +73,8 @@ return function (ContainerBuilder $containerBuilder) {
                     'ip_max_requests'   => (int) (getenv('MAX_CREATES_PER_IP_PER_5M') ?: '1'),
                     'ip_reset_time'     => 300, // 5 minutes
                     // All non-local envs, including 'test', assume ALB-style forwarded headers will be used.
-                    'prefer_forwarded' => getenv('APP_ENV') !== 'local',
-                    'trust_forwarded' => getenv('APP_ENV') !== 'local',
+                    'prefer_forwarded' => $appEnv !== 'local',
+                    'trust_forwarded' => $appEnv !== 'local',
                     'forwarded_headers_allowed' => [
                         'X-Forwarded-For',
                     ],
