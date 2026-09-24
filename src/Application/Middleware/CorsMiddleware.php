@@ -35,6 +35,7 @@ class CorsMiddleware implements MiddlewareInterface
         // Basic approach based on https://www.slimframework.com/docs/v4/cookbook/enable-cors.html
         // - adapted to allow for multiple potential origins per-Identity instance.
         $response = $handler->handle($request)
+            ->withHeader('Access-Control-Allow-Credentials', 'true') // Let Donate pass Cloudflare clearance cookies.
             ->withHeader('Access-Control-Allow-Origin', $corsAllowedOrigin)
             ->withHeader('Access-Control-Allow-Headers', $headers)
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
