@@ -447,7 +447,14 @@ class Person
 
         $notCompromisedPasswordValidator->initialize($context);
 
-        $notCompromisedPasswordValidator->validate($this->raw_password, new NotCompromisedPassword(skipOnError: true));
+        $notCompromisedPasswordValidator->validate(
+            $this->raw_password,
+            new NotCompromisedPassword(
+                message: 'This password has appeared in a known data breach and can\'t be used. ' .
+                'Please choose a different password.',
+                skipOnError: true
+            )
+        );
     }
 
     public function addCompletionJWT(string $completionJWT): void
