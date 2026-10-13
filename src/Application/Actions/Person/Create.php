@@ -30,6 +30,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use TypeError;
 
@@ -112,9 +113,18 @@ class Create extends Action
             // Ensure that e.g. the password meets minimum standards.
             $violations = $this->validator->validate($person, null, [Person::VALIDATION_COMPLETE]);
             if (count($violations) > 0) {
-                // Typically front-end is already giving detailed feedback on any validation issues, so we can guess
-                // slightly and be general here for now.
-                throw new HttpBadRequestException($request, 'Invalid password');
+                $message = "";
+                foreach ($violations as $violation) {
+                    // only message we're currently expecting to see is from the NotCompromisedPassword validator as
+                    // using our copy given in Person::validatePasswordIfNotBlank
+                    $message .= $violation->getMessage();
+                    $message .= " ";
+                }
+
+                throw new HttpBadRequestException(
+                    $request,
+                    $message,
+                );
             }
         } elseif ($permitCaptchaBypass) {
             return;
