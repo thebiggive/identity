@@ -116,10 +116,7 @@ class Create extends Action
                 $message = "";
                 foreach ($violations as $violation) {
                     // only message we're currently expecting to see is from the NotCompromisedPassword validator as
-                    // quoted below, as other issues should be caught by FE validation before form submission.
-                    //
-                    // "This password has been leaked in a data breach, it must not be used.
-                    // Please use another password",
+                    // using our copy given in Person::validatePasswordIfNotBlank
                     $message .= $violation->getMessage();
                     $message .= " ";
                 }
