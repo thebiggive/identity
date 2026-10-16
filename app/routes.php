@@ -17,7 +17,9 @@ use BigGive\Identity\Application\Middleware\CredentialsCaptchaMiddleware;
 use BigGive\Identity\Application\Middleware\PersonGetAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PersonPatchAuthMiddleware;
 use BigGive\Identity\Application\Middleware\PlainCaptchaMiddleware;
+use BigGive\Identity\Application\Settings\SettingsInterface;
 use Los\RateLimit\RateLimitMiddleware;
+use Los\RateLimit\RateLimitOptions;
 use Middlewares\ClientIp;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -32,7 +34,7 @@ return function (App $app) {
         ? new ClientIp()
         : (new ClientIp())->proxy([], ['X-Forwarded-For']);
 
-    $app->group('/v1', function (Group $versionGroup) {
+    $app->group('/v1', function (Group $versionGroup) use ($app) {
         $versionGroup->post('/people', Person\Create::class);
         // PersonCaptchaMiddleware removed - was here but not needed since they will have already been through
         // a captcha recently to get the email verification token, or donated money. We don't need to make them
@@ -61,10 +63,28 @@ return function (App $app) {
         })
             ->add(PersonGetAuthMiddleware::class);
 
+        // use stronger rate limiting for authentication.
+        $rateLimitSettingsForAuth = $app->getContainer()->get(SettingsInterface::class)->get('los_rate_limit');
+
+        // overrides higher rate allowed for other routes.
+        $rateLimitSettingsForAuth['ip_max_requests'] = 20;
+        // distinct hash required so these routes have their own remaining count in storage for rate limiter
+        $rateLimitSettingsForAuth['hash_salt'] = 'Los%Rate-2';
+
+
+        $authRateLimitMiddleware = new RateLimitMiddleware(
+            storage: $app->getContainer()->get(\Symfony\Component\Cache\Psr16Cache::class),
+            problemResponseFactory: $app->getContainer()->get(
+                \Mezzio\ProblemDetails\ProblemDetailsResponseFactory::class
+            ),
+            options: new RateLimitOptions($rateLimitSettingsForAuth)
+        );
         $versionGroup->post('/auth', Login::class)
+            ->add($authRateLimitMiddleware)
             ->add(CredentialsCaptchaMiddleware::class); // Runs last, after group's IP + rate limit middlewares.
 
         $versionGroup->post('/auth-or-get-token', LoginOrGetToken::class)
+            ->add($authRateLimitMiddleware)
             ->add(CredentialsCaptchaMiddleware::class);
 
         $versionGroup->post(
