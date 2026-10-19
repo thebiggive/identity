@@ -115,7 +115,7 @@ class Login extends Action
         }
 
         $person->lastLoginTime = $this->now;
-        $person->lastLoginIP = $_SERVER['REMOTE_ADDR'] ?? null;
+        $person->lastLoginIP = $_SERVER['HTTP_Client-Ip'] ?? null;
         $this->personRepository->persist($person, true);
 
         $this->personRepository->upgradePasswordIfPossible($credentials->raw_password, $person);
