@@ -21,7 +21,6 @@ use BigGive\Identity\Application\Middleware\PlainCaptchaMiddleware;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use Los\RateLimit\RateLimitMiddleware;
 use Los\RateLimit\RateLimitOptions;
-use Middlewares\ClientIp;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\App;
@@ -29,11 +28,6 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
     $app->get('/ping', Status::class);
-
-    // Provides real IP for logging etc.
-    $ipMiddleware = getenv('APP_ENV') === 'local'
-        ? new ClientIp()
-        : (new ClientIp())->proxy([], [Action::FORWARDED_IP_HEADER_NAME]);
 
     $app->group('/v1', function (Group $versionGroup) use ($app) {
         $versionGroup->post('/people', Person\Create::class);
@@ -114,7 +108,6 @@ return function (App $app) {
         $versionGroup->post('/emailVerificationToken', EmailVerificationToken\Create::class)
             ->add(PlainCaptchaMiddleware::class);
     })
-        ->add($ipMiddleware)
         ->add(RateLimitMiddleware::class);
 
     // CORS Pre-Flight OPTIONS Request Handler
