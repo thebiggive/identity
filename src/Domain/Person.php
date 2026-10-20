@@ -175,7 +175,12 @@ class Person
      * )
      * @var string The person's first name.
      */
-    #[Assert\NotBlank(groups: [self::VALIDATION_COMPLETE])]
+    #[Assert\When(
+        expression: 'this.is_organisation == false',
+        constraints: [
+            new Assert\NotBlank(groups: [self::VALIDATION_COMPLETE]),
+        ]
+    )]
     #[Assert\Regex(
         pattern: self::SIX_DIGITS_REGEX,
         match: false,

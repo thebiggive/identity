@@ -35,6 +35,7 @@
         "symfony/cache": "^8.1",
         "symfony/console": "^8.1",
         "symfony/doctrine-bridge": "^8.1",
+        "symfony/expression-language": "^8.1",
         "symfony/http-client": "^8.1",
         "symfony/property-access": "^8.1",
         "symfony/redis-messenger": "^8.1",
