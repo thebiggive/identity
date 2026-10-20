@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Actions\ChangePasswordUsingToken;
 use BigGive\Identity\Application\Actions\CreatePasswordResetToken;
 use BigGive\Identity\Application\Actions\EmailVerificationToken\GetEmailVerificationTokenWithPersonId;
@@ -32,7 +33,7 @@ return function (App $app) {
     // Provides real IP for logging etc.
     $ipMiddleware = getenv('APP_ENV') === 'local'
         ? new ClientIp()
-        : (new ClientIp())->proxy([], ['X-Forwarded-For']);
+        : (new ClientIp())->proxy([], [Action::FORWARDED_IP_HEADER_NAME]);
 
     $app->group('/v1', function (Group $versionGroup) use ($app) {
         $versionGroup->post('/people', Person\Create::class);

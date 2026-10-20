@@ -22,6 +22,13 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 #[OA\SecurityScheme(securityScheme: 'captcha', type: 'apiKey', in: 'header', name: 'x-captcha-code')]
 abstract class Action
 {
+
+    public final const string FORWARDED_IP_HEADER_NAME = 'X-Forwarded-For';
+
+    // as above but with `HTTP_` prepended, uppercase, and underscores not hyphen-minuses,
+    // all as done by the PHP engine to build the $_SERVER array:
+    public final const string FORWARDED_IP_HEADER_ARRAY_KEY = 'HTTP_X_FORWARDED_FOR';
+
     public function __construct(protected readonly LoggerInterface $logger)
     {
     }

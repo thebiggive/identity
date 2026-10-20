@@ -107,7 +107,7 @@ class Login extends Action
             return $this->fail(Password::BAD_LOGIN_MESSAGE);
         }
 
-        $HTTP_X_FORWARDED_FOR = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
+        $HTTP_X_FORWARDED_FOR = $_SERVER[Action::FORWARDED_IP_HEADER_ARRAY_KEY] ?? null;
         $clientIp = $HTTP_X_FORWARDED_FOR !== null ? \trim(\explode(',', $HTTP_X_FORWARDED_FOR)[0]) : null;
 
         if ($person->isLockedOutForIp($clientIp, $this->now)) {
