@@ -383,6 +383,12 @@ class Person
         }
 
         $exponent = min($this->failedLoginAttempts - self::MAX_FREE_FAILED_LOGINS, 14);
+
+        // $lockoutSeconds will be up to self::BASE_LOCKOUT_SECONDS * (2 ** 14)
+        //                               = 983040 seconds or 11.4 days.
+        // In case a donor does lock their account out for this long they will probably
+        // prefer to use the "forgot password" feature which resets the lockout rather
+        // than wait that long.
         $lockoutSeconds = self::BASE_LOCKOUT_SECONDS * (2 ** $exponent);
         $lockedUntil = $this->lastFailedLoginTime->modify("+{$lockoutSeconds} seconds");
 
