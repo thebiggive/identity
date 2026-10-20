@@ -42,6 +42,7 @@ class LoginTest extends TestCase
             $personWithHashMatchingRawPasswordFromLoginObject
         )
             ->shouldBeCalledOnce();
+        $personRepoProphecy->persist(Argument::type(Person::class), true)->shouldBeCalledOnce();
 
         $this->getContainer()->set(PersonRepository::class, $personRepoProphecy->reveal());
 

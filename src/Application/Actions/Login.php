@@ -50,6 +50,7 @@ class Login extends Action
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator,
         private readonly TokenService $tokenService,
+        private readonly \DateTimeImmutable $now,
     ) {
         parent::__construct($logger);
     }
@@ -112,6 +113,15 @@ class Login extends Action
         } catch (AuthenticationException $exception) {
             return $this->fail($exception->getMessage());
         }
+
+        $person->lastLoginTime = $this->now;
+        $HTTP_X_FORWARDED_FOR = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
+        if ($HTTP_X_FORWARDED_FOR !== null) {
+            $person->lastLoginIP = \trim(\explode(',', $HTTP_X_FORWARDED_FOR)[0]);
+        } else {
+            $person->lastLoginIP = null;
+        }
+        $this->personRepository->persist($person, true);
 
         $this->personRepository->upgradePasswordIfPossible($credentials->raw_password, $person);
 

@@ -76,6 +76,8 @@ class Person
         "captcha_code", // sent FROM frontend, doesn't ever need to be sent to frontend.
         "skipCaptchaCheck",
         "raw_password", // special rules around password handling, so set the property manually when required.
+        'lastLoginTime',
+        'lastLoginIP',
     ];
 
     /**
@@ -142,6 +144,15 @@ class Person
      */
     public ?array $recently_confirmed_tips_total = null;
 
+    #[ORM\Column(type: 'datetime_immutable',  nullable: true)]
+    public ?\DateTimeImmutable $lastLoginTime = null;
+
+    /**
+     * Recorded so that we can avoid strict lock-out policies for failed attempts if from the same IP address.
+     */
+    #[ORM\Column(type: 'string', nullable: true)]
+    public ?string $lastLoginIP = null;
+
     /**
      * @OA\Property(
      *  property="id",
@@ -164,7 +175,12 @@ class Person
      * )
      * @var string The person's first name.
      */
-    #[Assert\NotBlank(groups: [self::VALIDATION_COMPLETE])]
+    #[Assert\When(
+        expression: 'this.is_organisation == false',
+        constraints: [
+            new Assert\NotBlank(groups: [self::VALIDATION_COMPLETE]),
+        ]
+    )]
     #[Assert\Regex(
         pattern: self::SIX_DIGITS_REGEX,
         match: false,
