@@ -107,20 +107,24 @@ class Login extends Action
             return $this->fail(Password::BAD_LOGIN_MESSAGE);
         }
 
+        $HTTP_X_FORWARDED_FOR = $_SERVER[Action::FORWARDED_IP_HEADER_ARRAY_KEY] ?? null;
+        $clientIp = $HTTP_X_FORWARDED_FOR !== null ? \trim(\explode(',', $HTTP_X_FORWARDED_FOR)[0]) : null;
+
+        if ($person->isLockedOutForIp($clientIp, $this->now)) {
+            return $this->fail(Password::ACCOUNT_LOCKED_MESSAGE);
+        }
+
         // Throws on bad password.
         try {
             Password::verify($credentials->raw_password, $person);
         } catch (AuthenticationException $exception) {
+            $person->recordFailedLogin($this->now);
+            $this->personRepository->persist($person, true);
+
             return $this->fail($exception->getMessage());
         }
 
-        $person->lastLoginTime = $this->now;
-        $HTTP_X_FORWARDED_FOR = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
-        if ($HTTP_X_FORWARDED_FOR !== null) {
-            $person->lastLoginIP = \trim(\explode(',', $HTTP_X_FORWARDED_FOR)[0]);
-        } else {
-            $person->lastLoginIP = null;
-        }
+        $person->recordSuccessfulLogin($clientIp, $this->now);
         $this->personRepository->persist($person, true);
 
         $this->personRepository->upgradePasswordIfPossible($credentials->raw_password, $person);

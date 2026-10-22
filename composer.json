@@ -25,7 +25,6 @@
         "guzzlehttp/guzzle": "^7.5",
         "laminas/laminas-diactoros": "^3.8",
         "los/los-rate-limit": "dev-master",
-        "middlewares/client-ip": "^2.0",
         "monolog/monolog": "^2.6",
         "php-di/php-di": "^7.0",
         "slim/psr7": "^1.5",
