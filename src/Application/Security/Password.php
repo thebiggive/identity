@@ -17,6 +17,10 @@ class Password
      */
     public const string BAD_LOGIN_MESSAGE = 'Your email or password is incorrect';
 
+    public const string ACCOUNT_LOCKED_MESSAGE =
+        'Too many failed login attempts. This account is temporarily locked.' .
+        ' Please try again later or reset your password.';
+
     public static function hash(string $rawPassword): string
     {
         return password_hash(password: $rawPassword, algo: self::ALGORITHM, options: self::OPTIONS);

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BigGive\Identity\Application\Actions\Action;
 use BigGive\Identity\Application\Settings\Settings;
 use BigGive\Identity\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
@@ -76,7 +77,7 @@ return function (ContainerBuilder $containerBuilder) {
                     'prefer_forwarded' => $appEnv !== 'local',
                     'trust_forwarded' => $appEnv !== 'local',
                     'forwarded_headers_allowed' => [
-                        'X-Forwarded-For',
+                        Action::FORWARDED_IP_HEADER_NAME,
                     ],
                     'hash_ips' => true, // Required for Redis storage of IPv6 addresses.
                 ],
