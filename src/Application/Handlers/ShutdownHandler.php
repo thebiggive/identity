@@ -7,6 +7,7 @@ namespace BigGive\Identity\Application\Handlers;
 use JetBrains\PhpStorm\Pure;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Slim\Exception\HttpInternalServerErrorException;
 use Slim\ResponseEmitter;
 
@@ -36,32 +37,39 @@ class ShutdownHandler
                 case E_USER_ERROR:
                     $message = "FATAL USER ERROR: {$errorMessage}. ";
                     $message .= " on line {$errorLine} in file {$errorFile}.";
+                    $isError = true;
                     break;
 
                 case E_ERROR:
                     $message = "FATAL ERROR: {$errorMessage}. ";
                     $message .= " on line {$errorLine} in file {$errorFile}.";
+                    $isError = true;
                     break;
 
                 case E_USER_WARNING:
                     $message = "USER WARNING: {$errorMessage}";
+                    $isError = false;
                     break;
 
                 case E_WARNING:
                     $message = "WARNING: {$errorMessage}";
+                    $isError = false;
                     break;
 
                 case E_NOTICE:
                     $message = "NOTICE: {$errorMessage}";
+                    $isError = false;
                     break;
 
                 case E_USER_NOTICE:
                     $message = "USER NOTICE: {$errorMessage}";
+                    $isError = false;
                     break;
 
                 default:
                     $message = "ERROR: {$errorMessage}";
                     $message .= " on line {$errorLine} in file {$errorFile}.";
+                    $isError = true;
                     break;
             }
 
@@ -84,10 +92,7 @@ class ShutdownHandler
                 return;
             }
 
-            // maybe just a warning or PHP notice but we log it as an error since it could indicate important
-            // info missing from the output, e.g. because we tried to read a field that didn't exist in data sent from
-            // SF or FE. If this proves too noisy we might have to change this to just logging as warnings.
-            $this->log->error($errorMessage);
+            $this->log->log($isError ? LogLevel::ERROR : LogLevel::WARNING, $errorMessage);
 
             if (in_array($errorType, [\E_USER_WARNING, \E_WARNING, \E_NOTICE, \E_USER_NOTICE], true)) {
                 // the output is probably better than nothing - if it wasn't, we would have had an error
