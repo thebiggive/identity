@@ -106,7 +106,6 @@ class TokenService
             }
         }
         if ($decodedJwtBody === null) {
-            \assert($lastException instanceof \Exception);
             $type = get_class($lastException);
             // This is only a warning for now. We've seen likely crawlers + bots send invalid
             // requests. In the event that we find they are sending partial JWTs (rather than

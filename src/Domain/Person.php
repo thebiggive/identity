@@ -55,6 +55,9 @@ class Person
     use TimestampsTrait;
 
     public const int MIN_PASSWORD_LENGTH = 12;
+    public const int MAX_FREE_FAILED_LOGINS = 4;
+    public const int BASE_LOCKOUT_SECONDS = 60;
+    public const int FAILURE_WINDOW_SECONDS = 3600;
 
     public const array SERIALISED_FOR_UPDATE_ATTRIBUTES = [
         'first_name',
@@ -78,6 +81,8 @@ class Person
         "raw_password", // special rules around password handling, so set the property manually when required.
         'lastLoginTime',
         'lastLoginIP',
+        'lastFailedLoginTime',
+        'failedLoginAttempts',
     ];
 
     /**
@@ -152,6 +157,12 @@ class Person
      */
     #[ORM\Column(type: 'string', nullable: true)]
     public ?string $lastLoginIP = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    public ?\DateTimeImmutable $lastFailedLoginTime = null;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    public int $failedLoginAttempts = 0;
 
     /**
      * @OA\Property(
@@ -359,6 +370,61 @@ class Person
     public function setStripeCustomerId(?string $stripe_customer_id): void
     {
         $this->stripe_customer_id = $stripe_customer_id;
+    }
+
+    public function isLockedOutForIp(?string $clientIp, \DateTimeImmutable $now): bool
+    {
+        if ($this->lastLoginIP !== null && $clientIp === $this->lastLoginIP) {
+            return false;
+        }
+
+        return $this->isLockedOut($now);
+    }
+
+    public function isLockedOut(\DateTimeImmutable $now): bool
+    {
+        if ($this->failedLoginAttempts < self::MAX_FREE_FAILED_LOGINS || $this->lastFailedLoginTime === null) {
+            return false;
+        }
+
+        $exponent = min($this->failedLoginAttempts - self::MAX_FREE_FAILED_LOGINS, 14);
+
+        // $lockoutSeconds will be up to self::BASE_LOCKOUT_SECONDS * (2 ** 14)
+        //                               = 983040 seconds or 11.4 days.
+        // In case a donor does lock their account out for this long they will probably
+        // prefer to use the "forgot password" feature which resets the lockout rather
+        // than wait that long.
+        $lockoutSeconds = self::BASE_LOCKOUT_SECONDS * (2 ** $exponent);
+        $lockedUntil = $this->lastFailedLoginTime->modify("+{$lockoutSeconds} seconds");
+
+        return $now < $lockedUntil;
+    }
+
+    public function recordSuccessfulLogin(?string $clientIp, \DateTimeImmutable $now): void
+    {
+        $isKnownIp = ($this->lastLoginIP !== null && $clientIp === $this->lastLoginIP);
+
+        $this->lastLoginTime = $now;
+
+        if (!$isKnownIp) {
+            $this->lastLoginIP = $clientIp;
+            $this->failedLoginAttempts = 0;
+            $this->lastFailedLoginTime = null;
+        }
+    }
+
+    public function recordFailedLogin(\DateTimeImmutable $now): void
+    {
+        if (
+            $this->lastFailedLoginTime !== null &&
+            ($now->getTimestamp() - $this->lastFailedLoginTime->getTimestamp()) > self::FAILURE_WINDOW_SECONDS
+        ) {
+            $this->failedLoginAttempts = 1;
+        } else {
+            $this->failedLoginAttempts++;
+        }
+
+        $this->lastFailedLoginTime = $now;
     }
 
     /**
