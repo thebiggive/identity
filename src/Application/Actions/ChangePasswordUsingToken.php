@@ -11,6 +11,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use Symfony\Component\Uid\Exception\InvalidArgumentException as UidInvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -55,9 +56,17 @@ class ChangePasswordUsingToken extends Action
         /** @var array $requestData */
         $requestData = json_decode((string) $request->getBody(), true);
 
-        $secret = (string) ($requestData['secret'] ?? throw new \Exception('Missing secret'));
+        $secret = (string) ($requestData['secret'] ?? throw new HttpBadRequestException($request, 'Missing secret'));
 
-        $secretUuid = Uuid::fromBase58($secret);
+        try {
+            $secretUuid = Uuid::fromBase58($secret);
+        } catch (UidInvalidArgumentException $exception) {
+            $this->logger->warning('Misformatted secret', [
+                'secret' => $secret,
+                'exceptionMessage' => $exception->getMessage(),
+            ]);
+            throw new HttpBadRequestException($request, 'Misformatted secret');
+        }
 
         $token = $this->tokenRepository->findForUse($secretUuid);
 
