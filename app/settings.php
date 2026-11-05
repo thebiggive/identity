@@ -16,7 +16,8 @@ return function (ContainerBuilder $containerBuilder) {
            /** @var 'local'|'test'|'regression'|'staging'|'production' $appEnv */
             $appEnv = getenv('APP_ENV');
             $isProduction = $appEnv === 'production';
-            $isLoadTest = !$isProduction && isset($_SERVER['HTTP_X_IS_LOAD_TEST']) && $_SERVER['HTTP_X_IS_LOAD_TEST'] === '1';
+            $loadTestHeader = $_SERVER['HTTP_X_IS_LOAD_TEST'] ?? null;
+            $isLoadTest = !$isProduction && $loadTestHeader === '1';
 
             $doctrineConnectionOptions = [];
             if ($appEnv !== 'local') {
