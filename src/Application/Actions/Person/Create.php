@@ -140,7 +140,12 @@ class Create extends Action
                 throw new HttpBadRequestException($request, 'CAPTCHA verification error');
             }
 
-            Assertion::null($person->raw_password);
+            try {
+                Assertion::null($person->raw_password);
+            } catch (\Exception $ex) {
+                $this->logger->log(LogLevel::WARNING, 'Person Create password not null error');
+                throw $ex;
+            }
         }
     }
 
